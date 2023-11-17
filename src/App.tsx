@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import './App.css';
-import { Button, Typography } from '@mui/material';
+import { Box, Button, Stack, Typography } from '@mui/material';
 import { tomorrow as style } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 
@@ -71,7 +71,7 @@ function App() {
     while (true) {
       wait_for_event(&event);                /* only possibility is frame_arrival */
       from_physical_layer(&r);               /* go get the inbound frame */
-      to_physical_layer(&r.info);            /* pass the data to the network layer */
+      to_network_layer(&r.info);            /* pass the data to the network layer */
     }
   }
   `, receiver1Row);
@@ -117,21 +117,29 @@ function App() {
       <Typography>
         协议一提供了从发送方到接收方的单向数据传输。协议一假设了传输通道是无差错的，并且接收方可以任意快地处理输入数据。因此，发送方只需要循环发送数据，多快都可以。
       </Typography>
-      <Typography>
-        协议一的发送方代码：
-      </Typography>
-      <SyntaxHighlighter language="javascript" style={style}>
-        {sender1}
-      </SyntaxHighlighter>
-      <Button variant="contained" onClick={stepSender1} disabled={!canStepSender1()}>下一步</Button>
-      {senderToReceiver1}
-      <Typography>
-        协议一的接收方代码：
-      </Typography>
-      <SyntaxHighlighter language="javascript" style={style}>
-        {receiver1}
-      </SyntaxHighlighter>
-      <Button variant="contained" onClick={stepReceiver1} disabled={!canStepReceiver1()}>下一步</Button>
+      <Stack spacing={2} direction="row">
+        <Box>
+          <Typography>
+            协议一的发送方代码：
+          </Typography>
+          <SyntaxHighlighter language="javascript" style={style}>
+            {sender1}
+          </SyntaxHighlighter>
+          <Button variant="contained" onClick={stepSender1} disabled={!canStepSender1()}>下一步</Button>
+        </Box>
+        <Typography>
+          {senderToReceiver1}
+        </Typography>
+        <Box>
+          <Typography>
+            协议一的接收方代码：
+          </Typography>
+          <SyntaxHighlighter language="javascript" style={style}>
+            {receiver1}
+          </SyntaxHighlighter>
+          <Button variant="contained" onClick={stepReceiver1} disabled={!canStepReceiver1()}>下一步</Button>
+        </Box>
+      </Stack>
     </div>
   );
 }
