@@ -34,6 +34,12 @@ type ViewerState = {
 
   senderDataLinkToPhysical: string[];
   setSenderDataLinkToPhysical: (val: string[]) => void;
+
+  receiverPhysicalToDataLink: string[];
+  setReceiverPhysicalToDataLink: (val: string[]) => void;
+
+  receiverDataLinkToNetwork: string[];
+  setReceiverDataLinkToNetwork: (val: string[]) => void;
 };
 
 type ViewerProps = {
@@ -66,17 +72,22 @@ function Viewer(props: ViewerProps) {
   // sender data link -> sender physical
   const [senderDataLinkToPhysical, setSenderDataLinkToPhysical] = useState<string[]>([]);
 
-  // sender physical layer
-  // sender physical -> receiver physical
-  const [senderToReceiver, setSenderToReceiver] = useState<string[]>([]);
+  // sender & receiver physical layer
+  // sender physical -> receiver physical is implicit
+  // receiver physical -> receiver data link
+  const [receiverPhysicalToDataLink, setReceiverPhysicalToDataLink] = useState<string[]>([]);
   const sendPhysical = useCallback(() => {
-    setSenderToReceiver(senderToReceiver.concat(senderDataLinkToPhysical[0]));
-    setSenderDataLinkToPhysical(senderDataLinkToPhysical.slice());
-  }, [senderToReceiver, senderDataLinkToPhysical]);
+    setReceiverPhysicalToDataLink(receiverPhysicalToDataLink.concat(senderDataLinkToPhysical[0]));
+    setSenderDataLinkToPhysical(senderDataLinkToPhysical.slice(1));
+  }, [receiverPhysicalToDataLink, senderDataLinkToPhysical]);
 
   // receiver data link layer
   const [receiverRow, setReceiverRow] = useState(props.initialReceiverRow);
   const receiverCode = AddRowMarker(props.receiverCode, receiverRow);
+
+  // receiver network layer
+  // receiver data link -> receiver network
+  const [receiverDataLinkToNetwork, setReceiverDataLinkToNetwork] = useState<string[]>([]);
 
   const state: ViewerState = {
     senderRow: senderRow,
@@ -89,21 +100,30 @@ function Viewer(props: ViewerProps) {
     setSenderNetworkToDataLink: setSenderNetworkToDataLink,
 
     senderDataLinkToPhysical: senderDataLinkToPhysical,
-    setSenderDataLinkToPhysical: setSenderDataLinkToPhysical
+    setSenderDataLinkToPhysical: setSenderDataLinkToPhysical,
+
+    receiverPhysicalToDataLink: receiverPhysicalToDataLink,
+    setReceiverPhysicalToDataLink: setReceiverPhysicalToDataLink,
+
+    receiverDataLinkToNetwork: receiverDataLinkToNetwork,
+    setReceiverDataLinkToNetwork: setReceiverDataLinkToNetwork
+  };
+
+  const style1 = {
+    padding: '20px'
+  };
+  const style2 = {
+    padding: '10px',
+    marginTop: '10px'
   };
 
   return <Grid container spacing={2}>
     <Grid item xs={6}>
-      <Paper sx={{
-        padding: '20px',
-      }}>
+      <Paper sx={style1}>
         <Typography variant="h4">
           发送方
         </Typography>
-        <Paper sx={{
-          padding: '10px',
-          marginTop: '10px'
-        }}>
+        <Paper sx={style2}>
           <Typography variant="h5">
             网络层
           </Typography>
@@ -127,10 +147,7 @@ function Viewer(props: ViewerProps) {
             }
           </List>
         </Paper>
-        <Paper sx={{
-          padding: '10px',
-          marginTop: '10px'
-        }}>
+        <Paper sx={style2}>
           <Typography variant="h5">
             数据链路层
           </Typography>
@@ -145,15 +162,12 @@ function Viewer(props: ViewerProps) {
             {props.cantStepSenderReason(state)}
           </Typography>
         </Paper>
-        <Paper sx={{
-          padding: '10px',
-          marginTop: '10px'
-        }}>
+        <Paper sx={style2}>
           <Typography variant="h5">
             物理层
           </Typography>
           <Typography>
-            以下是数据链路层发送给物理层，但是物理层还没有发送出去的分组：
+            以下是数据链路层发送给物理层，但是物理层还没有发送的帧：
           </Typography>
           <List>
             {
@@ -168,37 +182,62 @@ function Viewer(props: ViewerProps) {
         </Paper>
       </Paper>
     </Grid>
-    <Grid item xs={4}>
-      <Typography variant="h2">
-        接收方
-      </Typography>
-      <Box>
-        <Typography variant="h3">
-          网络层
+    <Grid item xs={6}>
+      <Paper sx={style1}>
+        <Typography variant="h4">
+          接收方
         </Typography>
-      </Box>
-      <Box>
-        <Typography variant="h3">
-          数据链路层
-        </Typography>
-        <Typography>
-          协议一的接收方代码：
-        </Typography>
-        <SyntaxHighlighter language="javascript" style={style}>
-          {receiverCode}
-        </SyntaxHighlighter>
-        <Button variant="contained" onClick={() => props.stepReceiver(state)} disabled={!props.canStepReceiver(state)}>下一步</Button>
-        <Typography>
-          {props.cantStepReceiverReason(state)}
-        </Typography>
-      </Box>
-      <Box>
-        <Typography variant="h3">
-          物理层
-        </Typography>
-      </Box>
+        <Paper sx={style2}>
+          <Typography variant="h5">
+            网络层
+          </Typography>
+          <Typography>
+            以下是数据链路层发送给网络层的分组：
+          </Typography>
+          <List>
+            {
+              receiverDataLinkToNetwork.map((entry) => {
+                return <ListItem key={entry}>
+                  {entry}
+                </ListItem>;
+              })
+            }
+          </List>
+        </Paper>
+        <Paper sx={style2}>
+          <Typography variant="h5">
+            数据链路层
+          </Typography>
+          <Typography>
+            协议一的接收方代码：
+          </Typography>
+          <SyntaxHighlighter language="javascript" style={style}>
+            {receiverCode}
+          </SyntaxHighlighter>
+          <Button variant="contained" onClick={() => props.stepReceiver(state)} disabled={!props.canStepReceiver(state)}>下一步</Button>
+          <Typography>
+            {props.cantStepReceiverReason(state)}
+          </Typography>
+        </Paper>
+        <Paper sx={style2}>
+          <Typography variant="h5">
+            物理层
+          </Typography>
+          <Typography>
+            以下是物理层发送给数据链路层，但是数据链路层还没有接收的帧：
+          </Typography>
+          <List>
+            {
+              receiverPhysicalToDataLink.map((entry) => {
+                return <ListItem key={entry}>
+                  {entry}
+                </ListItem>;
+              })
+            }
+          </List>
+        </Paper>
+      </Paper>
     </Grid>
-
   </Grid>
 }
 
@@ -254,6 +293,7 @@ function App() {
     }
   }, []);
 
+  const [receiverCurrentFrame1, setReceiverCurrentFrame1] = useState("");
   const receiverCode1 = `
   void receiver1(void)
   {
@@ -274,27 +314,38 @@ function App() {
       state.setReceiverRow(4);
     } else if (state.receiverRow === 4) {
       state.setReceiverRow(5);
-    } else if (state.receiverRow === 5) {
+    } else if (state.receiverRow === 5 && state.receiverPhysicalToDataLink.length > 0) {
       state.setReceiverRow(6);
-    } else if (state.receiverRow === 6) {
+    } else if (state.receiverRow === 6 && state.receiverPhysicalToDataLink.length > 0) {
       state.setReceiverRow(7);
+      setReceiverCurrentFrame1(state.receiverPhysicalToDataLink[0]);
+      state.setReceiverPhysicalToDataLink(state.receiverPhysicalToDataLink.slice(1));
     } else if (state.receiverRow === 7) {
       state.setReceiverRow(8);
+      state.setReceiverDataLinkToNetwork(state.receiverDataLinkToNetwork.concat([receiverCurrentFrame1]))
     } else if (state.receiverRow === 8) {
       state.setReceiverRow(4);
     }
   }, []);
 
   const canStepReceiver1 = useCallback((state: ViewerState) => {
-    if (state.receiverRow === 5) {
+    if (state.receiverRow === 5 && state.receiverPhysicalToDataLink.length == 0) {
+      return false;
+    } else if (state.receiverRow === 6 && state.receiverPhysicalToDataLink.length == 0) {
       return false;
     } else {
       return true;
     }
   }, []);
 
-  const cantStepReceiverReason1 = useCallback(() => {
-    return "";
+  const cantStepReceiverReason1 = useCallback((state: ViewerState) => {
+    if (state.receiverRow === 5 && state.receiverPhysicalToDataLink.length == 0) {
+      return "没有新的事件";
+    } else if (state.receiverRow === 6 && state.receiverPhysicalToDataLink.length == 0) {
+      return "物理层没有新的帧";
+    } else {
+      return "";
+    }
   }, []);
 
   return (
