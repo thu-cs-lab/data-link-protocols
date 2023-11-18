@@ -116,50 +116,76 @@ function App() {
 
   return (
     <Container>
-      <Typography variant="h2">
-        数据链路层协议
-      </Typography>
-      <Typography>
-        在学习《计算机网络原理》课程时，数据链路层协议是一个重难点。为了理解《计算机网络》教材上讲述的数据链路层协议，你可以在本页面中观察各个数据链路层协议的工作方式。
-      </Typography>
-      <Typography variant="h3">
-        协议一：乌托邦协议（Utopia）
-      </Typography>
-      <Typography>
-        协议一提供了从发送方到接收方的单向数据传输。协议一假设了传输通道是无差错的，并且接收方可以任意快地处理输入数据。因此，发送方只需要循环发送数据，多快都可以。
-      </Typography>
       <Grid container spacing={2}>
-        <Grid item xs={6}>
-          <Typography variant="h4">
-            发送方
-          </Typography>
-          <Box>
-            <Typography variant="h5">
-              网络层
-            </Typography>
-            <TextField label="Input" variant="outlined" fullWidth onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setSenderNetworkInput1(event.target.value);
-            }} />
-            <Button variant="contained" onClick={sendNetwork1}>发送</Button>
-            {senderNetworkToDataLink1}
-          </Box>
-          <Box>
-            <Typography variant="h5">
-              数据链路层
+        <Grid item xs={12}>
+          <Paper sx={{
+            padding: '30px',
+          }}>
+            <Typography variant="h3">
+              数据链路层协议
             </Typography>
             <Typography>
-              协议一的发送方代码：
+              在学习《计算机网络原理》课程时，数据链路层协议是一个重难点。为了理解《计算机网络》教材上讲述的数据链路层协议，你可以在本页面中观察各个数据链路层协议的工作方式。
             </Typography>
-            <SyntaxHighlighter language="javascript" style={style}>
-              {sender1}
-            </SyntaxHighlighter>
-            <Button variant="contained" onClick={stepSender1} disabled={!canStepSender1()}>下一步</Button>
-          </Box>
-          <Box>
-            <Typography variant="h5">
-              物理层
+          </Paper>
+        </Grid>
+        <Grid item xs={12}>
+          <Paper sx={{
+            padding: '30px',
+          }}>
+            <Typography variant="h4">
+              协议一：乌托邦协议（Utopia）
             </Typography>
-          </Box>
+            <Typography>
+              协议一提供了从发送方到接收方的单向数据传输。协议一假设了传输通道是无差错的，并且接收方可以任意快地处理输入数据。因此，发送方只需要循环发送数据，多快都可以。
+            </Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={6}>
+          <Paper sx={{
+            padding: '20px',
+          }}>
+            <Typography variant="h4">
+              发送方
+            </Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <Paper sx={{
+                  padding: '5px',
+                }}>
+                  <Typography variant="h5">
+                    网络层
+                  </Typography>
+                  <TextField label="Input" variant="outlined" fullWidth onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    setSenderNetworkInput1(event.target.value);
+                  }} />
+                  <Button variant="contained" onClick={sendNetwork1}>发送</Button>
+                  {senderNetworkToDataLink1}
+                </Paper>
+              </Grid>
+            </Grid>
+            <Paper sx={{
+              padding: '5px',
+            }}>
+              <Typography variant="h5">
+                数据链路层
+              </Typography>
+              <Typography>
+                协议一的发送方代码：
+              </Typography>
+              <SyntaxHighlighter language="javascript" style={style}>
+                {sender1}
+              </SyntaxHighlighter>
+              <Button variant="contained" onClick={stepSender1} disabled={!canStepSender1()}>下一步</Button>
+            </Paper>
+            <Paper sx={{
+              padding: '5px',
+            }}>
+              <Typography variant="h5">
+                物理层
+              </Typography>
+            </Paper>
+          </Paper>
         </Grid>
         <Grid item xs={4}>
           <Typography variant="h2">
