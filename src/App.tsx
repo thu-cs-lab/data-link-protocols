@@ -37,26 +37,34 @@ enum Event {
 }
 
 type ViewerState = {
-  senderRow: number;
-  setSenderRow: (val: number) => void;
-
-  receiverRow: number;
-  setReceiverRow: (val: number) => void;
-
+  // sender network layer
   senderNetworkToDataLink: Packet[];
   setSenderNetworkToDataLink: (val: Packet[]) => void;
+
+  // sender data link layer
+  senderRow: number;
+  setSenderRow: (val: number) => void;
 
   senderDataLinkEvent: Event[];
   setSenderDataLinkEvent: (val: Event[]) => void;
 
+  // sender physical layer
   senderDataLinkToPhysical: Frame[];
   setSenderDataLinkToPhysical: (val: Frame[]) => void;
 
   senderPhysicalToDataLink: Frame[];
   setSenderPhysicalToDataLink: (val: Frame[]) => void;
 
+  // receiver physical layer
   receiverPhysicalToDataLink: Frame[];
   setReceiverPhysicalToDataLink: (val: Frame[]) => void;
+
+  receiverDataLinkToPhysical: Frame[];
+  setReceiverDataLinkToPhysical: (val: Frame[]) => void;
+
+  // receiver data link layer
+  receiverRow: number;
+  setReceiverRow: (val: number) => void;
 
   receiverDataLinkEvent: Event[];
   setReceiverDataLinkEvent: (val: Event[]) => void;
@@ -110,17 +118,25 @@ function Viewer(props: ViewerProps) {
   const [receiverRow, setReceiverRow] = useState(props.initialReceiverRow);
   const receiverCode = AddRowMarker(props.receiverCode, receiverRow);
   const [receiverDataLinkEvent, setReceiverDataLinkEvent] = useState<Event[]>([]);
+  const [receiverDataLinkToPhysical, setReceiverDataLinkToPhysical] = useState<Frame[]>([]);
 
   // receiver network layer
   // receiver data link -> receiver network
   const [receiverDataLinkToNetwork, setReceiverDataLinkToNetwork] = useState<Packet[]>([]);
 
   // sender physical -> receiver physical
-  const sendPhysical = useCallback(() => {
+  const sendSenderPhysical = useCallback(() => {
     setReceiverPhysicalToDataLink(receiverPhysicalToDataLink.concat(senderDataLinkToPhysical[0]));
     setSenderDataLinkToPhysical(senderDataLinkToPhysical.slice(1));
     setReceiverDataLinkEvent(receiverDataLinkEvent.concat([Event.FrameArrival]))
   }, [receiverPhysicalToDataLink, senderDataLinkToPhysical, receiverDataLinkEvent]);
+
+  // receiver physical -> sender physical
+  const sendReceiverPhysical = useCallback(() => {
+    setSenderPhysicalToDataLink(senderPhysicalToDataLink.concat(receiverDataLinkToPhysical[0]));
+    setReceiverDataLinkToPhysical(receiverDataLinkToPhysical.slice(1));
+    setSenderDataLinkEvent(senderDataLinkEvent.concat([Event.FrameArrival]))
+  }, [senderPhysicalToDataLink, receiverDataLinkToPhysical, senderDataLinkEvent]);
 
   const state: ViewerState = {
     senderRow: senderRow,
@@ -143,6 +159,9 @@ function Viewer(props: ViewerProps) {
 
     receiverPhysicalToDataLink: receiverPhysicalToDataLink,
     setReceiverPhysicalToDataLink: setReceiverPhysicalToDataLink,
+
+    receiverDataLinkToPhysical: receiverDataLinkToPhysical,
+    setReceiverDataLinkToPhysical: setReceiverDataLinkToPhysical,
 
     receiverDataLinkEvent: receiverDataLinkEvent,
     setReceiverDataLinkEvent: setReceiverDataLinkEvent,
@@ -234,7 +253,7 @@ function Viewer(props: ViewerProps) {
               })
             }
           </List>
-          <Button variant="contained" onClick={sendPhysical} disabled={senderDataLinkToPhysical.length === 0}>发送</Button>
+          <Button variant="contained" onClick={sendSenderPhysical} disabled={senderDataLinkToPhysical.length === 0}>发送</Button>
         </Paper>
       </Paper>
     </Grid>
@@ -303,6 +322,19 @@ function Viewer(props: ViewerProps) {
               })
             }
           </List>
+          <Typography>
+            以下是数据链路层发送给物理层，但是物理层还没有发送的帧：
+          </Typography>
+          <List>
+            {
+              receiverDataLinkToPhysical.map((entry) => {
+                return <ListItem key={entry.payload}>
+                  Frame: payload={entry.payload}
+                </ListItem>;
+              })
+            }
+          </List>
+          <Button variant="contained" onClick={sendReceiverPhysical} disabled={receiverDataLinkToPhysical.length === 0}>发送</Button>
         </Paper>
       </Paper>
     </Grid>
@@ -545,6 +577,10 @@ function App() {
     } else if (state.receiverRow === 8) {
       // to_physical_layer(&s);
       state.setReceiverRow(9);
+      const frame: Frame = {
+        payload: "dummy"
+      };
+      state.setReceiverDataLinkToPhysical(state.receiverDataLinkToPhysical.concat([frame]));
     } else if (state.receiverRow === 9) {
       // }
       state.setReceiverRow(4);
