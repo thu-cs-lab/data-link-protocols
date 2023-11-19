@@ -79,12 +79,15 @@ type ViewerProps = {
   stepSender: (state: ViewerState) => void;
   canStepSender: (state: ViewerState) => boolean;
   cantStepSenderReason: (state: ViewerState) => string;
+  hideSenderPhysicalToDataLink?: boolean;
+  hideSenderDataLinkEvent?: boolean;
 
   initialReceiverRow: number;
   receiverCode: string;
   stepReceiver: (state: ViewerState) => void;
   canStepReceiver: (state: ViewerState) => boolean;
   cantStepReceiverReason: (state: ViewerState) => string;
+  hideReceiverDataLinkToPhysical?: boolean;
 };
 
 function Viewer(props: ViewerProps) {
@@ -224,23 +227,42 @@ function Viewer(props: ViewerProps) {
           <Typography>
             {props.cantStepSenderReason(state)}
           </Typography>
-          <Typography>
-            以下是数据链路层尚未处理的事件：
-          </Typography>
-          <List>
-            {
-              senderDataLinkEvent.map((entry) => {
-                return <ListItem key={entry}>
-                  {entry}
-                </ListItem>;
-              })
-            }
-          </List>
+          {
+            props.hideSenderDataLinkEvent ? null : <Box><Typography>
+              以下是数据链路层尚未处理的事件：
+            </Typography>
+              <List>
+                {
+                  senderDataLinkEvent.map((entry) => {
+                    return <ListItem key={entry}>
+                      {entry}
+                    </ListItem>;
+                  })
+                }
+              </List>
+            </Box>
+          }
         </Paper>
         <Paper sx={style2}>
           <Typography variant="h5">
             物理层
           </Typography>
+          {
+            props.hideSenderPhysicalToDataLink ? null : <Box>
+              <Typography>
+                以下是物理层发送给数据链路层，但是数据链路层还没有接收的帧：
+              </Typography>
+              <List>
+                {
+                  senderPhysicalToDataLink.map((entry) => {
+                    return <ListItem key={entry.payload}>
+                      Frame: payload={entry.payload}
+                    </ListItem>;
+                  })
+                }
+              </List>
+            </Box>
+          }
           <Typography>
             以下是数据链路层发送给物理层，但是物理层还没有发送的帧：
           </Typography>
@@ -322,18 +344,22 @@ function Viewer(props: ViewerProps) {
               })
             }
           </List>
-          <Typography>
-            以下是数据链路层发送给物理层，但是物理层还没有发送的帧：
-          </Typography>
-          <List>
-            {
-              receiverDataLinkToPhysical.map((entry) => {
-                return <ListItem key={entry.payload}>
-                  Frame: payload={entry.payload}
-                </ListItem>;
-              })
-            }
-          </List>
+          {
+            props.hideReceiverDataLinkToPhysical ? null : <Box>
+              <Typography>
+                以下是数据链路层发送给物理层，但是物理层还没有发送的帧：
+              </Typography>
+              <List>
+                {
+                  receiverDataLinkToPhysical.map((entry) => {
+                    return <ListItem key={entry.payload}>
+                      Frame: payload={entry.payload}
+                    </ListItem>;
+                  })
+                }
+              </List>
+            </Box>
+          }
           <Button variant="contained" onClick={sendReceiverPhysical} disabled={receiverDataLinkToPhysical.length === 0}>发送</Button>
         </Paper>
       </Paper>
@@ -643,6 +669,9 @@ function App() {
           stepSender={stepSender1} canStepSender={canStepSender1} cantStepSenderReason={cantStepSenderReason1}
           initialReceiverRow={2} receiverCode={receiverCode1}
           stepReceiver={stepReceiver1} canStepReceiver={canStepReceiver1} cantStepReceiverReason={cantStepReceiverReason1}
+          hideSenderDataLinkEvent={true}
+          hideSenderPhysicalToDataLink={true}
+          hideReceiverDataLinkToPhysical={true}
         ></Viewer>
         <Grid item xs={12}>
           <Paper sx={{
