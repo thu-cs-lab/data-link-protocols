@@ -81,6 +81,7 @@ type ViewerProps = {
   cantStepSenderReason: (state: ViewerState) => string;
   hideSenderPhysicalToDataLink?: boolean;
   hideSenderDataLinkEvent?: boolean;
+  senderLocals: string;
 
   initialReceiverRow: number;
   receiverCode: string;
@@ -88,6 +89,7 @@ type ViewerProps = {
   canStepReceiver: (state: ViewerState) => boolean;
   cantStepReceiverReason: (state: ViewerState) => string;
   hideReceiverDataLinkToPhysical?: boolean;
+  receiverLocals: string;
 };
 
 function Viewer(props: ViewerProps) {
@@ -227,6 +229,10 @@ function Viewer(props: ViewerProps) {
           <Typography>
             {props.cantStepSenderReason(state)}
           </Typography>
+          <Typography>
+            局部变量：
+            {props.senderLocals}
+          </Typography>
           {
             props.hideSenderDataLinkEvent ? null : <Box><Typography>
               以下是数据链路层尚未处理的事件：
@@ -316,6 +322,10 @@ function Viewer(props: ViewerProps) {
             {props.cantStepReceiverReason(state)}
           </Typography>
           <Typography>
+            局部变量：
+            {props.receiverLocals}
+          </Typography>
+          <Typography>
             以下是数据链路层尚未处理的事件：
           </Typography>
           <List>
@@ -368,7 +378,10 @@ function Viewer(props: ViewerProps) {
 }
 
 function App() {
-  const [senderCurrentFrame1, setSenderCurrentFrame1] = useState<Frame>({ payload: "" });
+  // frame s;
+  const [senderS1, setSenderS1] = useState<Packet>({ payload: "" });
+  // packet buffer;
+  const [senderBuffer1, setSenderBuffer1] = useState<Frame>({ payload: "" });
   const senderCode1 = `
   void sender1(void)
   {
@@ -394,20 +407,23 @@ function App() {
     } else if (state.senderRow === 5 && state.senderNetworkToDataLink.length > 0) {
       // from_network_layer(&buffer);
       state.setSenderRow(6);
-      setSenderCurrentFrame1(state.senderNetworkToDataLink[0]);
+      setSenderBuffer1(state.senderNetworkToDataLink[0]);
       state.setSenderNetworkToDataLink(state.senderNetworkToDataLink.slice(1));
     } else if (state.senderRow === 6) {
       // s.info = buffer;
+      setSenderS1({
+        payload: senderBuffer1.payload
+      });
       state.setSenderRow(7);
     } else if (state.senderRow === 7) {
       // to_physical_layer(&s);
       state.setSenderRow(8);
-      state.setSenderDataLinkToPhysical(state.senderDataLinkToPhysical.concat(senderCurrentFrame1));
+      state.setSenderDataLinkToPhysical(state.senderDataLinkToPhysical.concat(senderS1));
     } else if (state.senderRow === 8) {
       // }
       state.setSenderRow(4);
     }
-  }, [senderCurrentFrame1]);
+  }, [senderS1, senderBuffer1]);
 
   const canStepSender1 = useCallback((state: ViewerState) => {
     if (state.senderRow === 5 && state.senderNetworkToDataLink.length === 0) {
@@ -427,7 +443,8 @@ function App() {
     }
   }, []);
 
-  const [receiverCurrentFrame1, setReceiverCurrentFrame1] = useState<Frame>({ payload: "" });
+  const [receiverR1, setReceiverR1] = useState<Frame>({ payload: "" });
+  const [receiverEvent1, setReceiverEvent1] = useState<Event | undefined>();
   const receiverCode1 = `
   void receiver1(void)
   {
@@ -453,21 +470,22 @@ function App() {
     } else if (state.receiverRow === 5 && state.receiverDataLinkEvent.length > 0) {
       // wait_for_event(&event);
       state.setReceiverRow(6);
+      setReceiverEvent1(state.receiverDataLinkEvent[0]);
       state.setReceiverDataLinkEvent(state.receiverDataLinkEvent.slice(1));
     } else if (state.receiverRow === 6 && state.receiverPhysicalToDataLink.length > 0) {
       // from_physical_layer(&r);
       state.setReceiverRow(7);
-      setReceiverCurrentFrame1(state.receiverPhysicalToDataLink[0]);
+      setReceiverR1(state.receiverPhysicalToDataLink[0]);
       state.setReceiverPhysicalToDataLink(state.receiverPhysicalToDataLink.slice(1));
     } else if (state.receiverRow === 7) {
       // to_network_layer(&r.info);
       state.setReceiverRow(8);
-      state.setReceiverDataLinkToNetwork(state.receiverDataLinkToNetwork.concat([receiverCurrentFrame1]))
+      state.setReceiverDataLinkToNetwork(state.receiverDataLinkToNetwork.concat([receiverR1]))
     } else if (state.receiverRow === 8) {
       // }
       state.setReceiverRow(4);
     }
-  }, [receiverCurrentFrame1]);
+  }, [receiverR1]);
 
   const canStepReceiver1 = useCallback((state: ViewerState) => {
     if (state.receiverRow === 5 && state.receiverDataLinkEvent.length == 0) {
@@ -493,7 +511,9 @@ function App() {
     }
   }, []);
 
-  const [senderCurrentFrame2, setSenderCurrentFrame2] = useState<Frame>({ payload: "" });
+  const [senderS2, setSenderS2] = useState<Frame>({ payload: "" });
+  const [senderBuffer2, setSenderBuffer2] = useState<Packet>({ payload: "" });
+  const [senderEvent2, setSenderEvent2] = useState<Event | undefined>();
   const senderCode2 = `
   void sender2(void)
   {
@@ -520,24 +540,26 @@ function App() {
     } else if (state.senderRow === 5 && state.senderNetworkToDataLink.length > 0) {
       // from_network_layer(&buffer);
       state.setSenderRow(6);
-      setSenderCurrentFrame2(state.senderNetworkToDataLink[0]);
+      setSenderBuffer2(state.senderNetworkToDataLink[0]);
       state.setSenderNetworkToDataLink(state.senderNetworkToDataLink.slice(2));
     } else if (state.senderRow === 6) {
       // s.info = buffer;
       state.setSenderRow(7);
+      setSenderS2(senderBuffer2);
     } else if (state.senderRow === 7) {
       // to_physical_layer(&s);
       state.setSenderRow(8);
-      state.setSenderDataLinkToPhysical(state.senderDataLinkToPhysical.concat(senderCurrentFrame2));
+      state.setSenderDataLinkToPhysical(state.senderDataLinkToPhysical.concat(senderS2));
     } else if (state.senderRow === 8 && state.senderDataLinkEvent.length > 0) {
       // wait_for_event(&event);
       state.setSenderRow(9);
+      setSenderEvent2(state.senderDataLinkEvent[0]);
       state.setSenderDataLinkEvent(state.senderDataLinkEvent.slice(1));
     } else if (state.senderRow === 9) {
       // }
       state.setSenderRow(4);
     }
-  }, [senderCurrentFrame2]);
+  }, [senderS2, senderBuffer2]);
 
   const canStepSender2 = useCallback((state: ViewerState) => {
     if (state.senderRow === 5 && state.senderNetworkToDataLink.length === 0) {
@@ -563,7 +585,9 @@ function App() {
     }
   }, []);
 
-  const [receiverCurrentFrame2, setReceiverCurrentFrame2] = useState<Frame>({ payload: "" });
+  const [receiverR2, setReceiverR2] = useState<Frame>({ payload: "" });
+  const [receiverS2, setReceiverS2] = useState<Frame>({ payload: "" });
+  const [receiverEvent2, setReceiverEvent2] = useState<Event | undefined>();
   const receiverCode2 = `
   void receiver2(void)
   {
@@ -590,28 +614,26 @@ function App() {
     } else if (state.receiverRow === 5 && state.receiverDataLinkEvent.length > 0) {
       // wait_for_event(&event);
       state.setReceiverRow(6);
+      setReceiverEvent2(state.receiverDataLinkEvent[0]);
       state.setReceiverDataLinkEvent(state.receiverDataLinkEvent.slice(1));
     } else if (state.receiverRow === 6 && state.receiverPhysicalToDataLink.length > 0) {
       // from_physical_layer(&r);
       state.setReceiverRow(7);
-      setReceiverCurrentFrame2(state.receiverPhysicalToDataLink[0]);
+      setReceiverR2(state.receiverPhysicalToDataLink[0]);
       state.setReceiverPhysicalToDataLink(state.receiverPhysicalToDataLink.slice(1));
     } else if (state.receiverRow === 7) {
       // to_network_layer(&r.info);
       state.setReceiverRow(8);
-      state.setReceiverDataLinkToNetwork(state.receiverDataLinkToNetwork.concat([receiverCurrentFrame2]))
+      state.setReceiverDataLinkToNetwork(state.receiverDataLinkToNetwork.concat([receiverR2]));
     } else if (state.receiverRow === 8) {
       // to_physical_layer(&s);
       state.setReceiverRow(9);
-      const frame: Frame = {
-        payload: "dummy"
-      };
-      state.setReceiverDataLinkToPhysical(state.receiverDataLinkToPhysical.concat([frame]));
+      state.setReceiverDataLinkToPhysical(state.receiverDataLinkToPhysical.concat([receiverS2]));
     } else if (state.receiverRow === 9) {
       // }
       state.setReceiverRow(4);
     }
-  }, [receiverCurrentFrame2]);
+  }, [receiverR2, receiverS2]);
 
   const canStepReceiver2 = useCallback((state: ViewerState) => {
     if (state.receiverRow === 5 && state.receiverDataLinkEvent.length == 0) {
@@ -667,8 +689,14 @@ function App() {
         <Viewer
           initialSenderRow={2} senderCode={senderCode1}
           stepSender={stepSender1} canStepSender={canStepSender1} cantStepSenderReason={cantStepSenderReason1}
+          senderLocals={
+            `s: Frame: payload=${senderS1.payload}, buffer: Packet: payload=${senderBuffer1.payload}`
+          }
           initialReceiverRow={2} receiverCode={receiverCode1}
           stepReceiver={stepReceiver1} canStepReceiver={canStepReceiver1} cantStepReceiverReason={cantStepReceiverReason1}
+          receiverLocals={
+            `r: Frame: payload=${receiverR1.payload}, event: Event=${receiverEvent1}`
+          }
           hideSenderDataLinkEvent={true}
           hideSenderPhysicalToDataLink={true}
           hideReceiverDataLinkToPhysical={true}
@@ -688,8 +716,14 @@ function App() {
         <Viewer
           initialSenderRow={2} senderCode={senderCode2}
           stepSender={stepSender2} canStepSender={canStepSender2} cantStepSenderReason={cantStepSenderReason2}
+          senderLocals={
+            `s: Frame: payload=${senderS2.payload}, buffer: Packet: payload=${senderBuffer2.payload}`
+          }
           initialReceiverRow={2} receiverCode={receiverCode2}
           stepReceiver={stepReceiver2} canStepReceiver={canStepReceiver2} cantStepReceiverReason={cantStepReceiverReason2}
+          receiverLocals={
+            `r: Frame: payload=${receiverR2.payload}, s: Frame: payload=${receiverS2.payload}, event: Event=${receiverEvent2}`
+          }
         ></Viewer>
       </Grid>
     </Container>
