@@ -30,6 +30,12 @@ type Frame = {
   payload: string;
 };
 
+enum Event {
+  FrameArrival = "Frame Arrival",
+  CksumError = "Checksum Error",
+  Timeout = "Timeout"
+}
+
 type ViewerState = {
   senderRow: number;
   setSenderRow: (val: number) => void;
@@ -40,11 +46,20 @@ type ViewerState = {
   senderNetworkToDataLink: Packet[];
   setSenderNetworkToDataLink: (val: Packet[]) => void;
 
+  senderDataLinkEvent: Event[];
+  setSenderDataLinkEvent: (val: Event[]) => void;
+
   senderDataLinkToPhysical: Frame[];
   setSenderDataLinkToPhysical: (val: Frame[]) => void;
 
+  senderPhysicalToDataLink: Frame[];
+  setSenderPhysicalToDataLink: (val: Frame[]) => void;
+
   receiverPhysicalToDataLink: Frame[];
   setReceiverPhysicalToDataLink: (val: Frame[]) => void;
+
+  receiverDataLinkEvent: Event[];
+  setReceiverDataLinkEvent: (val: Event[]) => void;
 
   receiverDataLinkToNetwork: Packet[];
   setReceiverDataLinkToNetwork: (val: Packet[]) => void;
@@ -80,25 +95,32 @@ function Viewer(props: ViewerProps) {
   // sender data link layer
   const [senderRow, setSenderRow] = useState(props.initialSenderRow);
   const senderCode = AddRowMarker(props.senderCode, senderRow);
+  const [senderDataLinkEvent, setSenderDataLinkEvent] = useState<Event[]>([]);
   // sender data link -> sender physical
   const [senderDataLinkToPhysical, setSenderDataLinkToPhysical] = useState<Frame[]>([]);
+  // sender physical -> sender data link
+  const [senderPhysicalToDataLink, setSenderPhysicalToDataLink] = useState<Frame[]>([]);
 
   // sender & receiver physical layer
   // sender physical -> receiver physical is implicit
   // receiver physical -> receiver data link
   const [receiverPhysicalToDataLink, setReceiverPhysicalToDataLink] = useState<Frame[]>([]);
-  const sendPhysical = useCallback(() => {
-    setReceiverPhysicalToDataLink(receiverPhysicalToDataLink.concat(senderDataLinkToPhysical[0]));
-    setSenderDataLinkToPhysical(senderDataLinkToPhysical.slice(1));
-  }, [receiverPhysicalToDataLink, senderDataLinkToPhysical]);
 
   // receiver data link layer
   const [receiverRow, setReceiverRow] = useState(props.initialReceiverRow);
   const receiverCode = AddRowMarker(props.receiverCode, receiverRow);
+  const [receiverDataLinkEvent, setReceiverDataLinkEvent] = useState<Event[]>([]);
 
   // receiver network layer
   // receiver data link -> receiver network
   const [receiverDataLinkToNetwork, setReceiverDataLinkToNetwork] = useState<Packet[]>([]);
+
+  // sender physical -> receiver physical
+  const sendPhysical = useCallback(() => {
+    setReceiverPhysicalToDataLink(receiverPhysicalToDataLink.concat(senderDataLinkToPhysical[0]));
+    setSenderDataLinkToPhysical(senderDataLinkToPhysical.slice(1));
+    setReceiverDataLinkEvent(receiverDataLinkEvent.concat([Event.FrameArrival]))
+  }, [receiverPhysicalToDataLink, senderDataLinkToPhysical, receiverDataLinkEvent]);
 
   const state: ViewerState = {
     senderRow: senderRow,
@@ -110,11 +132,20 @@ function Viewer(props: ViewerProps) {
     senderNetworkToDataLink: senderNetworkToDataLink,
     setSenderNetworkToDataLink: setSenderNetworkToDataLink,
 
+    senderDataLinkEvent: senderDataLinkEvent,
+    setSenderDataLinkEvent: setSenderDataLinkEvent,
+
     senderDataLinkToPhysical: senderDataLinkToPhysical,
     setSenderDataLinkToPhysical: setSenderDataLinkToPhysical,
 
+    senderPhysicalToDataLink: senderPhysicalToDataLink,
+    setSenderPhysicalToDataLink: setSenderPhysicalToDataLink,
+
     receiverPhysicalToDataLink: receiverPhysicalToDataLink,
     setReceiverPhysicalToDataLink: setReceiverPhysicalToDataLink,
+
+    receiverDataLinkEvent: receiverDataLinkEvent,
+    setReceiverDataLinkEvent: setReceiverDataLinkEvent,
 
     receiverDataLinkToNetwork: receiverDataLinkToNetwork,
     setReceiverDataLinkToNetwork: setReceiverDataLinkToNetwork
@@ -165,7 +196,7 @@ function Viewer(props: ViewerProps) {
             数据链路层
           </Typography>
           <Typography>
-            协议一的发送方代码：
+            发送方代码：
           </Typography>
           <SyntaxHighlighter language="javascript" style={style}>
             {senderCode}
@@ -174,6 +205,18 @@ function Viewer(props: ViewerProps) {
           <Typography>
             {props.cantStepSenderReason(state)}
           </Typography>
+          <Typography>
+            以下是数据链路层尚未处理的事件：
+          </Typography>
+          <List>
+            {
+              senderDataLinkEvent.map((entry) => {
+                return <ListItem key={entry}>
+                  {entry}
+                </ListItem>;
+              })
+            }
+          </List>
         </Paper>
         <Paper sx={style2}>
           <Typography variant="h5">
@@ -222,7 +265,7 @@ function Viewer(props: ViewerProps) {
             数据链路层
           </Typography>
           <Typography>
-            协议一的接收方代码：
+            接收方代码：
           </Typography>
           <SyntaxHighlighter language="javascript" style={style}>
             {receiverCode}
@@ -231,6 +274,18 @@ function Viewer(props: ViewerProps) {
           <Typography>
             {props.cantStepReceiverReason(state)}
           </Typography>
+          <Typography>
+            以下是数据链路层尚未处理的事件：
+          </Typography>
+          <List>
+            {
+              receiverDataLinkEvent.map((entry) => {
+                return <ListItem key={entry}>
+                  {entry}
+                </ListItem>;
+              })
+            }
+          </List>
         </Paper>
         <Paper sx={style2}>
           <Typography variant="h5">
@@ -337,9 +392,10 @@ function App() {
     } else if (state.receiverRow === 4) {
       // while (true) {
       state.setReceiverRow(5);
-    } else if (state.receiverRow === 5 && state.receiverPhysicalToDataLink.length > 0) {
+    } else if (state.receiverRow === 5 && state.receiverDataLinkEvent.length > 0) {
       // wait_for_event(&event);
       state.setReceiverRow(6);
+      state.setReceiverDataLinkEvent(state.receiverDataLinkEvent.slice(1));
     } else if (state.receiverRow === 6 && state.receiverPhysicalToDataLink.length > 0) {
       // from_physical_layer(&r);
       state.setReceiverRow(7);
@@ -356,7 +412,7 @@ function App() {
   }, [receiverCurrentFrame1]);
 
   const canStepReceiver1 = useCallback((state: ViewerState) => {
-    if (state.receiverRow === 5 && state.receiverPhysicalToDataLink.length == 0) {
+    if (state.receiverRow === 5 && state.receiverDataLinkEvent.length == 0) {
       // wait_for_event(&event);
       return false;
     } else if (state.receiverRow === 6 && state.receiverPhysicalToDataLink.length == 0) {
@@ -368,7 +424,147 @@ function App() {
   }, []);
 
   const cantStepReceiverReason1 = useCallback((state: ViewerState) => {
-    if (state.receiverRow === 5 && state.receiverPhysicalToDataLink.length == 0) {
+    if (state.receiverRow === 5 && state.receiverDataLinkEvent.length == 0) {
+      // wait_for_event(&event);
+      return "没有新的事件";
+    } else if (state.receiverRow === 6 && state.receiverPhysicalToDataLink.length == 0) {
+      // from_physical_layer(&r);
+      return "物理层没有新的帧";
+    } else {
+      return "";
+    }
+  }, []);
+
+  const [senderCurrentFrame2, setSenderCurrentFrame2] = useState<Frame>({ payload: "" });
+  const senderCode2 = `
+  void sender2(void)
+  {
+    frame s;                       /* buffer for an outbound frame */
+    packet buffer;                 /* buffer for an outbound packet */
+    while (true) {
+      from_network_layer(&buffer); /* go get something to send */
+      s.info = buffer;             /* copy it into s for transmission */
+      to_physical_layer(&s);       /* bye-byte little frame */
+      wait_for_event(&event);      /* do not proceed until given the go ahead */
+    }
+  }`;
+
+  const stepSender2 = useCallback((state: ViewerState) => {
+    if (state.senderRow === 2) {
+      // frame s;
+      state.setSenderRow(3);
+    } else if (state.senderRow === 3) {
+      // packet buffer;
+      state.setSenderRow(4);
+    } else if (state.senderRow === 4) {
+      // while (true) {
+      state.setSenderRow(5);
+    } else if (state.senderRow === 5 && state.senderNetworkToDataLink.length > 0) {
+      // from_network_layer(&buffer);
+      state.setSenderRow(6);
+      setSenderCurrentFrame2(state.senderNetworkToDataLink[0]);
+      state.setSenderNetworkToDataLink(state.senderNetworkToDataLink.slice(2));
+    } else if (state.senderRow === 6) {
+      // s.info = buffer;
+      state.setSenderRow(7);
+    } else if (state.senderRow === 7) {
+      // to_physical_layer(&s);
+      state.setSenderRow(8);
+      state.setSenderDataLinkToPhysical(state.senderDataLinkToPhysical.concat(senderCurrentFrame2));
+    } else if (state.senderRow === 8 && state.senderDataLinkEvent.length > 0) {
+      // wait_for_event(&event);
+      state.setSenderRow(9);
+      state.setSenderDataLinkEvent(state.senderDataLinkEvent.slice(1));
+    } else if (state.senderRow === 9) {
+      // }
+      state.setSenderRow(4);
+    }
+  }, [senderCurrentFrame2]);
+
+  const canStepSender2 = useCallback((state: ViewerState) => {
+    if (state.senderRow === 5 && state.senderNetworkToDataLink.length === 0) {
+      // from_network_layer(&buffer);
+      return false;
+    } else if (state.senderRow === 8 && state.senderDataLinkEvent.length === 0) {
+      // wait_for_event(&event);
+      return false;
+    } else {
+      return true;
+    }
+  }, []);
+
+  const cantStepSenderReason2 = useCallback((state: ViewerState) => {
+    if (state.senderRow === 5 && state.senderNetworkToDataLink.length === 0) {
+      // from_network_layer(&buffer);
+      return "没有可以从网络层读取的分组";
+    } else if (state.senderRow === 8 && state.senderDataLinkEvent.length === 0) {
+      // wait_for_event(&event);
+      return "没有新的事件";
+    } else {
+      return "";
+    }
+  }, []);
+
+  const [receiverCurrentFrame2, setReceiverCurrentFrame2] = useState<Frame>({ payload: "" });
+  const receiverCode2 = `
+  void receiver2(void)
+  {
+    frame r, s;                  /* buffers for frames */
+    event_type event;            /* frame_arrival is the only possibility */
+    while (true) {
+      wait_for_event(&event);    /* only possibility is frame_arrival */
+      from_physical_layer(&r);   /* go get the inbound frame */
+      to_network_layer(&r.info); /* pass the data to the network layer */
+      to_physical_layer(&s);     /* send a dummy frame to awaken sender */
+    }
+  }`;
+
+  const stepReceiver2 = useCallback((state: ViewerState) => {
+    if (state.receiverRow === 2) {
+      // frame r;
+      state.setReceiverRow(3);
+    } else if (state.receiverRow === 3) {
+      // event_type event;
+      state.setReceiverRow(4);
+    } else if (state.receiverRow === 4) {
+      // while (true) {
+      state.setReceiverRow(5);
+    } else if (state.receiverRow === 5 && state.receiverDataLinkEvent.length > 0) {
+      // wait_for_event(&event);
+      state.setReceiverRow(6);
+      state.setReceiverDataLinkEvent(state.receiverDataLinkEvent.slice(1));
+    } else if (state.receiverRow === 6 && state.receiverPhysicalToDataLink.length > 0) {
+      // from_physical_layer(&r);
+      state.setReceiverRow(7);
+      setReceiverCurrentFrame2(state.receiverPhysicalToDataLink[0]);
+      state.setReceiverPhysicalToDataLink(state.receiverPhysicalToDataLink.slice(1));
+    } else if (state.receiverRow === 7) {
+      // to_network_layer(&r.info);
+      state.setReceiverRow(8);
+      state.setReceiverDataLinkToNetwork(state.receiverDataLinkToNetwork.concat([receiverCurrentFrame2]))
+    } else if (state.receiverRow === 8) {
+      // to_physical_layer(&s);
+      state.setReceiverRow(9);
+    } else if (state.receiverRow === 9) {
+      // }
+      state.setReceiverRow(4);
+    }
+  }, [receiverCurrentFrame2]);
+
+  const canStepReceiver2 = useCallback((state: ViewerState) => {
+    if (state.receiverRow === 5 && state.receiverDataLinkEvent.length == 0) {
+      // wait_for_event(&event);
+      return false;
+    } else if (state.receiverRow === 6 && state.receiverPhysicalToDataLink.length == 0) {
+      // from_physical_layer(&r);
+      return false;
+    } else {
+      return true;
+    }
+  }, []);
+
+  const cantStepReceiverReason2 = useCallback((state: ViewerState) => {
+    if (state.receiverRow === 5 && state.receiverDataLinkEvent.length == 0) {
       // wait_for_event(&event);
       return "没有新的事件";
     } else if (state.receiverRow === 6 && state.receiverPhysicalToDataLink.length == 0) {
@@ -411,6 +607,24 @@ function App() {
           stepSender={stepSender1} canStepSender={canStepSender1} cantStepSenderReason={cantStepSenderReason1}
           initialReceiverRow={2} receiverCode={receiverCode1}
           stepReceiver={stepReceiver1} canStepReceiver={canStepReceiver1} cantStepReceiverReason={cantStepReceiverReason1}
+        ></Viewer>
+        <Grid item xs={12}>
+          <Paper sx={{
+            padding: '30px',
+          }}>
+            <Typography variant="h4">
+              协议二：停止-等待协议（Stop-and-Wait）
+            </Typography>
+            <Typography>
+              协议二（停止-等待，简称停等协议）也提供了从发送端到接收端的单向数据流。 与协议一一样，依然假设通信信道无差错。但是，这次接收端只有有限的缓冲区容量和有限的处理速度，因此协议必须明确防止发送端以快于接收端能处理的速度，向接收端发送数据。
+            </Typography>
+          </Paper>
+        </Grid>
+        <Viewer
+          initialSenderRow={2} senderCode={senderCode2}
+          stepSender={stepSender2} canStepSender={canStepSender2} cantStepSenderReason={cantStepSenderReason2}
+          initialReceiverRow={2} receiverCode={receiverCode2}
+          stepReceiver={stepReceiver2} canStepReceiver={canStepReceiver2} cantStepReceiverReason={cantStepReceiverReason2}
         ></Viewer>
       </Grid>
     </Container>
