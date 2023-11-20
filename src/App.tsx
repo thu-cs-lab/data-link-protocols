@@ -28,7 +28,12 @@ class Packet {
   ) { }
 
   public toString = (): string => {
-    return `Packet (payload: ${this.payload})`;
+    let entries = [];
+    if (this.payload !== undefined) {
+      entries.push(`payload: ${this.payload}`);
+    }
+
+    return `Packet (${entries.join(", ")})`;
   }
 
   public clone = (): Packet => {
@@ -44,7 +49,18 @@ class Frame {
   ) { }
 
   public toString = (): string => {
-    return `Frame (info: ${this.info}, seq: ${this.seq}, ack: ${this.ack})`;
+    let entries = [];
+    if (this.info !== undefined) {
+      entries.push(`info: ${this.info}`);
+    }
+    if (this.seq !== undefined) {
+      entries.push(`seq: ${this.seq}`);
+    }
+    if (this.ack !== undefined) {
+      entries.push(`ack: ${this.ack}`);
+    }
+
+    return `Frame (${entries.join(", ")})`;
   }
 
   public clone = (): Frame => {
@@ -57,6 +73,10 @@ enum Event {
   CksumError = "Checksum Error",
   Timeout = "Timeout"
 }
+
+const STALL_FROM_NETWORK_LAYER = "没有可以从网络层读取的分组";
+const STALL_FROM_PHYSICAL_LAYER = "没有可以从物理层读取的帧";
+const STALL_WAIT_FOR_EVENT = "没有新的事件";
 
 type ViewerState = {
   // sender network layer
@@ -126,8 +146,7 @@ type ViewerProps = {
   initialSenderRow: number;
   senderCode: string;
   stepSender: (state: ViewerState) => void;
-  canStepSender: (state: ViewerState) => boolean;
-  cantStepSenderReason: (state: ViewerState) => string;
+  canStepSender: (state: ViewerState) => string | undefined;
   hideSenderPhysicalToDataLink?: boolean;
   hideSenderDataLinkEvent?: boolean;
   senderLocals: HasToString[];
@@ -135,8 +154,7 @@ type ViewerProps = {
   initialReceiverRow: number;
   receiverCode: string;
   stepReceiver: (state: ViewerState) => void;
-  canStepReceiver: (state: ViewerState) => boolean;
-  cantStepReceiverReason: (state: ViewerState) => string;
+  canStepReceiver: (state: ViewerState) => string | undefined;
   hideReceiverDataLinkToPhysical?: boolean;
   receiverLocals: HasToString[];
 };
@@ -263,9 +281,9 @@ function Viewer(props: ViewerProps) {
           <SyntaxHighlighter language="javascript" style={style}>
             {senderCode}
           </SyntaxHighlighter>
-          <Button variant="contained" onClick={() => props.stepSender(state)} disabled={!props.canStepSender(state)}>下一步</Button>
+          <Button variant="contained" onClick={() => props.stepSender(state)} disabled={props.canStepSender(state) !== undefined}>下一步</Button>
           <Typography>
-            {props.cantStepSenderReason(state)}
+            {props.canStepSender(state)}
           </Typography>
           <MyList description='局部变量：'
             entries={props.senderLocals}></MyList>
@@ -308,9 +326,9 @@ function Viewer(props: ViewerProps) {
           <SyntaxHighlighter language="javascript" style={style}>
             {receiverCode}
           </SyntaxHighlighter>
-          <Button variant="contained" onClick={() => props.stepReceiver(state)} disabled={!props.canStepReceiver(state)}>下一步</Button>
+          <Button variant="contained" onClick={() => props.stepReceiver(state)} disabled={props.canStepReceiver(state) !== undefined}>下一步</Button>
           <Typography>
-            {props.cantStepReceiverReason(state)}
+            {props.canStepReceiver(state)}
           </Typography>
           <MyList description='局部变量：'
             entries={props.receiverLocals}></MyList>
@@ -387,18 +405,9 @@ function App() {
   const canStepSender1 = useCallback((state: ViewerState) => {
     if (state.senderRow === 5 && state.senderNetworkToDataLink.length === 0) {
       // from_network_layer(&buffer);
-      return false;
+      return STALL_FROM_NETWORK_LAYER;
     } else {
-      return true;
-    }
-  }, []);
-
-  const cantStepSenderReason1 = useCallback((state: ViewerState) => {
-    if (state.senderRow === 5 && state.senderNetworkToDataLink.length === 0) {
-      // from_network_layer(&buffer);
-      return "没有可以从网络层读取的分组";
-    } else {
-      return "";
+      return undefined;
     }
   }, []);
 
@@ -449,12 +458,12 @@ function App() {
   const canStepReceiver1 = useCallback((state: ViewerState) => {
     if (state.receiverRow === 5 && state.receiverDataLinkEvent.length == 0) {
       // wait_for_event(&event);
-      return false;
+      return STALL_WAIT_FOR_EVENT;
     } else if (state.receiverRow === 6 && state.receiverPhysicalToDataLink.length == 0) {
       // from_physical_layer(&r);
-      return false;
+      return STALL_FROM_PHYSICAL_LAYER;
     } else {
-      return true;
+      return undefined;
     }
   }, []);
 
@@ -464,7 +473,7 @@ function App() {
       return "没有新的事件";
     } else if (state.receiverRow === 6 && state.receiverPhysicalToDataLink.length == 0) {
       // from_physical_layer(&r);
-      return "物理层没有新的帧";
+      return "没有可以从物理层读取的帧";
     } else {
       return "";
     }
@@ -525,12 +534,12 @@ function App() {
   const canStepSender2 = useCallback((state: ViewerState) => {
     if (state.senderRow === 5 && state.senderNetworkToDataLink.length === 0) {
       // from_network_layer(&buffer);
-      return false;
+      return STALL_FROM_NETWORK_LAYER;
     } else if (state.senderRow === 8 && state.senderDataLinkEvent.length === 0) {
       // wait_for_event(&event);
-      return false;
+      return STALL_WAIT_FOR_EVENT;
     } else {
-      return true;
+      return undefined;
     }
   }, []);
 
@@ -599,24 +608,12 @@ function App() {
   const canStepReceiver2 = useCallback((state: ViewerState) => {
     if (state.receiverRow === 5 && state.receiverDataLinkEvent.length == 0) {
       // wait_for_event(&event);
-      return false;
+      return STALL_WAIT_FOR_EVENT;
     } else if (state.receiverRow === 6 && state.receiverPhysicalToDataLink.length == 0) {
       // from_physical_layer(&r);
-      return false;
+      return STALL_FROM_PHYSICAL_LAYER;
     } else {
-      return true;
-    }
-  }, []);
-
-  const cantStepReceiverReason2 = useCallback((state: ViewerState) => {
-    if (state.receiverRow === 5 && state.receiverDataLinkEvent.length == 0) {
-      // wait_for_event(&event);
-      return "没有新的事件";
-    } else if (state.receiverRow === 6 && state.receiverPhysicalToDataLink.length == 0) {
-      // from_physical_layer(&r);
-      return "物理层没有新的帧";
-    } else {
-      return "";
+      return undefined;
     }
   }, []);
 
@@ -744,11 +741,21 @@ function App() {
   }, [senderNextFrameToSend3, senderS3, senderBuffer3, senderEvent3]);
 
   const canStepSender3 = useCallback((state: ViewerState) => {
-    return true;
-  }, []);
-
-  const cantStepSenderReason3 = useCallback((state: ViewerState) => {
-    return "";
+    if (state.senderRow === 8 && state.senderNetworkToDataLink.length === 0) {
+      // from_network_layer(&buffer);
+      return STALL_FROM_NETWORK_LAYER;
+    } else if (state.senderRow === 14 && state.senderDataLinkEvent.length === 0) {
+      // wait_for_event(&event);
+      return STALL_WAIT_FOR_EVENT;
+    } else if (state.senderRow === 16 && state.senderPhysicalToDataLink.length === 0) {
+      // from_physical_layer(&s);
+      return STALL_FROM_PHYSICAL_LAYER;
+    } else if (state.senderRow === 19 && state.senderNetworkToDataLink.length === 0) {
+      // from_network_layer(&buffer);
+      return STALL_FROM_NETWORK_LAYER;
+    } else {
+      return undefined;
+    }
   }, []);
 
   const [receiverFrameExpected3, setReceiverFrameExpected3] = useState<number>(0);
@@ -849,11 +856,15 @@ function App() {
   }, [receiverFrameExpected3, receiverR3, receiverS3, receiverEvent3]);
 
   const canStepReceiver3 = useCallback((state: ViewerState) => {
-    return true;
-  }, []);
-
-  const cantStepReceiverReason3 = useCallback((state: ViewerState) => {
-    return "";
+    if (state.receiverRow === 8 && state.receiverDataLinkEvent.length === 0) {
+      // wait_for_event(&event);
+      return STALL_WAIT_FOR_EVENT;
+    } else if (state.receiverRow === 10 && state.receiverPhysicalToDataLink.length === 0) {
+      // from_physical_layer(&r);
+      return STALL_FROM_PHYSICAL_LAYER;
+    } else {
+      return undefined;
+    }
   }, []);
 
   return (
@@ -876,21 +887,21 @@ function App() {
             padding: '30px',
           }}>
             <Typography variant="h4">
-              协议一：乌托邦协议（Utopia）
+              协议一：乌托邦协议（Utopia） Protocol 1 (Utopia)
             </Typography>
             <Typography>
-              协议一提供了从发送方到接收方的单向数据传输。协议一假设了传输通道是无差错的，并且接收方可以任意快地处理输入数据。因此，发送方只需要循环发送数据，多快都可以。
+              协议一提供了从发送方到接收方的单向数据传输。协议一假设了传输通道是无差错的，并且接收方可以任意快地处理输入数据。因此，发送方只需要循环发送数据，多快都可以。Protocol 1 (Utopia) provides for data transmission in one direction only, from sender to receiver. The communication channel is assumed to be error free and the receiver is assumed to be able to process all the input infinitely quickly. Consequently, the sender just sits in a loop pumping data out onto the line as fast as it can.
             </Typography>
           </Paper>
         </Grid>
         <Viewer
           initialSenderRow={2} senderCode={senderCode1}
-          stepSender={stepSender1} canStepSender={canStepSender1} cantStepSenderReason={cantStepSenderReason1}
+          stepSender={stepSender1} canStepSender={canStepSender1}
           senderLocals={
             [`s: ${senderS1}`, `buffer: ${senderBuffer1}`]
           }
           initialReceiverRow={2} receiverCode={receiverCode1}
-          stepReceiver={stepReceiver1} canStepReceiver={canStepReceiver1} cantStepReceiverReason={cantStepReceiverReason1}
+          stepReceiver={stepReceiver1} canStepReceiver={canStepReceiver1}
           receiverLocals={
             [`r: ${receiverR1}`, `event: ${receiverEvent1}`]
           }
@@ -903,21 +914,21 @@ function App() {
             padding: '30px',
           }}>
             <Typography variant="h4">
-              协议二：停止-等待协议（Stop-and-Wait）
+              协议二：停止-等待协议（Stop-and-Wait） Protocol 2 (Stop-and-wait)
             </Typography>
             <Typography>
-              协议二（停止-等待，简称停等协议）也提供了从发送端到接收端的单向数据流。 与协议一一样，依然假设通信信道无差错。但是，这次接收端只有有限的缓冲区容量和有限的处理速度，因此协议必须明确防止发送端以快于接收端能处理的速度，向接收端发送数据。
+              协议二（停止-等待，简称停等协议）也提供了从发送端到接收端的单向数据流。与协议一一样，依然假设通信信道无差错。但是，这次接收端只有有限的缓冲区容量和有限的处理速度，因此协议必须明确防止发送端以快于接收端能处理的速度，向接收端发送数据。Protocol 2 (Stop-and-wait) also provides for a one-directional flow of data from sender to receiver. The communication channel is once again assumed to be error free, as in protocol 1. However, this time the receiver has only a finite buffer capacity and a finite processing speed, so the protocol must explicitly prevent the sender from flooding the receiver with data faster than it can be handled.
             </Typography>
           </Paper>
         </Grid>
         <Viewer
           initialSenderRow={2} senderCode={senderCode2}
-          stepSender={stepSender2} canStepSender={canStepSender2} cantStepSenderReason={cantStepSenderReason2}
+          stepSender={stepSender2} canStepSender={canStepSender2}
           senderLocals={
             [`s: ${senderS2}`, `buffer: ${senderBuffer2}`, `event: ${senderEvent2}`]
           }
           initialReceiverRow={2} receiverCode={receiverCode2}
-          stepReceiver={stepReceiver2} canStepReceiver={canStepReceiver2} cantStepReceiverReason={cantStepReceiverReason2}
+          stepReceiver={stepReceiver2} canStepReceiver={canStepReceiver2}
           receiverLocals={
             [`r: ${receiverR2}`, `s: ${receiverS2}`, `event: ${receiverEvent2}`]
           }
@@ -927,21 +938,21 @@ function App() {
             padding: '30px',
           }}>
             <Typography variant="h4">
-              协议三：
+              协议三：自动重复请求（ARQ，Automatic Repeat reQuest）或带有重传的肯定确认（PAR，Positive Acknowledgement with Retransmission） Protocol 3 (ARQ, Automatic Repeat reQuest or PAR, Positive Acknowledgement with Retransmission)
             </Typography>
             <Typography>
-              协议三
+              协议三实现了不可靠信道上的单向数据传输。Protocol 3 (PAR) allows unidirectional data flow over an unreliable channel.
             </Typography>
           </Paper>
         </Grid>
         <Viewer
           initialSenderRow={2} senderCode={senderCode3}
-          stepSender={stepSender3} canStepSender={canStepSender3} cantStepSenderReason={cantStepSenderReason3}
+          stepSender={stepSender3} canStepSender={canStepSender3}
           senderLocals={
             [`next_frame_to_send: ${senderNextFrameToSend3}`, `s: ${senderS3}`, `buffer: ${senderBuffer3}`, `event: ${senderEvent3}`]
           }
           initialReceiverRow={2} receiverCode={receiverCode3}
-          stepReceiver={stepReceiver3} canStepReceiver={canStepReceiver3} cantStepReceiverReason={cantStepReceiverReason3}
+          stepReceiver={stepReceiver3} canStepReceiver={canStepReceiver3}
           receiverLocals={
             [`frame_expected: ${receiverFrameExpected3}`, `r: ${receiverR3}`, `s: ${receiverS3}`, `event: ${receiverEvent3}`]
           }
