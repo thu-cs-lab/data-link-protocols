@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import './App.css';
 import { Box, Button, Container, Grid, List, ListItem, Paper, TextField, Typography } from '@mui/material';
 import { tomorrow as style } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -193,6 +193,30 @@ type ViewerProps = {
   hideReceiverNetworkInput?: boolean;
 };
 
+function FastForwarder(canStep: () => boolean, step: () => void) {
+  // do not call step() in a loop, because react has delayed updates
+  // use useEffect with counter to achieve update in a loop
+  const [fastForwardCounter, setFastForwardCounter] = useState(0);
+  const fastForward = useCallback(() => {
+    if (canStep()) {
+      setFastForwardCounter(fastForwardCounter + 1);
+    }
+    // deliberately not adding fastForwardCounter, step & canStep to dependency list
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    if (fastForwardCounter !== 0 && canStep()) {
+      step();
+      setFastForwardCounter(fastForwardCounter + 1);
+    }
+    // deliberately not adding step & canStep to dependency list
+    // but adding fastForwardCounter is required to re-trigger update
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fastForwardCounter]);
+
+  return fastForward;
+}
+
 function Viewer(props: ViewerProps) {
   // sender network layer
   // sender network -> sender data link
@@ -252,6 +276,10 @@ function Viewer(props: ViewerProps) {
     setReceiverDataLinkToPhysical(receiverDataLinkToPhysical.slice(1));
     setSenderDataLinkEvent(senderDataLinkEvent.concat([Event.FrameArrival]))
   }, [senderPhysicalToDataLink, receiverDataLinkToPhysical, senderDataLinkEvent]);
+
+  // fast forward
+  const fastForwardSender = FastForwarder(() => props.canStepSender(state) === undefined, () => props.stepSender(state));
+  const fastForwardReceiver = FastForwarder(() => props.canStepReceiver(state) === undefined, () => props.stepReceiver(state));
 
   const state: ViewerState = {
     senderRow: senderRow,
@@ -336,6 +364,7 @@ function Viewer(props: ViewerProps) {
             {senderCode}
           </SyntaxHighlighter>
           <Button variant="contained" onClick={() => props.stepSender(state)} disabled={props.canStepSender(state) !== undefined}>下一步</Button>
+          <Button variant="contained" onClick={fastForwardSender} disabled={props.canStepSender(state) !== undefined}>下一步直到无法立即继续</Button>
           <Typography>
             {props.canStepSender(state)}
           </Typography>
@@ -395,6 +424,7 @@ function Viewer(props: ViewerProps) {
             {receiverCode}
           </SyntaxHighlighter>
           <Button variant="contained" onClick={() => props.stepReceiver(state)} disabled={props.canStepReceiver(state) !== undefined}>下一步</Button>
+          <Button variant="contained" onClick={fastForwardReceiver} disabled={props.canStepReceiver(state) !== undefined}>下一步直到无法立即继续</Button>
           <Typography>
             {props.canStepReceiver(state)}
           </Typography>
