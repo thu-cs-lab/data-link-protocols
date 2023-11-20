@@ -22,13 +22,33 @@ function AddRowMarker(code: string, line: number | undefined) {
   return res;
 }
 
-type Packet = {
-  payload: string;
-};
+class Packet {
+  constructor(
+    public payload?: string,
+  ) { }
 
-type Frame = {
-  payload: string;
-};
+  public toString = (): string => {
+    return `Packet (payload: ${this.payload})`;
+  }
+
+  public clone = (): Packet => {
+    return new Packet(this.payload);
+  }
+}
+
+class Frame {
+  constructor(
+    public info?: Packet,
+  ) { }
+
+  public toString = (): string => {
+    return `Frame (info: ${this.info})`;
+  }
+
+  public clone = (): Frame => {
+    return new Frame(this.info?.clone());
+  }
+}
 
 enum Event {
   FrameArrival = "Frame Arrival",
@@ -99,9 +119,7 @@ function Viewer(props: ViewerProps) {
   // sender network -> sender data link
   const [senderNetworkToDataLink, setSenderNetworkToDataLink] = useState<Packet[]>([]);
   const sendNetwork = useCallback(() => {
-    const packet: Packet = {
-      payload: senderNetworkInput
-    };
+    const packet: Packet = new Packet(senderNetworkInput);
     setSenderNetworkToDataLink(senderNetworkToDataLink.concat(packet));
   }, [senderNetworkToDataLink, senderNetworkInput]);
 
@@ -261,8 +279,8 @@ function Viewer(props: ViewerProps) {
               <List>
                 {
                   senderPhysicalToDataLink.map((entry) => {
-                    return <ListItem key={entry.payload}>
-                      Frame: payload={entry.payload}
+                    return <ListItem key={entry.toString()}>
+                      {entry.toString()}
                     </ListItem>;
                   })
                 }
@@ -275,8 +293,8 @@ function Viewer(props: ViewerProps) {
           <List>
             {
               senderDataLinkToPhysical.map((entry) => {
-                return <ListItem key={entry.payload}>
-                  Frame: payload={entry.payload}
+                return <ListItem key={entry.toString()}>
+                  {entry.toString()}
                 </ListItem>;
               })
             }
@@ -300,8 +318,8 @@ function Viewer(props: ViewerProps) {
           <List>
             {
               receiverDataLinkToNetwork.map((entry) => {
-                return <ListItem key={entry.payload}>
-                  Packet: payload={entry.payload}
+                return <ListItem key={entry.toString()}>
+                  {entry.toString()}
                 </ListItem>;
               })
             }
@@ -348,8 +366,8 @@ function Viewer(props: ViewerProps) {
           <List>
             {
               receiverPhysicalToDataLink.map((entry) => {
-                return <ListItem key={entry.payload}>
-                  Frame: payload={entry.payload}
+                return <ListItem key={entry.toString()}>
+                  {entry.toString()}
                 </ListItem>;
               })
             }
@@ -362,8 +380,8 @@ function Viewer(props: ViewerProps) {
               <List>
                 {
                   receiverDataLinkToPhysical.map((entry) => {
-                    return <ListItem key={entry.payload}>
-                      Frame: payload={entry.payload}
+                    return <ListItem key={entry.toString()}>
+                      {entry.toString()}
                     </ListItem>;
                   })
                 }
@@ -379,9 +397,9 @@ function Viewer(props: ViewerProps) {
 
 function App() {
   // frame s;
-  const [senderS1, setSenderS1] = useState<Packet>({ payload: "" });
+  const [senderS1, setSenderS1] = useState<Frame>(new Frame());
   // packet buffer;
-  const [senderBuffer1, setSenderBuffer1] = useState<Frame>({ payload: "" });
+  const [senderBuffer1, setSenderBuffer1] = useState<Packet>(new Packet());
   const senderCode1 = `
   void sender1(void)
   {
@@ -411,9 +429,9 @@ function App() {
       state.setSenderNetworkToDataLink(state.senderNetworkToDataLink.slice(1));
     } else if (state.senderRow === 6) {
       // s.info = buffer;
-      setSenderS1({
-        payload: senderBuffer1.payload
-      });
+      const s = senderS1.clone();
+      s.info = senderBuffer1;
+      setSenderS1(s);
       state.setSenderRow(7);
     } else if (state.senderRow === 7) {
       // to_physical_layer(&s);
@@ -443,7 +461,7 @@ function App() {
     }
   }, []);
 
-  const [receiverR1, setReceiverR1] = useState<Frame>({ payload: "" });
+  const [receiverR1, setReceiverR1] = useState<Frame>(new Frame());
   const [receiverEvent1, setReceiverEvent1] = useState<Event | undefined>();
   const receiverCode1 = `
   void receiver1(void)
@@ -480,7 +498,7 @@ function App() {
     } else if (state.receiverRow === 7) {
       // to_network_layer(&r.info);
       state.setReceiverRow(8);
-      state.setReceiverDataLinkToNetwork(state.receiverDataLinkToNetwork.concat([receiverR1]))
+      state.setReceiverDataLinkToNetwork(state.receiverDataLinkToNetwork.concat([receiverR1.info!]));
     } else if (state.receiverRow === 8) {
       // }
       state.setReceiverRow(4);
@@ -511,8 +529,8 @@ function App() {
     }
   }, []);
 
-  const [senderS2, setSenderS2] = useState<Frame>({ payload: "" });
-  const [senderBuffer2, setSenderBuffer2] = useState<Packet>({ payload: "" });
+  const [senderS2, setSenderS2] = useState<Frame>(new Frame());
+  const [senderBuffer2, setSenderBuffer2] = useState<Packet>(new Packet());
   const [senderEvent2, setSenderEvent2] = useState<Event | undefined>();
   const senderCode2 = `
   void sender2(void)
@@ -545,7 +563,9 @@ function App() {
     } else if (state.senderRow === 6) {
       // s.info = buffer;
       state.setSenderRow(7);
-      setSenderS2(senderBuffer2);
+      const s = senderS2.clone();
+      s.info = senderBuffer2;
+      setSenderS2(s);
     } else if (state.senderRow === 7) {
       // to_physical_layer(&s);
       state.setSenderRow(8);
@@ -585,8 +605,8 @@ function App() {
     }
   }, []);
 
-  const [receiverR2, setReceiverR2] = useState<Frame>({ payload: "" });
-  const [receiverS2, setReceiverS2] = useState<Frame>({ payload: "" });
+  const [receiverR2, setReceiverR2] = useState<Frame>(new Frame());
+  const [receiverS2, setReceiverS2] = useState<Frame>(new Frame());
   const [receiverEvent2, setReceiverEvent2] = useState<Event | undefined>();
   const receiverCode2 = `
   void receiver2(void)
@@ -624,7 +644,7 @@ function App() {
     } else if (state.receiverRow === 7) {
       // to_network_layer(&r.info);
       state.setReceiverRow(8);
-      state.setReceiverDataLinkToNetwork(state.receiverDataLinkToNetwork.concat([receiverR2]));
+      state.setReceiverDataLinkToNetwork(state.receiverDataLinkToNetwork.concat([receiverR2.info!]));
     } else if (state.receiverRow === 8) {
       // to_physical_layer(&s);
       state.setReceiverRow(9);
@@ -690,12 +710,12 @@ function App() {
           initialSenderRow={2} senderCode={senderCode1}
           stepSender={stepSender1} canStepSender={canStepSender1} cantStepSenderReason={cantStepSenderReason1}
           senderLocals={
-            `s: Frame: payload=${senderS1.payload}, buffer: Packet: payload=${senderBuffer1.payload}`
+            `s: ${senderS1}, buffer: ${senderBuffer1}`
           }
           initialReceiverRow={2} receiverCode={receiverCode1}
           stepReceiver={stepReceiver1} canStepReceiver={canStepReceiver1} cantStepReceiverReason={cantStepReceiverReason1}
           receiverLocals={
-            `r: Frame: payload=${receiverR1.payload}, event: Event=${receiverEvent1}`
+            `r: ${receiverR1}, event: ${receiverEvent1}`
           }
           hideSenderDataLinkEvent={true}
           hideSenderPhysicalToDataLink={true}
@@ -717,12 +737,12 @@ function App() {
           initialSenderRow={2} senderCode={senderCode2}
           stepSender={stepSender2} canStepSender={canStepSender2} cantStepSenderReason={cantStepSenderReason2}
           senderLocals={
-            `s: Frame: payload=${senderS2.payload}, buffer: Packet: payload=${senderBuffer2.payload}`
+            `s: ${senderS2}, buffer: ${senderBuffer2}`
           }
           initialReceiverRow={2} receiverCode={receiverCode2}
           stepReceiver={stepReceiver2} canStepReceiver={canStepReceiver2} cantStepReceiverReason={cantStepReceiverReason2}
           receiverLocals={
-            `r: Frame: payload=${receiverR2.payload}, s: Frame: payload=${receiverS2.payload}, event: Event=${receiverEvent2}`
+            `r: ${receiverR2}, s: ${receiverS2}, event: ${receiverEvent2}`
           }
         ></Viewer>
       </Grid>
