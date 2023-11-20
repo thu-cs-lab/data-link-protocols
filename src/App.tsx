@@ -158,7 +158,7 @@ function MyList(props: MyListProps) {
     <List>
       {
         props.entries.map((entry) => {
-          return <ListItem key={entry.toString()}>
+          return <ListItem>
             {entry.toString()}
           </ListItem>;
         })
