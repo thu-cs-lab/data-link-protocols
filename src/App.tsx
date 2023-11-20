@@ -82,7 +82,7 @@ class Frame {
   }
 
   public clone = (): Frame => {
-    return new Frame(this.info?.clone());
+    return new Frame(this.info?.clone(), this.seq, this.ack);
   }
 }
 
@@ -196,7 +196,7 @@ function Viewer(props: ViewerProps) {
   const [senderNetworkToDataLink, setSenderNetworkToDataLink] = useState<Packet[]>([]);
   // user input for sender network
   const [senderNetworkInput, setSenderNetworkInput] = useState("");
-  const sendNetwork = useCallback(() => {
+  const senderSendNetwork = useCallback(() => {
     const packet: Packet = new Packet(senderNetworkInput);
     setSenderNetworkToDataLink(senderNetworkToDataLink.concat(packet));
   }, [senderNetworkToDataLink, senderNetworkInput]);
@@ -229,6 +229,12 @@ function Viewer(props: ViewerProps) {
   // receiver network layer
   // receiver network -> receiver data link
   const [receiverNetworkToDataLink, setReceiverNetworkToDataLink] = useState<Packet[]>([]);
+  // user input for receiver network
+  const [receiverNetworkInput, setReceiverNetworkInput] = useState("");
+  const receiverSendNetwork = useCallback(() => {
+    const packet: Packet = new Packet(receiverNetworkInput);
+    setReceiverNetworkToDataLink(receiverNetworkToDataLink.concat(packet));
+  }, [receiverNetworkToDataLink, receiverNetworkInput]);
 
   // sender physical -> receiver physical
   const sendSenderPhysical = useCallback(() => {
@@ -309,9 +315,11 @@ function Viewer(props: ViewerProps) {
           <TextField label="载荷" variant="outlined" fullWidth onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             setSenderNetworkInput(event.target.value);
           }} />
-          <Button variant="contained" onClick={sendNetwork}>发送</Button>
+          <Button variant="contained" onClick={senderSendNetwork}>发送</Button>
           <MyList description='以下是网络层发送给数据链路层，但数据链路层还没有接收的分组：'
             entries={senderNetworkToDataLink}></MyList>
+          <MyList description='以下是数据链路层发送给网络层的分组：'
+            entries={senderDataLinkToNetwork}></MyList>
         </Paper>
         <Paper sx={style2}>
           <Typography variant="h5">
@@ -355,6 +363,15 @@ function Viewer(props: ViewerProps) {
           <Typography variant="h5">
             网络层
           </Typography>
+          <Typography>
+            你可以在这里输入载荷的内容，点击发送，模拟接收方网络层要发送数据的情况：
+          </Typography>
+          <TextField label="载荷" variant="outlined" fullWidth onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+            setReceiverNetworkInput(event.target.value);
+          }} />
+          <Button variant="contained" onClick={receiverSendNetwork}>发送</Button>
+          <MyList description='以下是网络层发送给数据链路层，但数据链路层还没有接收的分组：'
+            entries={receiverNetworkToDataLink}></MyList>
           <MyList description='以下是数据链路层发送给网络层的分组：'
             entries={receiverDataLinkToNetwork}></MyList>
         </Paper>
@@ -890,21 +907,15 @@ function App() {
       state.setSenderRow(10);
     } else if (state.senderRow === 10) {
       // s.info = buffer;
-      const s = senderS4.clone();
-      s.info = senderBuffer4;
-      setSenderS4(s);
+      setSenderS4(senderS4.withInfo(senderBuffer4));
       state.setSenderRow(11);
     } else if (state.senderRow === 11) {
       // s.seq = next_frame_to_send;
-      const s = senderS4.clone();
-      s.seq = senderNextFrameToSend4;
-      setSenderS4(s);
+      setSenderS4(senderS4.withSeq(senderNextFrameToSend4));
       state.setSenderRow(12);
     } else if (state.senderRow === 12) {
       // s.ack = 1 - frame_expected;
-      const s = senderS4.clone();
-      s.ack = 1 - senderFrameExpected4;
-      setSenderS4(s);
+      setSenderS4(senderS4.withAck(1 - senderFrameExpected4));
       state.setSenderRow(13);
     } else if (state.senderRow === 13) {
       // to_physical_layer(&s);
@@ -998,16 +1009,16 @@ function App() {
   }, [senderNextFrameToSend4, senderFrameExpected4, senderR4, senderS4, senderBuffer4, senderEvent4]);
 
   const canStepSender4 = useCallback((state: ViewerState) => {
-    if (state.senderRow === 9 && state.senderNetworkToDataLink.length > 0) {
+    if (state.senderRow === 9 && state.senderNetworkToDataLink.length === 0) {
       // from_network_layer(&buffer);
       return STALL_FROM_NETWORK_LAYER;
-    } else if (state.senderRow === 16 && state.senderDataLinkEvent.length > 0) {
+    } else if (state.senderRow === 16 && state.senderDataLinkEvent.length === 0) {
       // wait_for_event(&event);
       return STALL_WAIT_FOR_EVENT;
-    } else if (state.senderRow === 18 && state.senderPhysicalToDataLink.length > 0) {
+    } else if (state.senderRow === 18 && state.senderPhysicalToDataLink.length === 0) {
       // from_physical_layer(&r);
       return STALL_FROM_PHYSICAL_LAYER;
-    } else if (state.senderRow === 25 && state.senderNetworkToDataLink.length > 0) {
+    } else if (state.senderRow === 25 && state.senderNetworkToDataLink.length === 0) {
       // from_network_layer(&buffer);
       return STALL_FROM_NETWORK_LAYER;
     } else {
@@ -1147,16 +1158,16 @@ function App() {
   }, [receiverNextFrameToSend4, receiverFrameExpected4, receiverR4, receiverS4, receiverBuffer4, receiverEvent4]);
 
   const canStepReceiver4 = useCallback((state: ViewerState) => {
-    if (state.receiverRow === 9 && state.receiverNetworkToDataLink.length > 0) {
+    if (state.receiverRow === 9 && state.receiverNetworkToDataLink.length === 0) {
       // from_network_layer(&buffer);
       return STALL_FROM_NETWORK_LAYER;
-    } else if (state.receiverRow === 16 && state.receiverDataLinkEvent.length > 0) {
+    } else if (state.receiverRow === 16 && state.receiverDataLinkEvent.length === 0) {
       // wait_for_event(&event);
       return STALL_WAIT_FOR_EVENT;
-    } else if (state.receiverRow === 18 && state.receiverPhysicalToDataLink.length > 0) {
+    } else if (state.receiverRow === 18 && state.receiverPhysicalToDataLink.length === 0) {
       // from_physical_layer(&r);
       return STALL_FROM_PHYSICAL_LAYER;
-    } else if (state.receiverRow === 25 && state.receiverNetworkToDataLink.length > 0) {
+    } else if (state.receiverRow === 25 && state.receiverNetworkToDataLink.length === 0) {
       // from_network_layer(&buffer);
       return STALL_FROM_NETWORK_LAYER;
     } else {
