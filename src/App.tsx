@@ -97,13 +97,13 @@ interface HasToString {
   toString: () => string;
 }
 
-type MyListProps<EntryType> = {
-  entries: EntryType[];
+type MyListProps = {
+  entries: HasToString[];
   hide?: boolean;
   description: string;
 };
 
-function MyList<EntryType extends HasToString>(props: MyListProps<EntryType>) {
+function MyList(props: MyListProps) {
   return props.hide ? null : <Box>
     <Typography>
       {props.description}
@@ -128,7 +128,7 @@ type ViewerProps = {
   cantStepSenderReason: (state: ViewerState) => string;
   hideSenderPhysicalToDataLink?: boolean;
   hideSenderDataLinkEvent?: boolean;
-  senderLocals: string;
+  senderLocals: HasToString[];
 
   initialReceiverRow: number;
   receiverCode: string;
@@ -136,7 +136,7 @@ type ViewerProps = {
   canStepReceiver: (state: ViewerState) => boolean;
   cantStepReceiverReason: (state: ViewerState) => string;
   hideReceiverDataLinkToPhysical?: boolean;
-  receiverLocals: string;
+  receiverLocals: HasToString[];
 };
 
 function Viewer(props: ViewerProps) {
@@ -229,7 +229,8 @@ function Viewer(props: ViewerProps) {
   };
 
   return <Grid container spacing={2} sx={{
-    padding: '30px',
+    paddingTop: '30px',
+    paddingBottom: '30px',
   }}>
     <Grid item xs={6}>
       <Paper sx={style1}>
@@ -264,10 +265,8 @@ function Viewer(props: ViewerProps) {
           <Typography>
             {props.cantStepSenderReason(state)}
           </Typography>
-          <Typography>
-            局部变量：
-            {props.senderLocals}
-          </Typography>
+          <MyList description='局部变量：'
+            entries={props.senderLocals}></MyList>
           <MyList description='以下是数据链路层尚未处理的事件：'
             hide={props.hideSenderDataLinkEvent}
             entries={senderDataLinkEvent}></MyList>
@@ -311,10 +310,8 @@ function Viewer(props: ViewerProps) {
           <Typography>
             {props.cantStepReceiverReason(state)}
           </Typography>
-          <Typography>
-            局部变量：
-            {props.receiverLocals}
-          </Typography>
+          <MyList description='局部变量：'
+            entries={props.receiverLocals}></MyList>
           <MyList description='以下是数据链路层尚未处理的事件：'
             entries={receiverDataLinkEvent}></MyList>
         </Paper>
@@ -652,12 +649,12 @@ function App() {
           initialSenderRow={2} senderCode={senderCode1}
           stepSender={stepSender1} canStepSender={canStepSender1} cantStepSenderReason={cantStepSenderReason1}
           senderLocals={
-            `s: ${senderS1}, buffer: ${senderBuffer1}`
+            [`s: ${senderS1}`, `buffer: ${senderBuffer1}`]
           }
           initialReceiverRow={2} receiverCode={receiverCode1}
           stepReceiver={stepReceiver1} canStepReceiver={canStepReceiver1} cantStepReceiverReason={cantStepReceiverReason1}
           receiverLocals={
-            `r: ${receiverR1}, event: ${receiverEvent1}`
+            [`r: ${receiverR1}`, `event: ${receiverEvent1}`]
           }
           hideSenderDataLinkEvent={true}
           hideSenderPhysicalToDataLink={true}
@@ -679,12 +676,12 @@ function App() {
           initialSenderRow={2} senderCode={senderCode2}
           stepSender={stepSender2} canStepSender={canStepSender2} cantStepSenderReason={cantStepSenderReason2}
           senderLocals={
-            `s: ${senderS2}, buffer: ${senderBuffer2}`
+            [`s: ${senderS2}`, `event: ${senderBuffer2}`]
           }
           initialReceiverRow={2} receiverCode={receiverCode2}
           stepReceiver={stepReceiver2} canStepReceiver={canStepReceiver2} cantStepReceiverReason={cantStepReceiverReason2}
           receiverLocals={
-            `r: ${receiverR2}, s: ${receiverS2}, event: ${receiverEvent2}`
+            [`r: ${receiverR2}`, `s: ${receiverS2}`, `event: ${receiverEvent2}`]
           }
         ></Viewer>
       </Grid>
