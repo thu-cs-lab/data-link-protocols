@@ -186,8 +186,11 @@ type ViewerProps = {
   receiverLocals: HasToString[];
 
   hideSenderPhysicalToDataLink?: boolean;
+  hideSenderDataLinkToNetwork?: boolean;
   hideSenderDataLinkEvent?: boolean;
   hideReceiverDataLinkToPhysical?: boolean;
+  hideReceiverNetworkToDataLink?: boolean;
+  hideReceiverNetworkInput?: boolean;
 };
 
 function Viewer(props: ViewerProps) {
@@ -319,6 +322,7 @@ function Viewer(props: ViewerProps) {
           <MyList description='以下是网络层发送给数据链路层，但数据链路层还没有接收的分组：'
             entries={senderNetworkToDataLink}></MyList>
           <MyList description='以下是数据链路层发送给网络层的分组：'
+            hide={props.hideSenderDataLinkToNetwork}
             entries={senderDataLinkToNetwork}></MyList>
         </Paper>
         <Paper sx={style2}>
@@ -363,14 +367,19 @@ function Viewer(props: ViewerProps) {
           <Typography variant="h5">
             网络层
           </Typography>
-          <Typography>
-            你可以在这里输入载荷的内容，点击发送，模拟接收方网络层要发送数据的情况：
-          </Typography>
-          <TextField label="载荷" variant="outlined" fullWidth onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-            setReceiverNetworkInput(event.target.value);
-          }} />
-          <Button variant="contained" onClick={receiverSendNetwork}>发送</Button>
+          {
+            props.hideReceiverNetworkInput ? null : <Box>
+              <Typography>
+                你可以在这里输入载荷的内容，点击发送，模拟接收方网络层要发送数据的情况：
+              </Typography>
+              <TextField label="载荷" variant="outlined" fullWidth onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setReceiverNetworkInput(event.target.value);
+              }} />
+              <Button variant="contained" onClick={receiverSendNetwork}>发送</Button>
+            </Box>
+          }
           <MyList description='以下是网络层发送给数据链路层，但数据链路层还没有接收的分组：'
+            hide={props.hideReceiverNetworkToDataLink}
             entries={receiverNetworkToDataLink}></MyList>
           <MyList description='以下是数据链路层发送给网络层的分组：'
             entries={receiverDataLinkToNetwork}></MyList>
@@ -1215,7 +1224,10 @@ function App() {
           }
           hideSenderDataLinkEvent={true}
           hideSenderPhysicalToDataLink={true}
+          hideSenderDataLinkToNetwork={true}
           hideReceiverDataLinkToPhysical={true}
+          hideReceiverNetworkInput={true}
+          hideReceiverNetworkToDataLink={true}
         ></Viewer>
         <Grid item xs={12}>
           <Paper sx={{
@@ -1240,6 +1252,9 @@ function App() {
           receiverLocals={
             [`r: ${receiverR2}`, `s: ${receiverS2}`, `event: ${receiverEvent2}`]
           }
+          hideSenderDataLinkToNetwork={true}
+          hideReceiverNetworkInput={true}
+          hideReceiverNetworkToDataLink={true}
         ></Viewer>
         <Grid item xs={12}>
           <Paper sx={{
@@ -1264,6 +1279,9 @@ function App() {
           receiverLocals={
             [`frame_expected: ${receiverFrameExpected3}`, `r: ${receiverR3}`, `s: ${receiverS3}`, `event: ${receiverEvent3}`]
           }
+          hideSenderDataLinkToNetwork={true}
+          hideReceiverNetworkInput={true}
+          hideReceiverNetworkToDataLink={true}
         ></Viewer>
         <Grid item xs={12}>
           <Paper sx={{
