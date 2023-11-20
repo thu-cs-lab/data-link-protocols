@@ -470,30 +470,44 @@ function App() {
   }`;
 
   const stepSender1 = useCallback((state: ViewerState) => {
-    if (state.senderRow === 4) {
+    const row = state.senderRow;
+    const setRow = state.setSenderRow;
+    const networkToDataLink = state.senderNetworkToDataLink;
+    const setNetworkToDataLink = state.setSenderNetworkToDataLink;
+    const dataLinkToPhysical = state.senderDataLinkToPhysical;
+    const setDataLinkToPhysical = state.setSenderDataLinkToPhysical;
+    const buffer = senderBuffer1;
+    const setBuffer = setSenderBuffer1;
+    const s = senderS1;
+    const setS = setSenderS1;
+
+    if (row === 4) {
       // while (true) {
-      state.setSenderRow(5);
-    } else if (state.senderRow === 5 && state.senderNetworkToDataLink.length > 0) {
+      setRow(5);
+    } else if (row === 5 && networkToDataLink.length > 0) {
       // from_network_layer(&buffer);
-      state.setSenderRow(6);
-      setSenderBuffer1(state.senderNetworkToDataLink[0]);
-      state.setSenderNetworkToDataLink(state.senderNetworkToDataLink.slice(1));
-    } else if (state.senderRow === 6) {
+      setBuffer(networkToDataLink[0])
+      setNetworkToDataLink(networkToDataLink.slice(1));
+      setRow(6);
+    } else if (row === 6) {
       // s.info = buffer;
-      setSenderS1(senderS1.withInfo(senderBuffer1));
-      state.setSenderRow(7);
-    } else if (state.senderRow === 7) {
+      setS(s.withInfo(buffer));
+      setRow(7);
+    } else if (row === 7) {
       // to_physical_layer(&s);
-      state.setSenderRow(8);
-      state.setSenderDataLinkToPhysical(state.senderDataLinkToPhysical.concat(senderS1));
-    } else if (state.senderRow === 8) {
+      setDataLinkToPhysical(dataLinkToPhysical.concat(s));
+      setRow(8);
+    } else if (row === 8) {
       // }
-      state.setSenderRow(4);
+      setRow(4);
     }
   }, [senderS1, senderBuffer1]);
 
   const canStepSender1 = useCallback((state: ViewerState) => {
-    if (state.senderRow === 5 && state.senderNetworkToDataLink.length === 0) {
+    const row = state.senderRow;
+    const networkToDataLink = state.senderNetworkToDataLink;
+
+    if (row === 5 && networkToDataLink.length === 0) {
       // from_network_layer(&buffer);
       return STALL_FROM_NETWORK_LAYER;
     } else {
@@ -516,34 +530,50 @@ function App() {
   }`;
 
   const stepReceiver1 = useCallback((state: ViewerState) => {
-    if (state.receiverRow === 4) {
+    const row = state.receiverRow;
+    const setRow = state.setReceiverRow;
+    const dataLinkEvent = state.receiverDataLinkEvent;
+    const setDataLinkEvent = state.setReceiverDataLinkEvent;
+    const dataLinkToNetwork = state.receiverDataLinkToNetwork;
+    const setDataLinkToNetwork = state.setReceiverDataLinkToNetwork;
+    const physicalToDataLink = state.receiverPhysicalToDataLink;
+    const setPhysicalToDataLink = state.setReceiverPhysicalToDataLink;
+    const setEvent = setReceiverEvent1;
+    const r = receiverR1;
+    const setR = setReceiverR1;
+
+    if (row === 4) {
       // while (true) {
-      state.setReceiverRow(5);
-    } else if (state.receiverRow === 5 && state.receiverDataLinkEvent.length > 0) {
+      setRow(5);
+    } else if (row === 5 && dataLinkEvent.length > 0) {
       // wait_for_event(&event);
-      state.setReceiverRow(6);
-      setReceiverEvent1(state.receiverDataLinkEvent[0]);
-      state.setReceiverDataLinkEvent(state.receiverDataLinkEvent.slice(1));
-    } else if (state.receiverRow === 6 && state.receiverPhysicalToDataLink.length > 0) {
+      setEvent(dataLinkEvent[0]);
+      setDataLinkEvent(dataLinkEvent.slice(1));
+      setRow(6);
+    } else if (row === 6 && physicalToDataLink.length > 0) {
       // from_physical_layer(&r);
-      state.setReceiverRow(7);
-      setReceiverR1(state.receiverPhysicalToDataLink[0]);
-      state.setReceiverPhysicalToDataLink(state.receiverPhysicalToDataLink.slice(1));
-    } else if (state.receiverRow === 7) {
+      setR(physicalToDataLink[0]);
+      setPhysicalToDataLink(physicalToDataLink.slice(1));
+      setRow(7);
+    } else if (row === 7) {
       // to_network_layer(&r.info);
-      state.setReceiverRow(8);
-      state.setReceiverDataLinkToNetwork(state.receiverDataLinkToNetwork.concat([receiverR1.info!]));
-    } else if (state.receiverRow === 8) {
+      setDataLinkToNetwork(dataLinkToNetwork.concat([r.info!]));
+      setRow(8);
+    } else if (row === 8) {
       // }
-      state.setReceiverRow(4);
+      setRow(4);
     }
   }, [receiverR1]);
 
   const canStepReceiver1 = useCallback((state: ViewerState) => {
-    if (state.receiverRow === 5 && state.receiverDataLinkEvent.length === 0) {
+    const row = state.receiverRow;
+    const dataLinkEvent = state.receiverDataLinkEvent;
+    const physicalToDataLink = state.receiverPhysicalToDataLink;
+
+    if (row === 5 && dataLinkEvent.length === 0) {
       // wait_for_event(&event);
       return STALL_WAIT_FOR_EVENT;
-    } else if (state.receiverRow === 6 && state.receiverPhysicalToDataLink.length === 0) {
+    } else if (row === 6 && physicalToDataLink.length === 0) {
       // from_physical_layer(&r);
       return STALL_FROM_PHYSICAL_LAYER;
     } else {
