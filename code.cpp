@@ -46,9 +46,9 @@ void receiver2(void)
 
 void sender3(void)
 {
-  seq_nr next_frame_to_send;                /* seq number of next outgoing frame */
-  frame s;                                  /* scratch variable */
-  packet buffer;                            /* buffer for an outbound packet */
+  seq_nr next_frame_to_send;             /* seq number of next outgoing frame */
+  frame s;                               /* scratch variable */
+  packet buffer;                         /* buffer for an outbound packet */
   event_type event;
 
   next_frame_to_send = 0;                /* initialize outbound sequence numbers */
