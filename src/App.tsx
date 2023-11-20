@@ -598,38 +598,56 @@ function App() {
   }`;
 
   const stepSender2 = useCallback((state: ViewerState) => {
-    if (state.senderRow === 4) {
+    const row = state.senderRow;
+    const setRow = state.setSenderRow;
+    const networkToDataLink = state.senderNetworkToDataLink;
+    const setNetworkToDataLink = state.setSenderNetworkToDataLink;
+    const dataLinkToPhysical = state.senderDataLinkToPhysical;
+    const setDataLinkToPhysical = state.setSenderDataLinkToPhysical;
+    const dataLinkEvent = state.senderDataLinkEvent;
+    const setDataLinkEvent = state.setSenderDataLinkEvent;
+    const buffer = senderBuffer2;
+    const setBuffer = setSenderBuffer2;
+    const s = senderS2;
+    const setS = setSenderS2;
+    const setEvent = setSenderEvent2;
+
+    if (row === 4) {
       // while (true) {
-      state.setSenderRow(5);
-    } else if (state.senderRow === 5 && state.senderNetworkToDataLink.length > 0) {
+      setRow(5);
+    } else if (row === 5 && networkToDataLink.length > 0) {
       // from_network_layer(&buffer);
-      state.setSenderRow(6);
-      setSenderBuffer2(state.senderNetworkToDataLink[0]);
-      state.setSenderNetworkToDataLink(state.senderNetworkToDataLink.slice(1));
-    } else if (state.senderRow === 6) {
+      setBuffer(networkToDataLink[0]);
+      setNetworkToDataLink(networkToDataLink.slice(1));
+      setRow(6);
+    } else if (row === 6) {
       // s.info = buffer;
-      setSenderS2(senderS2.withInfo(senderBuffer2));
-      state.setSenderRow(7);
-    } else if (state.senderRow === 7) {
+      setS(s.withInfo(buffer));
+      setRow(7);
+    } else if (row === 7) {
       // to_physical_layer(&s);
-      state.setSenderRow(8);
-      state.setSenderDataLinkToPhysical(state.senderDataLinkToPhysical.concat(senderS2));
-    } else if (state.senderRow === 8 && state.senderDataLinkEvent.length > 0) {
+      setDataLinkToPhysical(dataLinkToPhysical.concat(s));
+      setRow(8);
+    } else if (row === 8 && dataLinkEvent.length > 0) {
       // wait_for_event(&event);
-      state.setSenderRow(9);
-      setSenderEvent2(state.senderDataLinkEvent[0]);
-      state.setSenderDataLinkEvent(state.senderDataLinkEvent.slice(1));
-    } else if (state.senderRow === 9) {
+      setEvent(dataLinkEvent[0]);
+      setDataLinkEvent(dataLinkEvent.slice(1));
+      setRow(9);
+    } else if (row === 9) {
       // }
-      state.setSenderRow(4);
+      setRow(4);
     }
   }, [senderS2, senderBuffer2]);
 
   const canStepSender2 = useCallback((state: ViewerState) => {
-    if (state.senderRow === 5 && state.senderNetworkToDataLink.length === 0) {
+    const row = state.senderRow;
+    const networkToDataLink = state.senderNetworkToDataLink;
+    const dataLinkEvent = state.senderDataLinkEvent;
+
+    if (row === 5 && networkToDataLink.length === 0) {
       // from_network_layer(&buffer);
       return STALL_FROM_NETWORK_LAYER;
-    } else if (state.senderRow === 8 && state.senderDataLinkEvent.length === 0) {
+    } else if (row === 8 && dataLinkEvent.length === 0) {
       // wait_for_event(&event);
       return STALL_WAIT_FOR_EVENT;
     } else {
@@ -654,38 +672,57 @@ function App() {
   }`;
 
   const stepReceiver2 = useCallback((state: ViewerState) => {
-    if (state.receiverRow === 4) {
+    const row = state.receiverRow;
+    const setRow = state.setReceiverRow;
+    const dataLinkEvent = state.receiverDataLinkEvent;
+    const setDataLinkEvent = state.setReceiverDataLinkEvent;
+    const dataLinkToNetwork = state.receiverDataLinkToNetwork;
+    const setDataLinkToNetwork = state.setReceiverDataLinkToNetwork;
+    const dataLinkToPhysical = state.receiverDataLinkToPhysical;
+    const setDataLinkToPhysical = state.setReceiverDataLinkToPhysical;
+    const physicalToDataLink = state.receiverPhysicalToDataLink;
+    const setPhysicalToDataLink = state.setReceiverPhysicalToDataLink;
+    const setEvent = setReceiverEvent2;
+    const r = receiverR2;
+    const setR = setReceiverR2;
+    const s = receiverS2;
+
+    if (row === 4) {
       // while (true) {
-      state.setReceiverRow(5);
-    } else if (state.receiverRow === 5 && state.receiverDataLinkEvent.length > 0) {
+      setRow(5);
+    } else if (row === 5 && dataLinkEvent.length > 0) {
       // wait_for_event(&event);
-      setReceiverEvent2(state.receiverDataLinkEvent[0]);
-      state.setReceiverDataLinkEvent(state.receiverDataLinkEvent.slice(1));
-      state.setReceiverRow(6);
-    } else if (state.receiverRow === 6 && state.receiverPhysicalToDataLink.length > 0) {
+      setEvent(dataLinkEvent[0]);
+      setDataLinkEvent(dataLinkEvent.slice(1));
+      setRow(6);
+    } else if (row === 6 && physicalToDataLink.length > 0) {
       // from_physical_layer(&r);
-      setReceiverR2(state.receiverPhysicalToDataLink[0]);
-      state.setReceiverPhysicalToDataLink(state.receiverPhysicalToDataLink.slice(1));
-      state.setReceiverRow(7);
-    } else if (state.receiverRow === 7) {
+      setR(physicalToDataLink[0]);
+      setPhysicalToDataLink(physicalToDataLink.slice(1));
+      setRow(7);
+    } else if (row === 7) {
       // to_network_layer(&r.info);
-      state.setReceiverDataLinkToNetwork(state.receiverDataLinkToNetwork.concat([receiverR2.info!]));
-      state.setReceiverRow(8);
-    } else if (state.receiverRow === 8) {
+      setDataLinkToNetwork(dataLinkToNetwork.concat([r.info!]));
+      setRow(8);
+    } else if (row === 8) {
       // to_physical_layer(&s);
-      state.setReceiverDataLinkToPhysical(state.receiverDataLinkToPhysical.concat([receiverS2]));
-      state.setReceiverRow(9);
-    } else if (state.receiverRow === 9) {
+      setDataLinkToPhysical(dataLinkToPhysical.concat([s]));
+      setRow(9);
+    } else if (row === 9) {
       // }
-      state.setReceiverRow(4);
+      setRow(4);
     }
   }, [receiverR2, receiverS2]);
 
   const canStepReceiver2 = useCallback((state: ViewerState) => {
-    if (state.receiverRow === 5 && state.receiverDataLinkEvent.length === 0) {
+    const row = state.receiverRow;
+    const dataLinkEvent = state.receiverDataLinkEvent;
+    const physicalToDataLink = state.receiverPhysicalToDataLink;
+
+    if (row === 5 && dataLinkEvent.length === 0) {
       // wait_for_event(&event);
       return STALL_WAIT_FOR_EVENT;
-    } else if (state.receiverRow === 6 && state.receiverPhysicalToDataLink.length === 0) {
+    } else if (row === 6 && physicalToDataLink.length === 0) {
       // from_physical_layer(&r);
       return STALL_FROM_PHYSICAL_LAYER;
     } else {
