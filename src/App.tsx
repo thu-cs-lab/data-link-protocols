@@ -93,6 +93,33 @@ type ViewerState = {
   setReceiverDataLinkToNetwork: (val: Packet[]) => void;
 };
 
+interface HasToString {
+  toString: () => string;
+}
+
+type MyListProps<EntryType> = {
+  entries: EntryType[];
+  hide?: boolean;
+  description: string;
+};
+
+function MyList<EntryType extends HasToString>(props: MyListProps<EntryType>) {
+  return props.hide ? null : <Box>
+    <Typography>
+      {props.description}
+    </Typography>
+    <List>
+      {
+        props.entries.map((entry) => {
+          return <ListItem key={entry.toString()}>
+            {entry.toString()}
+          </ListItem>;
+        })
+      }
+    </List>
+  </Box>;
+}
+
 type ViewerProps = {
   initialSenderRow: number;
   senderCode: string;
@@ -220,18 +247,8 @@ function Viewer(props: ViewerProps) {
             setSenderNetworkInput(event.target.value);
           }} />
           <Button variant="contained" onClick={sendNetwork}>发送</Button>
-          <Typography>
-            以下是网络层发送给数据链路层，但数据链路层还没有接收的分组：
-          </Typography>
-          <List>
-            {
-              senderNetworkToDataLink.map((entry) => {
-                return <ListItem key={entry.payload}>
-                  Packet: payload={entry.payload}
-                </ListItem>;
-              })
-            }
-          </List>
+          <MyList description='以下是网络层发送给数据链路层，但数据链路层还没有接收的分组：'
+            entries={senderNetworkToDataLink}></MyList>
         </Paper>
         <Paper sx={style2}>
           <Typography variant="h5">
@@ -251,54 +268,19 @@ function Viewer(props: ViewerProps) {
             局部变量：
             {props.senderLocals}
           </Typography>
-          {
-            props.hideSenderDataLinkEvent ? null : <Box><Typography>
-              以下是数据链路层尚未处理的事件：
-            </Typography>
-              <List>
-                {
-                  senderDataLinkEvent.map((entry) => {
-                    return <ListItem key={entry}>
-                      {entry}
-                    </ListItem>;
-                  })
-                }
-              </List>
-            </Box>
-          }
+          <MyList description='以下是数据链路层尚未处理的事件：'
+            hide={props.hideSenderDataLinkEvent}
+            entries={senderDataLinkEvent}></MyList>
         </Paper>
         <Paper sx={style2}>
           <Typography variant="h5">
             物理层
           </Typography>
-          {
-            props.hideSenderPhysicalToDataLink ? null : <Box>
-              <Typography>
-                以下是物理层发送给数据链路层，但是数据链路层还没有接收的帧：
-              </Typography>
-              <List>
-                {
-                  senderPhysicalToDataLink.map((entry) => {
-                    return <ListItem key={entry.toString()}>
-                      {entry.toString()}
-                    </ListItem>;
-                  })
-                }
-              </List>
-            </Box>
-          }
-          <Typography>
-            以下是数据链路层发送给物理层，但是物理层还没有发送的帧：
-          </Typography>
-          <List>
-            {
-              senderDataLinkToPhysical.map((entry) => {
-                return <ListItem key={entry.toString()}>
-                  {entry.toString()}
-                </ListItem>;
-              })
-            }
-          </List>
+          <MyList description='以下是物理层发送给数据链路层，但是数据链路层还没有接收的帧：'
+            hide={props.hideSenderPhysicalToDataLink}
+            entries={senderPhysicalToDataLink}></MyList>
+          <MyList description='以下是数据链路层发送给物理层，但是物理层还没有发送的帧：'
+            entries={senderDataLinkToPhysical}></MyList>
           <Button variant="contained" onClick={sendSenderPhysical} disabled={senderDataLinkToPhysical.length === 0}>发送</Button>
         </Paper>
       </Paper>
@@ -312,18 +294,8 @@ function Viewer(props: ViewerProps) {
           <Typography variant="h5">
             网络层
           </Typography>
-          <Typography>
-            以下是数据链路层发送给网络层的分组：
-          </Typography>
-          <List>
-            {
-              receiverDataLinkToNetwork.map((entry) => {
-                return <ListItem key={entry.toString()}>
-                  {entry.toString()}
-                </ListItem>;
-              })
-            }
-          </List>
+          <MyList description='以下是数据链路层发送给网络层的分组：'
+            entries={receiverDataLinkToNetwork}></MyList>
         </Paper>
         <Paper sx={style2}>
           <Typography variant="h5">
@@ -343,52 +315,22 @@ function Viewer(props: ViewerProps) {
             局部变量：
             {props.receiverLocals}
           </Typography>
-          <Typography>
-            以下是数据链路层尚未处理的事件：
-          </Typography>
-          <List>
-            {
-              receiverDataLinkEvent.map((entry) => {
-                return <ListItem key={entry}>
-                  {entry}
-                </ListItem>;
-              })
-            }
-          </List>
+          <MyList description='以下是数据链路层尚未处理的事件：'
+            entries={receiverDataLinkEvent}></MyList>
         </Paper>
         <Paper sx={style2}>
           <Typography variant="h5">
             物理层
           </Typography>
-          <Typography>
-            以下是物理层发送给数据链路层，但是数据链路层还没有接收的帧：
-          </Typography>
-          <List>
-            {
-              receiverPhysicalToDataLink.map((entry) => {
-                return <ListItem key={entry.toString()}>
-                  {entry.toString()}
-                </ListItem>;
-              })
-            }
-          </List>
+          <MyList description='以下是物理层发送给数据链路层，但是数据链路层还没有接收的帧：'
+            entries={receiverPhysicalToDataLink}></MyList>
+          <MyList description='以下是数据链路层发送给物理层，但是物理层还没有发送的帧：'
+            hide={props.hideReceiverDataLinkToPhysical}
+            entries={receiverDataLinkToPhysical}></MyList>
           {
-            props.hideReceiverDataLinkToPhysical ? null : <Box>
-              <Typography>
-                以下是数据链路层发送给物理层，但是物理层还没有发送的帧：
-              </Typography>
-              <List>
-                {
-                  receiverDataLinkToPhysical.map((entry) => {
-                    return <ListItem key={entry.toString()}>
-                      {entry.toString()}
-                    </ListItem>;
-                  })
-                }
-              </List>
-            </Box>
+            props.hideReceiverDataLinkToPhysical ? null :
+              <Button variant="contained" onClick={sendReceiverPhysical} disabled={receiverDataLinkToPhysical.length === 0}>发送</Button>
           }
-          <Button variant="contained" onClick={sendReceiverPhysical} disabled={receiverDataLinkToPhysical.length === 0}>发送</Button>
         </Paper>
       </Paper>
     </Grid>
