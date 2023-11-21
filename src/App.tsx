@@ -483,14 +483,13 @@ function App() {
   // packet buffer;
   const [senderBuffer1, setSenderBuffer1] = useState<Packet>(new Packet());
   const senderCode1 = `
-  void sender1(void)
-  {
-    frame s;                        /* buffer for an outbound frame */
-    packet buffer;                  /* buffer for an outbound packet */
+  void sender1(void) {
+    frame s;       /* buffer for an outbound frame */
+    packet buffer; /* buffer for an outbound packet */
     while (true) {
-      from_network_layer(&buffer);  /* go get something to send */
-      s.info = buffer;              /* copy it into s for transmission */
-      to_physical_layer(&s);        /* send it on its way */
+      from_network_layer(&buffer); /* go get something to send */
+      s.info = buffer;             /* copy it into s for transmission */
+      to_physical_layer(&s);       /* send it on its way */
     }
   }`;
 
@@ -506,25 +505,25 @@ function App() {
     const s = senderS1;
     const setS = setSenderS1;
 
-    if (row === 4) {
+    if (row === 3) {
       // while (true) {
-      setRow(5);
-    } else if (row === 5 && networkToDataLink.length > 0) {
+      setRow(4);
+    } else if (row === 4 && networkToDataLink.length > 0) {
       // from_network_layer(&buffer);
       setBuffer(networkToDataLink[0])
       setNetworkToDataLink(networkToDataLink.slice(1));
-      setRow(6);
-    } else if (row === 6) {
+      setRow(5);
+    } else if (row === 5) {
       // s.info = buffer;
       setS(s.withInfo(buffer));
-      setRow(7);
-    } else if (row === 7) {
+      setRow(6);
+    } else if (row === 6) {
       // to_physical_layer(&s);
       setDataLinkToPhysical(dataLinkToPhysical.concat(s));
-      setRow(8);
-    } else if (row === 8) {
+      setRow(7);
+    } else if (row === 7) {
       // }
-      setRow(4);
+      setRow(3);
     }
   }, [senderS1, senderBuffer1]);
 
@@ -532,7 +531,7 @@ function App() {
     const row = state.senderRow;
     const networkToDataLink = state.senderNetworkToDataLink;
 
-    if (row === 5 && networkToDataLink.length === 0) {
+    if (row === 4 && networkToDataLink.length === 0) {
       // from_network_layer(&buffer);
       return STALL_FROM_NETWORK_LAYER;
     } else {
@@ -543,14 +542,13 @@ function App() {
   const [receiverR1, setReceiverR1] = useState<Frame>(new Frame());
   const [receiverEvent1, setReceiverEvent1] = useState<Event | undefined>();
   const receiverCode1 = `
-  void receiver1(void)
-  {
+  void receiver1(void) {
     frame r;
-    event_type event;                        /* filled in by wait, but not used here */
+    event_type event; /* filled in by wait, but not used here */
     while (true) {
-      wait_for_event(&event);                /* only possibility is frame_arrival */
-      from_physical_layer(&r);               /* go get the inbound frame */
-      to_network_layer(&r.info);            /* pass the data to the network layer */
+      wait_for_event(&event);    /* only possibility is frame_arrival */
+      from_physical_layer(&r);   /* go get the inbound frame */
+      to_network_layer(&r.info); /* pass the data to the network layer */
     }
   }`;
 
@@ -567,26 +565,26 @@ function App() {
     const r = receiverR1;
     const setR = setReceiverR1;
 
-    if (row === 4) {
+    if (row === 3) {
       // while (true) {
-      setRow(5);
-    } else if (row === 5 && dataLinkEvent.length > 0) {
+      setRow(4);
+    } else if (row === 4 && dataLinkEvent.length > 0) {
       // wait_for_event(&event);
       setEvent(dataLinkEvent[0]);
       setDataLinkEvent(dataLinkEvent.slice(1));
-      setRow(6);
-    } else if (row === 6 && physicalToDataLink.length > 0) {
+      setRow(5);
+    } else if (row === 5 && physicalToDataLink.length > 0) {
       // from_physical_layer(&r);
       setR(physicalToDataLink[0]);
       setPhysicalToDataLink(physicalToDataLink.slice(1));
-      setRow(7);
-    } else if (row === 7) {
+      setRow(6);
+    } else if (row === 6) {
       // to_network_layer(&r.info);
       setDataLinkToNetwork(dataLinkToNetwork.concat([r.info!]));
-      setRow(8);
-    } else if (row === 8) {
+      setRow(7);
+    } else if (row === 7) {
       // }
-      setRow(4);
+      setRow(3);
     }
   }, [receiverR1]);
 
@@ -595,10 +593,10 @@ function App() {
     const dataLinkEvent = state.receiverDataLinkEvent;
     const physicalToDataLink = state.receiverPhysicalToDataLink;
 
-    if (row === 5 && dataLinkEvent.length === 0) {
+    if (row === 4 && dataLinkEvent.length === 0) {
       // wait_for_event(&event);
       return STALL_WAIT_FOR_EVENT;
-    } else if (row === 6 && physicalToDataLink.length === 0) {
+    } else if (row === 5 && physicalToDataLink.length === 0) {
       // from_physical_layer(&r);
       return STALL_FROM_PHYSICAL_LAYER;
     } else {
@@ -610,11 +608,10 @@ function App() {
   const [senderBuffer2, setSenderBuffer2] = useState<Packet>(new Packet());
   const [senderEvent2, setSenderEvent2] = useState<Event | undefined>();
   const senderCode2 = `
-  void sender2(void)
-  {
-    frame s;                       /* buffer for an outbound frame */
-    packet buffer;                 /* buffer for an outbound packet */
-    event_type event;              /* frame_arrival is the only possibility */
+  void sender2(void) {
+    frame s;          /* buffer for an outbound frame */
+    packet buffer;    /* buffer for an outbound packet */
+    event_type event; /* frame_arrival is the only possibility */
     while (true) {
       from_network_layer(&buffer); /* go get something to send */
       s.info = buffer;             /* copy it into s for transmission */
@@ -638,30 +635,30 @@ function App() {
     const setS = setSenderS2;
     const setEvent = setSenderEvent2;
 
-    if (row === 5) {
+    if (row === 4) {
       // while (true) {
-      setRow(6);
-    } else if (row === 6 && networkToDataLink.length > 0) {
+      setRow(5);
+    } else if (row === 5 && networkToDataLink.length > 0) {
       // from_network_layer(&buffer);
       setBuffer(networkToDataLink[0]);
       setNetworkToDataLink(networkToDataLink.slice(1));
-      setRow(7);
-    } else if (row === 7) {
+      setRow(6);
+    } else if (row === 6) {
       // s.info = buffer;
       setS(s.withInfo(buffer));
-      setRow(8);
-    } else if (row === 8) {
+      setRow(7);
+    } else if (row === 7) {
       // to_physical_layer(&s);
       setDataLinkToPhysical(dataLinkToPhysical.concat(s));
-      setRow(9);
-    } else if (row === 9 && dataLinkEvent.length > 0) {
+      setRow(8);
+    } else if (row === 8 && dataLinkEvent.length > 0) {
       // wait_for_event(&event);
       setEvent(dataLinkEvent[0]);
       setDataLinkEvent(dataLinkEvent.slice(1));
-      setRow(10);
-    } else if (row === 10) {
+      setRow(9);
+    } else if (row === 9) {
       // }
-      setRow(5);
+      setRow(4);
     }
   }, [senderS2, senderBuffer2]);
 
@@ -670,10 +667,10 @@ function App() {
     const networkToDataLink = state.senderNetworkToDataLink;
     const dataLinkEvent = state.senderDataLinkEvent;
 
-    if (row === 6 && networkToDataLink.length === 0) {
+    if (row === 5 && networkToDataLink.length === 0) {
       // from_network_layer(&buffer);
       return STALL_FROM_NETWORK_LAYER;
-    } else if (row === 9 && dataLinkEvent.length === 0) {
+    } else if (row === 8 && dataLinkEvent.length === 0) {
       // wait_for_event(&event);
       return STALL_WAIT_FOR_EVENT;
     } else {
@@ -685,10 +682,9 @@ function App() {
   const [receiverS2, setReceiverS2] = useState<Frame>(new Frame());
   const [receiverEvent2, setReceiverEvent2] = useState<Event | undefined>();
   const receiverCode2 = `
-  void receiver2(void)
-  {
-    frame r, s;                  /* buffers for frames */
-    event_type event;            /* frame_arrival is the only possibility */
+  void receiver2(void) {
+    frame r, s;       /* buffers for frames */
+    event_type event; /* frame_arrival is the only possibility */
     while (true) {
       wait_for_event(&event);    /* only possibility is frame_arrival */
       from_physical_layer(&r);   /* go get the inbound frame */
@@ -713,30 +709,30 @@ function App() {
     const setR = setReceiverR2;
     const s = receiverS2;
 
-    if (row === 4) {
+    if (row === 3) {
       // while (true) {
-      setRow(5);
-    } else if (row === 5 && dataLinkEvent.length > 0) {
+      setRow(4);
+    } else if (row === 4 && dataLinkEvent.length > 0) {
       // wait_for_event(&event);
       setEvent(dataLinkEvent[0]);
       setDataLinkEvent(dataLinkEvent.slice(1));
-      setRow(6);
-    } else if (row === 6 && physicalToDataLink.length > 0) {
+      setRow(5);
+    } else if (row === 5 && physicalToDataLink.length > 0) {
       // from_physical_layer(&r);
       setR(physicalToDataLink[0]);
       setPhysicalToDataLink(physicalToDataLink.slice(1));
-      setRow(7);
-    } else if (row === 7) {
+      setRow(6);
+    } else if (row === 6) {
       // to_network_layer(&r.info);
       setDataLinkToNetwork(dataLinkToNetwork.concat([r.info!]));
-      setRow(8);
-    } else if (row === 8) {
+      setRow(7);
+    } else if (row === 7) {
       // to_physical_layer(&s);
       setDataLinkToPhysical(dataLinkToPhysical.concat([s]));
-      setRow(9);
-    } else if (row === 9) {
+      setRow(8);
+    } else if (row === 8) {
       // }
-      setRow(4);
+      setRow(3);
     }
   }, [receiverR2, receiverS2]);
 
@@ -745,10 +741,10 @@ function App() {
     const dataLinkEvent = state.receiverDataLinkEvent;
     const physicalToDataLink = state.receiverPhysicalToDataLink;
 
-    if (row === 5 && dataLinkEvent.length === 0) {
+    if (row === 4 && dataLinkEvent.length === 0) {
       // wait_for_event(&event);
       return STALL_WAIT_FOR_EVENT;
-    } else if (row === 6 && physicalToDataLink.length === 0) {
+    } else if (row === 5 && physicalToDataLink.length === 0) {
       // from_physical_layer(&r);
       return STALL_FROM_PHYSICAL_LAYER;
     } else {
@@ -761,27 +757,26 @@ function App() {
   const [senderBuffer3, setSenderBuffer3] = useState<Packet>(new Packet());
   const [senderEvent3, setSenderEvent3] = useState<Event | undefined>();
   const senderCode3 = `
-  void sender3(void)
-  {
-    seq_nr next_frame_to_send;             /* seq number of next outgoing frame */
-    frame s;                               /* scratch variable */
-    packet buffer;                         /* buffer for an outbound packet */
+  void sender3(void) {
+    seq_nr next_frame_to_send; /* seq number of next outgoing frame */
+    frame s;                   /* scratch variable */
+    packet buffer;             /* buffer for an outbound packet */
     event_type event;
   
-    next_frame_to_send = 0;                /* initialize outbound sequence numbers */
-    from_network_layer(&buffer);           /* fetch first packet */
-    while(true) {
-      s.info = buffer;                     /* construct a frame for transmission */
-      s.seq = next_frame_to_send;          /* insert sequence number in frame */
-      to_physical_layer(&s);               /* send it on its way */
-      start_timer(s.seq);                  /* if answer takes too long */
-      wait_for_event(&event);              /* frame_arrival, cksum_err, timeout */
+    next_frame_to_send = 0;      /* initialize outbound sequence numbers */
+    from_network_layer(&buffer); /* fetch first packet */
+    while (true) {
+      s.info = buffer;            /* construct a frame for transmission */
+      s.seq = next_frame_to_send; /* insert sequence number in frame */
+      to_physical_layer(&s);      /* send it on its way */
+      start_timer(s.seq);         /* if answer takes too long */
+      wait_for_event(&event);     /* frame_arrival, cksum_err, timeout */
       if (event == frame_arrival) {
-        from_physical_layer(&s);           /* get the acknowledgement */
+        from_physical_layer(&s); /* get the acknowledgement */
         if (s.ack == next_frame_to_send) {
-          stop_timer(s.ack);               /* turn the timer off */
-          from_network_layer(&buffer);     /* get the next one to send */
-          inc(next_frame_to_send);         /* invert next_frame_to_send */
+          stop_timer(s.ack);           /* turn the timer off */
+          from_network_layer(&buffer); /* get the next one to send */
+          inc(next_frame_to_send);     /* invert next_frame_to_send */
         }
       }
     }
@@ -807,78 +802,78 @@ function App() {
     const nextFrameToSend = senderNextFrameToSend3;
     const setNextFrameToSend = setSenderNextFrameToSend3;
 
-    if (row === 7) {
+    if (row === 6) {
       // next_frame_to_send = 0;
       setNextFrameToSend(0);
-      setRow(8);
-    } else if (row === 8 && networkToDataLink.length > 0) {
+      setRow(7);
+    } else if (row === 7 && networkToDataLink.length > 0) {
       // from_network_layer(&buffer);
       setBuffer(networkToDataLink[0]);
       setNetworkToDataLink(networkToDataLink.slice(1));
+      setRow(8);
+    } else if (row === 8) {
+      // while(true) {
       setRow(9);
     } else if (row === 9) {
-      // while(true) {
-      setRow(10);
-    } else if (row === 10) {
       // s.info = buffer;
       setS(s.withInfo(buffer));
-      setRow(11);
-    } else if (row === 11) {
+      setRow(10);
+    } else if (row === 10) {
       // s.seq = next_frame_to_send;
       setS(s.withSeq(nextFrameToSend));
-      setRow(12);
-    } else if (row === 12) {
+      setRow(11);
+    } else if (row === 11) {
       // to_physical_layer(&s);
       setDataLinkToPhysical(dataLinkToPhysical.concat([s]));
-      setRow(13);
-    } else if (row === 13) {
+      setRow(12);
+    } else if (row === 12) {
       // start_timer(s.seq);
-      setRow(14);
-    } else if (row === 14 && dataLinkEvent.length > 0) {
+      setRow(13);
+    } else if (row === 13 && dataLinkEvent.length > 0) {
       // wait_for_event(&event);
       setEvent(dataLinkEvent[0]);
       setDataLinkEvent(dataLinkEvent.slice(1));
-      setRow(15);
-    } else if (row === 15) {
+      setRow(14);
+    } else if (row === 14) {
       // if (event == frame_arrival) {
       if (event === Event.FrameArrival) {
-        setRow(16);
-      } else {
-        setRow(22);
-      }
-    } else if (row === 16 && physicalToDataLink.length > 0) {
-      // from_physical_layer(&s);
-      setS(physicalToDataLink[0]);
-      setPhysicalToDataLink(physicalToDataLink.slice(1));
-      setRow(17);
-    } else if (row === 17) {
-      // if (s.ack == next_frame_to_send) {
-      if (s.ack === nextFrameToSend) {
-        setRow(18);
+        setRow(15);
       } else {
         setRow(21);
       }
-    } else if (row === 18) {
+    } else if (row === 15 && physicalToDataLink.length > 0) {
+      // from_physical_layer(&s);
+      setS(physicalToDataLink[0]);
+      setPhysicalToDataLink(physicalToDataLink.slice(1));
+      setRow(16);
+    } else if (row === 16) {
+      // if (s.ack == next_frame_to_send) {
+      if (s.ack === nextFrameToSend) {
+        setRow(17);
+      } else {
+        setRow(20);
+      }
+    } else if (row === 17) {
       // stop_timer(s.ack);
-      setRow(19);
-    } else if (row === 19 && networkToDataLink.length > 0) {
+      setRow(18);
+    } else if (row === 18 && networkToDataLink.length > 0) {
       // from_network_layer(&buffer);
       setBuffer(networkToDataLink[0]);
       setNetworkToDataLink(networkToDataLink.slice(1))
-      setRow(20);
-    } else if (row === 20) {
+      setRow(19);
+    } else if (row === 19) {
       // inc(next_frame_to_send);
       setNextFrameToSend(1 - nextFrameToSend);
+      setRow(20);
+    } else if (row === 20) {
+      // }
       setRow(21);
     } else if (row === 21) {
       // }
       setRow(22);
     } else if (row === 22) {
       // }
-      setRow(23);
-    } else if (row === 23) {
-      // }
-      setRow(9);
+      setRow(8);
     }
   }, [senderNextFrameToSend3, senderS3, senderBuffer3, senderEvent3]);
 
@@ -888,16 +883,16 @@ function App() {
     const dataLinkEvent = state.senderDataLinkEvent;
     const physicalToDataLink = state.senderPhysicalToDataLink;
 
-    if (row === 8 && networkToDataLink.length === 0) {
+    if (row === 7 && networkToDataLink.length === 0) {
       // from_network_layer(&buffer);
       return STALL_FROM_NETWORK_LAYER;
-    } else if (row === 14 && dataLinkEvent.length === 0) {
+    } else if (row === 13 && dataLinkEvent.length === 0) {
       // wait_for_event(&event);
       return STALL_WAIT_FOR_EVENT;
-    } else if (row === 16 && physicalToDataLink.length === 0) {
+    } else if (row === 15 && physicalToDataLink.length === 0) {
       // from_physical_layer(&s);
       return STALL_FROM_PHYSICAL_LAYER;
-    } else if (row === 19 && networkToDataLink.length === 0) {
+    } else if (row === 18 && networkToDataLink.length === 0) {
       // from_network_layer(&buffer);
       return STALL_FROM_NETWORK_LAYER;
     } else {
@@ -910,23 +905,22 @@ function App() {
   const [receiverS3, setReceiverS3] = useState<Frame>(new Frame());
   const [receiverEvent3, setReceiverEvent3] = useState<Event | undefined>();
   const receiverCode3 = `
-  void receiver3(void)
-  {
+  void receiver3(void) {
     seq_nr frame_expected;
     frame r, s;
     event_type event;
   
     frame_expected = 0;
     while (true) {
-      wait_for_event(&event);          /* possibilities: frame_arrival, cksum_err */
-      if (event == frame_arrival) {    /* a valid frame has arrived */
-        from_physical_layer(&r);       /* go get the newly arrived frame */
+      wait_for_event(&event);       /* possibilities: frame_arrival, cksum_err */
+      if (event == frame_arrival) { /* a valid frame has arrived */
+        from_physical_layer(&r);    /* go get the newly arrived frame */
         if (r.seq == frame_expected) { /* this is what we have been waiting for */
           to_network_layer(&r.info);   /* pass the data to the network layer */
-          inc(frame_expected);         /* next time expect the other sequence nr */
+          inc(frame_expected); /* next time expect the other sequence nr */
         }
-        s.ack = 1 - frame_expected;    /* tell which frame is being acked */
-        to_physical_layer(&s);         /* send acknowledgement */
+        s.ack = 1 - frame_expected; /* tell which frame is being acked */
+        to_physical_layer(&s);      /* send acknowledgement */
       }
     }
   }`;
@@ -951,62 +945,62 @@ function App() {
     const frameExpected = receiverFrameExpected3;
     const setFrameExpected = setReceiverFrameExpected3;
 
-    if (row === 6) {
+    if (row === 5) {
       // frame_expected = 0;
       setFrameExpected(0);
-      setRow(7);
-    } else if (row === 7) {
+      setRow(6);
+    } else if (row === 6) {
       // while (true) {
-      setRow(8);
-    } else if (row === 8 && dataLinkEvent.length > 0) {
+      setRow(7);
+    } else if (row === 7 && dataLinkEvent.length > 0) {
       // wait_for_event(&event);
       setEvent(dataLinkEvent[0]);
       setDataLinkEvent(dataLinkEvent.slice(1));
-      setRow(9);
-    } else if (row === 9) {
+      setRow(8);
+    } else if (row === 8) {
       // if (event == frame_arrival) {
       if (event === Event.FrameArrival) {
-        setRow(10);
+        setRow(9);
       } else {
-        setRow(17);
+        setRow(16);
       }
-    } else if (row === 10 && physicalToDataLink.length > 0) {
+    } else if (row === 9 && physicalToDataLink.length > 0) {
       // from_physical_layer(&r);
       setR(physicalToDataLink[0]);
       setPhysicalToDataLink(physicalToDataLink.slice(1));
-      setRow(11);
-    } else if (row === 11) {
+      setRow(10);
+    } else if (row === 10) {
       // if (r.seq == frame_expected) {
       if (r.seq === frameExpected) {
-        setRow(12);
+        setRow(11);
       } else {
-        setRow(14);
+        setRow(13);
       }
-    } else if (row === 12) {
+    } else if (row === 11) {
       // to_network_layer(&r.info);
       setDataLinkToNetwork(dataLinkToNetwork.concat([r.info!]));
-      setRow(13);
-    } else if (row === 13) {
+      setRow(12);
+    } else if (row === 12) {
       // inc(frame_expected);
       setFrameExpected(1 - frameExpected);
+      setRow(13);
+    } else if (row === 13) {
+      // }
       setRow(14);
     } else if (row === 14) {
-      // }
-      setRow(15);
-    } else if (row === 15) {
       // s.ack = 1 - frame_expected;
       setS(s.withAck(1 - frameExpected));
-      setRow(16);
-    } else if (row === 16) {
+      setRow(15);
+    } else if (row === 15) {
       // to_physical_layer(&s);
       setDataLinkToPhysical(dataLinkToPhysical.concat([s]));
+      setRow(16);
+    } else if (row === 16) {
+      // }
       setRow(17);
     } else if (row === 17) {
       // }
-      setRow(18);
-    } else if (row === 18) {
-      // }
-      setRow(7);
+      setRow(6);
     }
   }, [receiverFrameExpected3, receiverR3, receiverS3, receiverEvent3]);
 
@@ -1015,10 +1009,10 @@ function App() {
     const dataLinkEvent = state.receiverDataLinkEvent;
     const physicalToDataLink = state.receiverPhysicalToDataLink;
 
-    if (row === 8 && dataLinkEvent.length === 0) {
+    if (row === 7 && dataLinkEvent.length === 0) {
       // wait_for_event(&event);
       return STALL_WAIT_FOR_EVENT;
-    } else if (row === 10 && physicalToDataLink.length === 0) {
+    } else if (row === 9 && physicalToDataLink.length === 0) {
       // from_physical_layer(&r);
       return STALL_FROM_PHYSICAL_LAYER;
     } else {
@@ -1033,28 +1027,27 @@ function App() {
   const [senderBuffer4, setSenderBuffer4] = useState<Packet>(new Packet());
   const [senderEvent4, setSenderEvent4] = useState<Event | undefined>();
   const senderCode4 = `
-  void protocol4(void)
-  {
-    seq_nr next_frame_to_send;             /* 0 or 1 only */
-    seq_nr frame_expected;                 /* 0 or 1 only */
-    frame r, s;                            /* scratch variables */
-    packet buffer;                         /* current packet being sent */
+  void protocol4(void) {
+    seq_nr next_frame_to_send; /* 0 or 1 only */
+    seq_nr frame_expected;     /* 0 or 1 only */
+    frame r, s;                /* scratch variables */
+    packet buffer;             /* current packet being sent */
     event_type event;
-    next_frame_to_send = 0;                /* next frame on the outbound stream */
-    frame_expected = 0;                    /* frame expected next */
-    from_network_layer(&buffer);           /* fetch a packet from the network layer */
-    s.info = buffer;                       /* prepare to send the initial frame */
-    s.seq = next_frame_to_send;            /* insert sequence number info frame */
-    s.ack = 1 - frame_expected;            /* piggybacked ack */
-    to_physical_layer(&s);                 /* transmit the frame */
-    start_timer(s.seq);                    /* start the timer running */
+    next_frame_to_send = 0;      /* next frame on the outbound stream */
+    frame_expected = 0;          /* frame expected next */
+    from_network_layer(&buffer); /* fetch a packet from the network layer */
+    s.info = buffer;             /* prepare to send the initial frame */
+    s.seq = next_frame_to_send;  /* insert sequence number info frame */
+    s.ack = 1 - frame_expected;  /* piggybacked ack */
+    to_physical_layer(&s);       /* transmit the frame */
+    start_timer(s.seq);          /* start the timer running */
     while (true) {
-      wait_for_event(&event);              /* frame_arrival, cksum_err, or timeout */
-      if (event == frame_arrival) {        /* a frame has arrived undamaged */
-        from_physical_layer(&r);           /* go get it */
-        if (r.seq == frame_expected) {     /* handle inbound frame stream */
-          to_network_layer(&r.info);       /* pass packet to network layer */
-          inc(frame_expected);             /* invert seq number expected next */
+      wait_for_event(&event);          /* frame_arrival, cksum_err, or timeout */
+      if (event == frame_arrival) {    /* a frame has arrived undamaged */
+        from_physical_layer(&r);       /* go get it */
+        if (r.seq == frame_expected) { /* handle inbound frame stream */
+          to_network_layer(&r.info);   /* pass packet to network layer */
+          inc(frame_expected);         /* invert seq number expected next */
         }
         if (r.ack == next_frame_to_send) { /* handle outbound frame stream */
           stop_timer(r.ack);               /* turn the timer off */
@@ -1062,11 +1055,11 @@ function App() {
           inc(next_frame_to_send);         /* invert sender's sequence number */
         }
       }
-      s.info = buffer;                     /* construct outbound frame */
-      s.seq = next_frame_to_send;          /* insert sequence number into it */
-      s.ack = 1 - frame_expected;          /* seq number of last received frame */
-      to_physical_layer(&s);               /* transmit a frame */
-      start_timer(s.seq);                  /* start the timer running */
+      s.info = buffer;            /* construct outbound frame */
+      s.seq = next_frame_to_send; /* insert sequence number into it */
+      s.ack = 1 - frame_expected; /* seq number of last received frame */
+      to_physical_layer(&s);      /* transmit a frame */
+      start_timer(s.seq);         /* start the timer running */
     }
   }`;
 
@@ -1096,119 +1089,122 @@ function App() {
     const frameExpected = senderFrameExpected4;
     const setFrameExpected = setSenderFrameExpected4;
 
-    if (row === 7) {
+    if (row === 6) {
       // next_frame_to_send = 0;
       setNextFrameToSend(0);
-      setRow(8);
-    } else if (row === 8) {
+      setRow(7);
+    } else if (row === 7) {
       // frame_expected = 0;
       setFrameExpected(0);
-      setRow(9);
-    } else if (row === 9 && networkToDataLink.length > 0) {
+      setRow(8);
+    } else if (row === 8 && networkToDataLink.length > 0) {
       // from_network_layer(&buffer);
       setBuffer(networkToDataLink[0]);
       setNetworkToDataLink(networkToDataLink.slice(1));
-      setRow(10);
-    } else if (row === 10) {
+      setRow(9);
+    } else if (row === 9) {
       // s.info = buffer;
       setS(s.withInfo(buffer));
-      setRow(11);
-    } else if (row === 11) {
+      setRow(10);
+    } else if (row === 10) {
       // s.seq = next_frame_to_send;
       setS(s.withSeq(nextFrameToSend));
-      setRow(12);
-    } else if (row === 12) {
+      setRow(11);
+    } else if (row === 11) {
       // s.ack = 1 - frame_expected;
       setS(s.withAck(1 - nextFrameToSend));
-      setRow(13);
-    } else if (row === 13) {
+      setRow(12);
+    } else if (row === 12) {
       // to_physical_layer(&s);
       setDataLinkToPhysical(dataLinkToPhysical.concat([s]));
+      setRow(13);
+    } else if (row === 13) {
+      // start_timer(s.seq);
       setRow(14);
     } else if (row === 14) {
-      // start_timer(s.seq);
-      setRow(15);
-    } else if (row === 15) {
       // while (true) {
-      setRow(16);
-    } else if (row === 16 && dataLinkEvent.length > 0) {
+      setRow(15);
+    } else if (row === 15 && dataLinkEvent.length > 0) {
       // wait_for_event(&event);
       setEvent(dataLinkEvent[0]);
       setDataLinkEvent(dataLinkEvent.slice(1));
-      setRow(17);
-    } else if (row === 17) {
+      setRow(16);
+    } else if (row === 16) {
       // if (event == frame_arrival) {
       if (event === Event.FrameArrival) {
-        setRow(18);
-      } else {
-        setRow(28);
-      }
-    } else if (row === 18 && physicalToDataLink.length > 0) {
-      // from_physical_layer(&r);
-      setR(physicalToDataLink[0]);
-      setPhysicalToDataLink(physicalToDataLink.slice(1));
-      setRow(19);
-    } else if (row === 19) {
-      // if (r.seq == frame_expected) {
-      if (r.seq === frameExpected) {
-        setRow(20);
-      } else {
-        setRow(22);
-      }
-    } else if (row === 20) {
-      // to_network_layer(&r.info);
-      setDataLinkToNetwork(dataLinkToNetwork.concat([r.info!]));
-      setRow(21);
-    } else if (row === 21) {
-      // inc(frame_expected);
-      setFrameExpected(1 - frameExpected);
-      setRow(22);
-    } else if (row === 22) {
-      // }
-      setRow(23);
-    } else if (row === 23) {
-      // if (r.ack == next_frame_to_send) {
-      if (r.ack === nextFrameToSend) {
-        setRow(24);
+        setRow(17);
       } else {
         setRow(27);
       }
-    } else if (row === 24) {
+    } else if (row === 17 && physicalToDataLink.length > 0) {
+      // from_physical_layer(&r);
+      setR(physicalToDataLink[0]);
+      setPhysicalToDataLink(physicalToDataLink.slice(1));
+      setRow(18);
+    } else if (row === 18) {
+      // if (r.seq == frame_expected) {
+      if (r.seq === frameExpected) {
+        setRow(19);
+      } else {
+        setRow(21);
+      }
+    } else if (row === 19) {
+      // to_network_layer(&r.info);
+      setDataLinkToNetwork(dataLinkToNetwork.concat([r.info!]));
+      setRow(20);
+    } else if (row === 20) {
+      // inc(frame_expected);
+      setFrameExpected(1 - frameExpected);
+      setRow(21);
+    } else if (row === 21) {
+      // }
+      setRow(22);
+    } else if (row === 22) {
+      // if (r.ack == next_frame_to_send) {
+      if (r.ack === nextFrameToSend) {
+        setRow(23);
+      } else {
+        setRow(26);
+      }
+    } else if (row === 23) {
       // stop_timer(r.ack);
-      setRow(25);
-    } else if (row === 25 && networkToDataLink.length > 0) {
+      setRow(24);
+    } else if (row === 24 && networkToDataLink.length > 0) {
       // from_network_layer(&buffer);
       setBuffer(networkToDataLink[0]);
       setNetworkToDataLink(networkToDataLink.slice(1));
+      setRow(25);
+    } else if (row === 25) {
+      // inc(next_frame_to_send);
       setRow(26);
     } else if (row === 26) {
-      // inc(next_frame_to_send);
+      // }
       setRow(27);
     } else if (row === 27) {
       // }
       setRow(28);
     } else if (row === 28) {
-      // }
-      setRow(29);
-    } else if (row === 29) {
       // s.info = buffer;
       setS(s.withInfo(buffer));
-      setRow(30);
-    } else if (row === 30) {
+      setRow(29);
+    } else if (row === 29) {
       // s.seq = next_frame_to_send;
       setS(s.withSeq(nextFrameToSend));
-      setRow(31);
-    } else if (row === 31) {
+      setRow(30);
+    } else if (row === 30) {
       // s.ack = 1 - frame_expected;
       setS(s.withAck(1 - frameExpected));
-      setRow(32);
-    } else if (row === 32) {
+      setRow(31);
+    } else if (row === 31) {
       // to_physical_layer(&s);
       setDataLinkToPhysical(dataLinkToPhysical.concat([s]));
+      setRow(32);
+    } else if (row === 32) {
+      // start_timer(s.seq);
       setRow(33);
     } else if (row === 33) {
       // }
-      setRow(15);
+      setRow(14);
     }
   }, [senderNextFrameToSend4, senderFrameExpected4, senderR4, senderS4, senderBuffer4, senderEvent4]);
 
@@ -1218,16 +1214,16 @@ function App() {
     const dataLinkEvent = state.senderDataLinkEvent;
     const physicalToDataLink = state.senderPhysicalToDataLink;
 
-    if (row === 9 && networkToDataLink.length === 0) {
+    if (row === 8 && networkToDataLink.length === 0) {
       // from_network_layer(&buffer);
       return STALL_FROM_NETWORK_LAYER;
-    } else if (row === 16 && dataLinkEvent.length === 0) {
+    } else if (row === 15 && dataLinkEvent.length === 0) {
       // wait_for_event(&event);
       return STALL_WAIT_FOR_EVENT;
-    } else if (row === 18 && physicalToDataLink.length === 0) {
+    } else if (row === 17 && physicalToDataLink.length === 0) {
       // from_physical_layer(&r);
       return STALL_FROM_PHYSICAL_LAYER;
-    } else if (row === 25 && networkToDataLink.length === 0) {
+    } else if (row === 24 && networkToDataLink.length === 0) {
       // from_network_layer(&buffer);
       return STALL_FROM_NETWORK_LAYER;
     } else {
@@ -1269,119 +1265,122 @@ function App() {
     const frameExpected = receiverFrameExpected4;
     const setFrameExpected = setReceiverFrameExpected4;
 
-    if (row === 7) {
+    if (row === 6) {
       // next_frame_to_send = 0;
       setNextFrameToSend(0);
-      setRow(8);
-    } else if (row === 8) {
+      setRow(7);
+    } else if (row === 7) {
       // frame_expected = 0;
       setFrameExpected(0);
-      setRow(9);
-    } else if (row === 9 && networkToDataLink.length > 0) {
+      setRow(8);
+    } else if (row === 8 && networkToDataLink.length > 0) {
       // from_network_layer(&buffer);
       setBuffer(networkToDataLink[0]);
       setNetworkToDataLink(networkToDataLink.slice(1));
-      setRow(10);
-    } else if (row === 10) {
+      setRow(9);
+    } else if (row === 9) {
       // s.info = buffer;
       setS(s.withInfo(buffer));
-      setRow(11);
-    } else if (row === 11) {
+      setRow(10);
+    } else if (row === 10) {
       // s.seq = next_frame_to_send;
       setS(s.withSeq(nextFrameToSend));
-      setRow(12);
-    } else if (row === 12) {
+      setRow(11);
+    } else if (row === 11) {
       // s.ack = 1 - frame_expected;
       setS(s.withAck(1 - nextFrameToSend));
-      setRow(13);
-    } else if (row === 13) {
+      setRow(12);
+    } else if (row === 12) {
       // to_physical_layer(&s);
       setDataLinkToPhysical(dataLinkToPhysical.concat([s]));
+      setRow(13);
+    } else if (row === 13) {
+      // start_timer(s.seq);
       setRow(14);
     } else if (row === 14) {
-      // start_timer(s.seq);
-      setRow(15);
-    } else if (row === 15) {
       // while (true) {
-      setRow(16);
-    } else if (row === 16 && dataLinkEvent.length > 0) {
+      setRow(15);
+    } else if (row === 15 && dataLinkEvent.length > 0) {
       // wait_for_event(&event);
       setEvent(dataLinkEvent[0]);
       setDataLinkEvent(dataLinkEvent.slice(1));
-      setRow(17);
-    } else if (row === 17) {
+      setRow(16);
+    } else if (row === 16) {
       // if (event == frame_arrival) {
       if (event === Event.FrameArrival) {
-        setRow(18);
-      } else {
-        setRow(28);
-      }
-    } else if (row === 18 && physicalToDataLink.length > 0) {
-      // from_physical_layer(&r);
-      setR(physicalToDataLink[0]);
-      setPhysicalToDataLink(physicalToDataLink.slice(1));
-      setRow(19);
-    } else if (row === 19) {
-      // if (r.seq == frame_expected) {
-      if (r.seq === frameExpected) {
-        setRow(20);
-      } else {
-        setRow(22);
-      }
-    } else if (row === 20) {
-      // to_network_layer(&r.info);
-      setDataLinkToNetwork(dataLinkToNetwork.concat([r.info!]));
-      setRow(21);
-    } else if (row === 21) {
-      // inc(frame_expected);
-      setFrameExpected(1 - frameExpected);
-      setRow(22);
-    } else if (row === 22) {
-      // }
-      setRow(23);
-    } else if (row === 23) {
-      // if (r.ack == next_frame_to_send) {
-      if (r.ack === nextFrameToSend) {
-        setRow(24);
+        setRow(17);
       } else {
         setRow(27);
       }
-    } else if (row === 24) {
+    } else if (row === 17 && physicalToDataLink.length > 0) {
+      // from_physical_layer(&r);
+      setR(physicalToDataLink[0]);
+      setPhysicalToDataLink(physicalToDataLink.slice(1));
+      setRow(18);
+    } else if (row === 18) {
+      // if (r.seq == frame_expected) {
+      if (r.seq === frameExpected) {
+        setRow(19);
+      } else {
+        setRow(21);
+      }
+    } else if (row === 19) {
+      // to_network_layer(&r.info);
+      setDataLinkToNetwork(dataLinkToNetwork.concat([r.info!]));
+      setRow(20);
+    } else if (row === 20) {
+      // inc(frame_expected);
+      setFrameExpected(1 - frameExpected);
+      setRow(21);
+    } else if (row === 21) {
+      // }
+      setRow(22);
+    } else if (row === 22) {
+      // if (r.ack == next_frame_to_send) {
+      if (r.ack === nextFrameToSend) {
+        setRow(23);
+      } else {
+        setRow(26);
+      }
+    } else if (row === 23) {
       // stop_timer(r.ack);
-      setRow(25);
-    } else if (row === 25 && networkToDataLink.length > 0) {
+      setRow(24);
+    } else if (row === 24 && networkToDataLink.length > 0) {
       // from_network_layer(&buffer);
       setBuffer(networkToDataLink[0]);
       setNetworkToDataLink(networkToDataLink.slice(1));
+      setRow(25);
+    } else if (row === 25) {
+      // inc(next_frame_to_send);
       setRow(26);
     } else if (row === 26) {
-      // inc(next_frame_to_send);
+      // }
       setRow(27);
     } else if (row === 27) {
       // }
       setRow(28);
     } else if (row === 28) {
-      // }
-      setRow(29);
-    } else if (row === 29) {
       // s.info = buffer;
       setS(s.withInfo(buffer));
-      setRow(30);
-    } else if (row === 30) {
+      setRow(29);
+    } else if (row === 29) {
       // s.seq = next_frame_to_send;
       setS(s.withSeq(nextFrameToSend));
-      setRow(31);
-    } else if (row === 31) {
+      setRow(30);
+    } else if (row === 30) {
       // s.ack = 1 - frame_expected;
       setS(s.withAck(1 - frameExpected));
-      setRow(32);
-    } else if (row === 32) {
+      setRow(31);
+    } else if (row === 31) {
       // to_physical_layer(&s);
       setDataLinkToPhysical(dataLinkToPhysical.concat([s]));
+      setRow(32);
+    } else if (row === 32) {
+      // start_timer(s.seq);
       setRow(33);
     } else if (row === 33) {
       // }
-      setRow(15);
+      setRow(14);
     }
   }, [receiverNextFrameToSend4, receiverFrameExpected4, receiverR4, receiverS4, receiverBuffer4, receiverEvent4]);
 
@@ -1391,22 +1390,116 @@ function App() {
     const dataLinkEvent = state.receiverDataLinkEvent;
     const physicalToDataLink = state.receiverPhysicalToDataLink;
 
-    if (row === 9 && networkToDataLink.length === 0) {
+    if (row === 8 && networkToDataLink.length === 0) {
       // from_network_layer(&buffer);
       return STALL_FROM_NETWORK_LAYER;
-    } else if (row === 16 && dataLinkEvent.length === 0) {
+    } else if (row === 15 && dataLinkEvent.length === 0) {
       // wait_for_event(&event);
       return STALL_WAIT_FOR_EVENT;
-    } else if (row === 18 && physicalToDataLink.length === 0) {
+    } else if (row === 17 && physicalToDataLink.length === 0) {
       // from_physical_layer(&r);
       return STALL_FROM_PHYSICAL_LAYER;
-    } else if (row === 25 && networkToDataLink.length === 0) {
+    } else if (row === 24 && networkToDataLink.length === 0) {
       // from_network_layer(&buffer);
       return STALL_FROM_NETWORK_LAYER;
     } else {
       return undefined;
     }
   }, []);
+
+  const [senderNextFrameToSend5, setSenderNextFrameToSend5] = useState<number>(0);
+  const [senderAckExpected5, setSenderAckExpected5] = useState<number>(0);
+  const [senderFrameExpected5, setSenderFrameExpected5] = useState<number>(0);
+  const [senderR5, setSenderR5] = useState<Frame>(new Frame());
+  const [senderBuffer5, setSenderBuffer5] = useState<Packet[]>(() => {
+    let result = [];
+    for (let i = 0; i < 8; i++) {
+      result.push(new Packet());
+    }
+    return result;
+  });
+  const [senderNBuffered5, setSenderNBuffered5] = useState<number>(0);
+  const [senderI5, setSenderI5] = useState<number>(0);
+  const [senderEvent5, setSenderEvent5] = useState<Event | undefined>();
+  const senderCode5 = `
+  #define MAX_SEQ 7
+  static boolean between(seq_nr a, seq_nr b, seq_nr c) {
+    /* Return true if a <= b < c circularly; false otherwise. */
+    if (((a <= b) && (b < c) || ((c < a) && (a <= b)) || ((b < c) && (c < a))))
+      return (true);
+    else
+      return (false);
+  }
+  
+  static void send_data(seq_nr frame_nr, seq_nr frame_expected, packet buffer[]) {
+    /* Construct and send a data frame. */
+    frame s;                   /* scratch variable */
+    s.info = buffer[frame_nr]; /* insert packet into frame */
+    s.seq = frame_nr;          /* insert sequence number into frame */
+    s.ack = (frame_expected + MAX_SEQ) % (MAX_SEQ + 1); /* piggyback ack */
+    to_physical_layer(&s);                              /* transmit the frame */
+    start_timer(frame_nr); /* start the timer running */
+  }
+  
+  void protocol5(void) {
+    seq_nr next_frame_to_send;  /* MAX_SEQ > 1; used for outbound stream */
+    seq_nr ack_expected;        /* oldest frame as yet unacknowledged */
+    seq_nr frame_expected;      /* next frame expected on inbound stream */
+    frame r;                    /* scratch variable */
+    packet buffer[MAX_SEQ + 1]; /* buffers for the outbound stream */
+    seq_nr nbuffered;           /* number of output buffers currently in use */
+    seq_nr i;                   /* used to index into the buffer array */
+    event_type event;
+    enable_network_layer(); /* allow network_layer_ready_events */
+    ack_expected = 0;       /* next ack expected inbound */
+    next_frame_to_send = 0; /* next frame going out */
+    frame_expected = 0;     /* number of frame expected inbound */
+    nbuffered = 0;          /* initially no packets are buffered */
+    while (true) {
+      wait_for_event(&event); /* four possibilities: see event_type above */
+      switch (event) {
+      case network_layer_ready: /* the network layer has a packet to send */
+        /* Accept, save, and transmit a new frame. */
+        from_network_layer(&buffer[next_frame_to_send]); /* fetch new packet */
+        nbuffered = nbuffered + 1; /* expand the sender's window */
+        send_data(next_frame_to_send, frame_expected,
+                  buffer);       /* transmit the frame */
+        inc(next_frame_to_send); /* advance sender's upper window edge */
+        break;
+  
+      case frame_arrival:        /* a data or control frame has arrived */
+        from_physical_layer(&r); /* get incoming frame from physical layer */
+        if (r.seq == frame_expected) {
+          /* Frames are accepted only in order*/
+          to_network_layer(&r.info); /* pass packet the network layer */
+          inc(frame_expected);       /* advance lower edge of receiver's window */
+        }
+        /* Ack n implies n - 1, n - 2, etc. Check for this. */
+        while (between(ack_expected, r.ack, next_frame_to_send)) {
+          /* Handle piggybacked ack. */
+          nbuffered = nbuffered - 1; /* one frame fewer buffered */
+          stop_timer(ack_expected);  /* frame arrived intact; stop timer */
+          inc(ack_expected);         /* contract sender's window */
+        }
+        break;
+  
+      case cksum_err: /* just ignore bad frames */
+        break;
+  
+      case timeout: /* trouble; retransmit all outstanding frames */
+        next_frame_to_send = ack_expected; /* start retransmitting here */
+        for (i = 1; i <= nbuffered; i++) {
+          send_data(next_frame_to_send, frame_expected,
+                    buffer);       /* resend frame */
+          inc(next_frame_to_send); /* prepare to send the next one */
+        }
+      }
+      if (nbuffered < MAX_SEQ)
+        enable_network_layer();
+      else
+        disable_network_layer();
+    }
+  }`;
 
   return (
     <Container>
@@ -1436,12 +1529,12 @@ function App() {
           </Paper>
         </Grid>
         <Viewer
-          initialSenderRow={4} senderCode={senderCode1}
+          initialSenderRow={3} senderCode={senderCode1}
           stepSender={stepSender1} canStepSender={canStepSender1}
           senderLocals={
             [`s: ${senderS1}`, `buffer: ${senderBuffer1}`]
           }
-          initialReceiverRow={4} receiverCode={receiverCode1}
+          initialReceiverRow={3} receiverCode={receiverCode1}
           stepReceiver={stepReceiver1} canStepReceiver={canStepReceiver1}
           receiverLocals={
             [`r: ${receiverR1}`, `event: ${receiverEvent1}`]
@@ -1467,12 +1560,12 @@ function App() {
           </Paper>
         </Grid>
         <Viewer
-          initialSenderRow={5} senderCode={senderCode2}
+          initialSenderRow={4} senderCode={senderCode2}
           stepSender={stepSender2} canStepSender={canStepSender2}
           senderLocals={
             [`s: ${senderS2}`, `buffer: ${senderBuffer2}`, `event: ${senderEvent2}`]
           }
-          initialReceiverRow={4} receiverCode={receiverCode2}
+          initialReceiverRow={3} receiverCode={receiverCode2}
           stepReceiver={stepReceiver2} canStepReceiver={canStepReceiver2}
           receiverLocals={
             [`r: ${receiverR2}`, `s: ${receiverS2}`, `event: ${receiverEvent2}`]
@@ -1495,12 +1588,12 @@ function App() {
           </Paper>
         </Grid>
         <Viewer
-          initialSenderRow={7} senderCode={senderCode3}
+          initialSenderRow={6} senderCode={senderCode3}
           stepSender={stepSender3} canStepSender={canStepSender3}
           senderLocals={
             [`next_frame_to_send: ${senderNextFrameToSend3}`, `s: ${senderS3}`, `buffer: ${senderBuffer3}`, `event: ${senderEvent3}`]
           }
-          initialReceiverRow={6} receiverCode={receiverCode3}
+          initialReceiverRow={5} receiverCode={receiverCode3}
           stepReceiver={stepReceiver3} canStepReceiver={canStepReceiver3}
           receiverLocals={
             [`frame_expected: ${receiverFrameExpected3}`, `r: ${receiverR3}`, `s: ${receiverS3}`, `event: ${receiverEvent3}`]
@@ -1522,12 +1615,12 @@ function App() {
           </Paper>
         </Grid>
         <Viewer
-          initialSenderRow={7} senderCode={senderCode4}
+          initialSenderRow={6} senderCode={senderCode4}
           stepSender={stepSender4} canStepSender={canStepSender4}
           senderLocals={
             [`next_frame_to_send: ${senderNextFrameToSend4}`, `frame_expected: ${senderFrameExpected4}`, `r: ${senderR4}`, `s: ${senderS4}`, `buffer: ${senderBuffer4}`, `event: ${senderEvent4}`]
           }
-          initialReceiverRow={7} receiverCode={receiverCode4}
+          initialReceiverRow={6} receiverCode={receiverCode4}
           stepReceiver={stepReceiver4} canStepReceiver={canStepReceiver4}
           receiverLocals={
             [`next_frame_to_send: ${receiverNextFrameToSend4}`, `frame_expected: ${receiverFrameExpected4}`, `r: ${receiverR4}`, `s: ${receiverS4}`, `buffer: ${receiverBuffer4}`, `event: ${receiverEvent4}`]
