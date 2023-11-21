@@ -1,3 +1,46 @@
+struct packet {
+
+};
+
+typedef int seq_nr;
+typedef bool boolean;
+
+enum event_type {
+  frame_arrival,
+  cksum_err,
+  timeout,
+  ack_timeout,
+  network_layer_ready
+};
+
+enum frame_kind {
+  data,
+  ack,
+  nak
+};
+
+struct frame {
+  packet info;
+  seq_nr seq;
+  seq_nr ack;
+  frame_kind kind;
+};
+
+
+void from_network_layer(packet *);
+void to_network_layer(packet *);
+void to_physical_layer(frame *);
+void from_physical_layer(frame *);
+void wait_for_event(event_type *);
+void start_timer(seq_nr);
+void stop_timer(seq_nr);
+void start_ack_timer();
+void stop_ack_timer();
+void inc(seq_nr&);
+void enable_network_layer();
+void disable_network_layer();
+void stop_network_layer();
+
 void sender1(void)
 {
   frame s;                       /* buffer for an outbound frame */
@@ -24,6 +67,7 @@ void sender2(void)
 {
   frame s;                       /* buffer for an outbound frame */
   packet buffer;                 /* buffer for an outbound packet */
+  event_type event;              /* frame_arrival is the only possibility */
   while (true) {
     from_network_layer(&buffer); /* go get something to send */
     s.info = buffer;             /* copy it into s for transmission */
@@ -221,7 +265,7 @@ static boolean between(seq_nr a, seq_nr b, seq_nr c)
   return ((a <= b) && (b < c) || ((c < a) && (a <= b)) || ((b < c) && (c < a)));
 }
 
-static void send_data(frame_kind fk, seq_nr frame_nr, seq_nr frame_expected, packet buffer[])
+static void send_frame(frame_kind fk, seq_nr frame_nr, seq_nr frame_expected, packet buffer[])
 {
   /* Construct and send a data, ack or nak frame. */
   frame s;

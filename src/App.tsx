@@ -614,6 +614,7 @@ function App() {
   {
     frame s;                       /* buffer for an outbound frame */
     packet buffer;                 /* buffer for an outbound packet */
+    event_type event;              /* frame_arrival is the only possibility */
     while (true) {
       from_network_layer(&buffer); /* go get something to send */
       s.info = buffer;             /* copy it into s for transmission */
@@ -637,30 +638,30 @@ function App() {
     const setS = setSenderS2;
     const setEvent = setSenderEvent2;
 
-    if (row === 4) {
+    if (row === 5) {
       // while (true) {
-      setRow(5);
-    } else if (row === 5 && networkToDataLink.length > 0) {
+      setRow(6);
+    } else if (row === 6 && networkToDataLink.length > 0) {
       // from_network_layer(&buffer);
       setBuffer(networkToDataLink[0]);
       setNetworkToDataLink(networkToDataLink.slice(1));
-      setRow(6);
-    } else if (row === 6) {
-      // s.info = buffer;
-      setS(s.withInfo(buffer));
       setRow(7);
     } else if (row === 7) {
+      // s.info = buffer;
+      setS(s.withInfo(buffer));
+      setRow(8);
+    } else if (row === 8) {
       // to_physical_layer(&s);
       setDataLinkToPhysical(dataLinkToPhysical.concat(s));
-      setRow(8);
-    } else if (row === 8 && dataLinkEvent.length > 0) {
+      setRow(9);
+    } else if (row === 9 && dataLinkEvent.length > 0) {
       // wait_for_event(&event);
       setEvent(dataLinkEvent[0]);
       setDataLinkEvent(dataLinkEvent.slice(1));
-      setRow(9);
-    } else if (row === 9) {
+      setRow(10);
+    } else if (row === 10) {
       // }
-      setRow(4);
+      setRow(5);
     }
   }, [senderS2, senderBuffer2]);
 
@@ -669,10 +670,10 @@ function App() {
     const networkToDataLink = state.senderNetworkToDataLink;
     const dataLinkEvent = state.senderDataLinkEvent;
 
-    if (row === 5 && networkToDataLink.length === 0) {
+    if (row === 6 && networkToDataLink.length === 0) {
       // from_network_layer(&buffer);
       return STALL_FROM_NETWORK_LAYER;
-    } else if (row === 8 && dataLinkEvent.length === 0) {
+    } else if (row === 9 && dataLinkEvent.length === 0) {
       // wait_for_event(&event);
       return STALL_WAIT_FOR_EVENT;
     } else {
@@ -1466,7 +1467,7 @@ function App() {
           </Paper>
         </Grid>
         <Viewer
-          initialSenderRow={4} senderCode={senderCode2}
+          initialSenderRow={5} senderCode={senderCode2}
           stepSender={stepSender2} canStepSender={canStepSender2}
           senderLocals={
             [`s: ${senderS2}`, `buffer: ${senderBuffer2}`, `event: ${senderEvent2}`]
