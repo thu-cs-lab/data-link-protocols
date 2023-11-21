@@ -191,6 +191,7 @@ type ViewerProps = {
   hideReceiverDataLinkToPhysical?: boolean;
   hideReceiverNetworkToDataLink?: boolean;
   hideReceiverNetworkInput?: boolean;
+  hideAddEventButton?: boolean;
 };
 
 function FastForwarder(canStep: () => boolean, step: () => void) {
@@ -238,6 +239,12 @@ function Viewer(props: ViewerProps) {
   const [senderDataLinkToPhysical, setSenderDataLinkToPhysical] = useState<Frame[]>([]);
   // sender physical -> sender data link
   const [senderPhysicalToDataLink, setSenderPhysicalToDataLink] = useState<Frame[]>([]);
+  const addSenderChecksumErrorEvent = useCallback(() => {
+    setSenderDataLinkEvent(senderDataLinkEvent.concat([Event.CksumError]));
+  }, [senderDataLinkEvent]);
+  const addSenderTimeoutEvent = useCallback(() => {
+    setSenderDataLinkEvent(senderDataLinkEvent.concat([Event.Timeout]));
+  }, [senderDataLinkEvent]);
 
   // sender & receiver physical layer
   // sender physical -> receiver physical is implicit
@@ -252,6 +259,12 @@ function Viewer(props: ViewerProps) {
   const [receiverDataLinkToPhysical, setReceiverDataLinkToPhysical] = useState<Frame[]>([]);
   // receiver data link -> receiver network
   const [receiverDataLinkToNetwork, setReceiverDataLinkToNetwork] = useState<Packet[]>([]);
+  const addReceiverChecksumErrorEvent = useCallback(() => {
+    setReceiverDataLinkEvent(receiverDataLinkEvent.concat([Event.CksumError]));
+  }, [receiverDataLinkEvent]);
+  const addReceiverTimeoutEvent = useCallback(() => {
+    setReceiverDataLinkEvent(receiverDataLinkEvent.concat([Event.Timeout]));
+  }, [receiverDataLinkEvent]);
 
   // receiver network layer
   // receiver network -> receiver data link
@@ -373,6 +386,12 @@ function Viewer(props: ViewerProps) {
           <MyList description='以下是数据链路层尚未处理的事件：'
             hide={props.hideSenderDataLinkEvent}
             entries={senderDataLinkEvent}></MyList>
+          {
+            props.hideAddEventButton ? null : <Box>
+              <Button variant="contained" onClick={addSenderChecksumErrorEvent}>添加 Checksum Error 事件</Button>
+              <Button variant="contained" onClick={addSenderTimeoutEvent}>添加 Timeout 事件</Button>
+            </Box>
+          }
         </Paper>
         <Paper sx={style2}>
           <Typography variant="h5">
@@ -432,6 +451,12 @@ function Viewer(props: ViewerProps) {
             entries={props.receiverLocals}></MyList>
           <MyList description='以下是数据链路层尚未处理的事件：'
             entries={receiverDataLinkEvent}></MyList>
+          {
+            props.hideAddEventButton ? null : <Box>
+              <Button variant="contained" onClick={addReceiverChecksumErrorEvent}>添加 Checksum Error 事件</Button>
+              <Button variant="contained" onClick={addReceiverTimeoutEvent}>添加 Timeout 事件</Button>
+            </Box>
+          }
         </Paper>
         <Paper sx={style2}>
           <Typography variant="h5">
@@ -1372,6 +1397,7 @@ function App() {
           hideReceiverDataLinkToPhysical={true}
           hideReceiverNetworkInput={true}
           hideReceiverNetworkToDataLink={true}
+          hideAddEventButton={true}
         ></Viewer>
         <Grid item xs={12}>
           <Paper sx={{
@@ -1399,6 +1425,7 @@ function App() {
           hideSenderDataLinkToNetwork={true}
           hideReceiverNetworkInput={true}
           hideReceiverNetworkToDataLink={true}
+          hideAddEventButton={true}
         ></Viewer>
         <Grid item xs={12}>
           <Paper sx={{
