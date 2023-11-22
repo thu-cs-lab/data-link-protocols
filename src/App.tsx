@@ -421,12 +421,16 @@ function Viewer(props: ViewerProps) {
           <Typography>
             你可以在这里输入载荷的内容，点击发送，模拟发送方网络层要发送数据的情况：
           </Typography>
+          <p></p>
           <TextField label="载荷" variant="outlined" fullWidth onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             setSenderNetworkInput(event.target.value);
           }} />
+          <p></p>
           <Button variant="contained" onClick={senderSendNetwork}>发送</Button>
+          <p></p>
           <MyList description='以下是网络层发送给数据链路层，但数据链路层还没有接收的分组：'
             entries={senderNetworkToDataLink}></MyList>
+          <p></p>
           <MyList description='以下是数据链路层发送给网络层的分组：'
             hide={props.hideSenderDataLinkToNetwork}
             entries={senderDataLinkToNetwork}></MyList>
@@ -446,10 +450,13 @@ function Viewer(props: ViewerProps) {
             </Grid>
             <Grid item xs={4}>
               <Button variant="contained" onClick={() => props.stepSender(state)} disabled={props.canStepSender(state) !== undefined}>下一步</Button>
+              <p></p>
               <Button variant="contained" onClick={fastForwardSender} disabled={props.canStepSender(state) !== undefined}>下一步直到无法立即继续</Button>
+              <p></p>
               <Typography>
                 {props.canStepSender(state)}
               </Typography>
+              <p></p>
               <MyList description='局部变量：'
                 entries={props.senderLocals}></MyList>
               <MyList description='以下是数据链路层尚未处理的事件：'
@@ -458,6 +465,7 @@ function Viewer(props: ViewerProps) {
               {
                 props.hideAddEventButton ? null : <Box>
                   <Button variant="contained" onClick={addSenderChecksumErrorEvent}>添加 Checksum Error 事件</Button>
+                  <p></p>
                   <Button variant="contained" onClick={addSenderTimeoutEvent}>添加 Timeout 事件</Button>
                 </Box>
               }
@@ -471,6 +479,7 @@ function Viewer(props: ViewerProps) {
           <MyList description='以下是物理层发送给数据链路层，但是数据链路层还没有接收的帧：'
             hide={props.hideSenderPhysicalToDataLink}
             entries={senderPhysicalToDataLink}></MyList>
+          <p></p>
           <MyList description='以下是数据链路层发送给物理层，但是物理层还没有发送的帧：'
             entries={senderDataLinkToPhysical}></MyList>
           <Button variant="contained" onClick={sendSenderPhysical} disabled={senderDataLinkToPhysical.length === 0}>发送</Button>
@@ -491,15 +500,19 @@ function Viewer(props: ViewerProps) {
               <Typography>
                 你可以在这里输入载荷的内容，点击发送，模拟接收方网络层要发送数据的情况：
               </Typography>
+              <p></p>
               <TextField label="载荷" variant="outlined" fullWidth onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 setReceiverNetworkInput(event.target.value);
               }} />
+              <p></p>
               <Button variant="contained" onClick={receiverSendNetwork}>发送</Button>
             </Box>
           }
+          <p></p>
           <MyList description='以下是网络层发送给数据链路层，但数据链路层还没有接收的分组：'
             hide={props.hideReceiverNetworkToDataLink}
             entries={receiverNetworkToDataLink}></MyList>
+          <p></p>
           <MyList description='以下是数据链路层发送给网络层的分组：'
             entries={receiverDataLinkToNetwork}></MyList>
         </Paper>
@@ -518,10 +531,13 @@ function Viewer(props: ViewerProps) {
             </Grid>
             <Grid item xs={4}>
               <Button variant="contained" onClick={() => props.stepReceiver(state)} disabled={props.canStepReceiver(state) !== undefined}>下一步</Button>
+              <p></p>
               <Button variant="contained" onClick={fastForwardReceiver} disabled={props.canStepReceiver(state) !== undefined}>下一步直到无法立即继续</Button>
+              <p></p>
               <Typography>
                 {props.canStepReceiver(state)}
               </Typography>
+              <p></p>
               <MyList description='局部变量：'
                 entries={props.receiverLocals}></MyList>
               <MyList description='以下是数据链路层尚未处理的事件：'
@@ -529,6 +545,7 @@ function Viewer(props: ViewerProps) {
               {
                 props.hideAddEventButton ? null : <Box>
                   <Button variant="contained" onClick={addReceiverChecksumErrorEvent}>添加 Checksum Error 事件</Button>
+                  <p></p>
                   <Button variant="contained" onClick={addReceiverTimeoutEvent}>添加 Timeout 事件</Button>
                 </Box>
               }
@@ -541,9 +558,11 @@ function Viewer(props: ViewerProps) {
           </Typography>
           <MyList description='以下是物理层发送给数据链路层，但是数据链路层还没有接收的帧：'
             entries={receiverPhysicalToDataLink}></MyList>
+          <p></p>
           <MyList description='以下是数据链路层发送给物理层，但是物理层还没有发送的帧：'
             hide={props.hideReceiverDataLinkToPhysical}
             entries={receiverDataLinkToPhysical}></MyList>
+          <p></p>
           {
             props.hideReceiverDataLinkToPhysical ? null :
               <Button variant="contained" onClick={sendReceiverPhysical} disabled={receiverDataLinkToPhysical.length === 0}>发送</Button>
