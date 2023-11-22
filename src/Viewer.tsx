@@ -421,7 +421,6 @@ export function Viewer(props: ViewerProps) {
                 props.hideAddEventButton ? null : <Box>
                   <Button variant="contained" onClick={() => addReceiverEvent(Event.CksumError)}>添加 Checksum Error 事件</Button>
                   <p></p>
-                  <Button variant="contained" onClick={() => addReceiverEvent(Event.Timeout)}>添加 Timeout 事件</Button>
                   {
                     props.addOldestFrameToTimeoutEvent ?
                       <Box>
