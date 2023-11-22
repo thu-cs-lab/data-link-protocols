@@ -100,8 +100,17 @@ function Protocol() {
     }
   }`;
 
+  const sendData = useCallback((state: ViewerState, frameNr: number, frameExpected: number, buffer: Packet[]) => {
+    const { dataLinkToPhysical, setDataLinkToPhysical } = state;
+    let s = new Frame();
+    s.info = buffer[frameNr];
+    s.seq = frameNr;
+    s.ack = (frameExpected + MAX_SEQ) % (MAX_SEQ + 1);
+    setDataLinkToPhysical(dataLinkToPhysical.concat([s]));
+  }, []);
+
   const step = useCallback((state: ViewerState) => {
-    const { row, setRow, dataLinkEvent, setDataLinkEvent, dataLinkToPhysical, setDataLinkToPhysical, physicalToDataLink, setPhysicalToDataLink, dataLinkToNetwork, setDataLinkToNetwork, enableNetworkLayer, disableNetworkLayer, networkToDataLink, setNetworkToDataLink } = state;
+    const { row, setRow, dataLinkEvent, setDataLinkEvent, physicalToDataLink, setPhysicalToDataLink, dataLinkToNetwork, setDataLinkToNetwork, enableNetworkLayer, disableNetworkLayer, networkToDataLink, setNetworkToDataLink } = state;
     if (row === 28) {
       // enable_network_layer();
       enableNetworkLayer();
@@ -157,11 +166,7 @@ function Protocol() {
     } else if (row === 40) {
       // send_data(next_frame_to_send, frame_expected,
       // buffer);
-      let s = new Frame();
-      s.info = buffer[nextFrameToSend];
-      s.seq = nextFrameToSend;
-      s.ack = (frameExpected + MAX_SEQ) % (MAX_SEQ + 1);
-      setDataLinkToPhysical(dataLinkToPhysical.concat([s]));
+      sendData(state, nextFrameToSend, frameExpected, buffer);
       setRow(42);
     } else if (row === 42) {
       // inc(next_frame_to_send);
@@ -238,11 +243,7 @@ function Protocol() {
     } else if (row === 68) {
       // send_data(next_frame_to_send, frame_expected,
       // buffer);
-      let s = new Frame();
-      s.info = buffer[nextFrameToSend];
-      s.seq = nextFrameToSend;
-      s.ack = (frameExpected + MAX_SEQ) % (MAX_SEQ + 1);
-      setDataLinkToPhysical(dataLinkToPhysical.concat([s]));
+      sendData(state, nextFrameToSend, frameExpected, buffer);
       setRow(70);
     } else if (row === 70) {
       // inc(next_frame_to_send);
@@ -278,7 +279,7 @@ function Protocol() {
       // }
       setRow(34);
     }
-  }, [nextFrameToSend, ackExpected, frameExpected, r, buffer, nBuffered, i, event]);
+  }, [nextFrameToSend, ackExpected, frameExpected, r, buffer, nBuffered, i, event, sendData]);
 
   const canStep = useCallback((state: ViewerState) => {
     const { row, dataLinkEvent, physicalToDataLink, networkToDataLink } = state;
