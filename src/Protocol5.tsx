@@ -4,13 +4,15 @@ import { Viewer, ViewerState } from './Viewer';
 import { Frame, Packet, Event, STALL_FROM_NETWORK_LAYER, STALL_FROM_PHYSICAL_LAYER, STALL_WAIT_FOR_EVENT } from './Common';
 
 export function Protocol5() {
+  const MAX_SEQ = 7;
+
   const [senderNextFrameToSend5, setSenderNextFrameToSend5] = useState<number>(0);
   const [senderAckExpected5, setSenderAckExpected5] = useState<number>(0);
   const [senderFrameExpected5, setSenderFrameExpected5] = useState<number>(0);
   const [senderR5, setSenderR5] = useState<Frame>(new Frame());
   const [senderBuffer5, setSenderBuffer5] = useState<Packet[]>(() => {
     let result = [];
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < MAX_SEQ + 1; i++) {
       result.push(new Packet());
     }
     return result;
@@ -188,12 +190,12 @@ export function Protocol5() {
       let s = new Frame();
       s.info = buffer[nextFrameToSend];
       s.seq = nextFrameToSend;
-      s.ack = (frameExpected + 7) % (7 + 1);
+      s.ack = (frameExpected + MAX_SEQ) % (MAX_SEQ + 1);
       setDataLinkToPhysical(dataLinkToPhysical.concat([s]));
       setRow(42);
     } else if (row === 42) {
       // inc(next_frame_to_send);
-      setNextFrameToSend((nextFrameToSend + 1) % (7 + 1));
+      setNextFrameToSend((nextFrameToSend + 1) % (MAX_SEQ + 1));
       setRow(43);
     } else if (row === 43) {
       // break;
@@ -216,7 +218,7 @@ export function Protocol5() {
       setRow(51);
     } else if (row === 51) {
       // inc(frame_expected);
-      setFrameExpected((frameExpected + 1) % (7 + 1));
+      setFrameExpected((frameExpected + 1) % (MAX_SEQ + 1));
       setRow(52);
     } else if (row === 52) {
       // }
@@ -240,7 +242,7 @@ export function Protocol5() {
       setRow(58);
     } else if (row === 58) {
       // inc(ack_expected);
-      setAckExpected((ackExpected + 1) % (7 + 1));
+      setAckExpected((ackExpected + 1) % (MAX_SEQ + 1));
       setRow(59);
     } else if (row === 59) {
       // }
@@ -269,12 +271,12 @@ export function Protocol5() {
       let s = new Frame();
       s.info = buffer[nextFrameToSend];
       s.seq = nextFrameToSend;
-      s.ack = (frameExpected + 7) % (7 + 1);
+      s.ack = (frameExpected + MAX_SEQ) % (MAX_SEQ + 1);
       setDataLinkToPhysical(dataLinkToPhysical.concat([s]));
       setRow(70);
     } else if (row === 70) {
       // inc(next_frame_to_send);
-      setNextFrameToSend((nextFrameToSend + 1) % (7 + 1));
+      setNextFrameToSend((nextFrameToSend + 1) % (MAX_SEQ + 1));
       setRow(71);
     } else if (row === 71) {
       // }
@@ -289,7 +291,7 @@ export function Protocol5() {
       setRow(73);
     } else if (row === 73) {
       // if (nbuffered < MAX_SEQ)
-      if (nBuffered < 7) {
+      if (nBuffered < MAX_SEQ) {
         setRow(74);
       } else {
         setRow(76);
@@ -334,7 +336,7 @@ export function Protocol5() {
   const [receiverR5, setReceiverR5] = useState<Frame>(new Frame());
   const [receiverBuffer5, setReceiverBuffer5] = useState<Packet[]>(() => {
     let result = [];
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < MAX_SEQ + 1; i++) {
       result.push(new Packet());
     }
     return result;
@@ -434,12 +436,12 @@ export function Protocol5() {
       let s = new Frame();
       s.info = buffer[nextFrameToSend];
       s.seq = nextFrameToSend;
-      s.ack = (frameExpected + 7) % (7 + 1);
+      s.ack = (frameExpected + MAX_SEQ) % (MAX_SEQ + 1);
       setDataLinkToPhysical(dataLinkToPhysical.concat([s]));
       setRow(42);
     } else if (row === 42) {
       // inc(next_frame_to_send);
-      setNextFrameToSend((nextFrameToSend + 1) % (7 + 1));
+      setNextFrameToSend((nextFrameToSend + 1) % (MAX_SEQ + 1));
       setRow(43);
     } else if (row === 43) {
       // break;
@@ -462,7 +464,7 @@ export function Protocol5() {
       setRow(51);
     } else if (row === 51) {
       // inc(frame_expected);
-      setFrameExpected((frameExpected + 1) % (7 + 1));
+      setFrameExpected((frameExpected + 1) % (MAX_SEQ + 1));
       setRow(52);
     } else if (row === 52) {
       // }
@@ -486,7 +488,7 @@ export function Protocol5() {
       setRow(58);
     } else if (row === 58) {
       // inc(ack_expected);
-      setAckExpected((ackExpected + 1) % (7 + 1));
+      setAckExpected((ackExpected + 1) % (MAX_SEQ + 1));
       setRow(59);
     } else if (row === 59) {
       // }
@@ -515,12 +517,12 @@ export function Protocol5() {
       let s = new Frame();
       s.info = buffer[nextFrameToSend];
       s.seq = nextFrameToSend;
-      s.ack = (frameExpected + 7) % (7 + 1);
+      s.ack = (frameExpected + MAX_SEQ) % (MAX_SEQ + 1);
       setDataLinkToPhysical(dataLinkToPhysical.concat([s]));
       setRow(70);
     } else if (row === 70) {
       // inc(next_frame_to_send);
-      setNextFrameToSend((nextFrameToSend + 1) % (7 + 1));
+      setNextFrameToSend((nextFrameToSend + 1) % (MAX_SEQ + 1));
       setRow(71);
     } else if (row === 71) {
       // }
@@ -535,7 +537,7 @@ export function Protocol5() {
       setRow(73);
     } else if (row === 73) {
       // if (nbuffered < MAX_SEQ)
-      if (nBuffered < 7) {
+      if (nBuffered < MAX_SEQ) {
         setRow(74);
       } else {
         setRow(76);
@@ -575,7 +577,6 @@ export function Protocol5() {
   }, []);
 
   return <Box>
-
     <Grid item xs={12}>
       <Paper sx={{
         padding: '30px',
