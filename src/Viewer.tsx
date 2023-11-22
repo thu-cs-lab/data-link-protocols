@@ -276,10 +276,10 @@ export function Viewer(props: ViewerProps) {
             网络层
           </Typography>
           <Typography>
-            你可以在这里输入载荷的内容，点击发送，模拟发送方网络层要发送数据的情况：
+            你可以在这里输入有效载荷的内容，点击发送，模拟发送方网络层要发送数据的情况：
           </Typography>
           <p></p>
-          <TextField label="载荷" variant="outlined" fullWidth onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+          <TextField label="有效载荷" variant="outlined" fullWidth onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             setSenderNetworkInput(event.target.value);
           }} />
           <p></p>
@@ -371,10 +371,10 @@ export function Viewer(props: ViewerProps) {
           {
             props.hideReceiverNetworkInput ? null : <Box>
               <Typography>
-                你可以在这里输入载荷的内容，点击发送，模拟接收方网络层要发送数据的情况：
+                你可以在这里输入有效载荷的内容，点击发送，模拟接收方网络层要发送数据的情况：
               </Typography>
               <p></p>
-              <TextField label="载荷" variant="outlined" fullWidth onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              <TextField label="有效载荷" variant="outlined" fullWidth onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 setReceiverNetworkInput(event.target.value);
               }} />
               <p></p>
