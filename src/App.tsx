@@ -577,7 +577,7 @@ function Viewer(props: ViewerProps) {
   </Grid>
 }
 
-function App() {
+function Protocol1() {
   // frame s;
   const [senderS1, setSenderS1] = useState<Frame>(new Frame());
   // packet buffer;
@@ -704,6 +704,42 @@ function App() {
     }
   }, []);
 
+  return <Box>
+    <Grid item xs={12}>
+      <Paper sx={{
+        padding: '30px',
+      }}>
+        <Typography variant="h4">
+          协议一：乌托邦协议（Utopia） Protocol 1 (Utopia)
+        </Typography>
+        <Typography>
+          协议一提供了从发送方到接收方的单向数据传输。协议一假设了传输通道是无差错的，并且接收方可以任意快地处理输入数据。因此，发送方只需要循环发送数据，多快都可以。Protocol 1 (Utopia) provides for data transmission in one direction only, from sender to receiver. The communication channel is assumed to be error free and the receiver is assumed to be able to process all the input infinitely quickly. Consequently, the sender just sits in a loop pumping data out onto the line as fast as it can.
+        </Typography>
+      </Paper>
+    </Grid>
+    <Viewer
+      initialSenderRow={3} senderCode={senderCode1}
+      stepSender={stepSender1} canStepSender={canStepSender1}
+      senderLocals={
+        [`s: ${senderS1}`, `buffer: ${senderBuffer1}`]
+      }
+      initialReceiverRow={3} receiverCode={receiverCode1}
+      stepReceiver={stepReceiver1} canStepReceiver={canStepReceiver1}
+      receiverLocals={
+        [`r: ${receiverR1}`, `event: ${receiverEvent1}`]
+      }
+      hideSenderDataLinkEvent={true}
+      hideSenderPhysicalToDataLink={true}
+      hideSenderDataLinkToNetwork={true}
+      hideReceiverDataLinkToPhysical={true}
+      hideReceiverNetworkInput={true}
+      hideReceiverNetworkToDataLink={true}
+      hideAddEventButton={true}
+    ></Viewer>
+  </Box>;
+}
+
+function Protocol2() {
   const [senderS2, setSenderS2] = useState<Frame>(new Frame());
   const [senderBuffer2, setSenderBuffer2] = useState<Packet>(new Packet());
   const [senderEvent2, setSenderEvent2] = useState<Event | undefined>();
@@ -852,6 +888,39 @@ function App() {
     }
   }, []);
 
+  return <Box>
+    <Grid item xs={12}>
+      <Paper sx={{
+        padding: '30px',
+      }}>
+        <Typography variant="h4">
+          协议二：停止-等待协议（Stop-and-Wait） Protocol 2 (Stop-and-wait)
+        </Typography>
+        <Typography>
+          协议二（停止-等待，简称停等协议）也提供了从发送端到接收端的单向数据流。与协议一一样，依然假设通信信道无差错。但是，这次接收端只有有限的缓冲区容量和有限的处理速度，因此协议必须明确防止发送端以快于接收端能处理的速度，向接收端发送数据。Protocol 2 (Stop-and-wait) also provides for a one-directional flow of data from sender to receiver. The communication channel is once again assumed to be error free, as in protocol 1. However, this time the receiver has only a finite buffer capacity and a finite processing speed, so the protocol must explicitly prevent the sender from flooding the receiver with data faster than it can be handled.
+        </Typography>
+      </Paper>
+    </Grid>
+    <Viewer
+      initialSenderRow={4} senderCode={senderCode2}
+      stepSender={stepSender2} canStepSender={canStepSender2}
+      senderLocals={
+        [`s: ${senderS2}`, `buffer: ${senderBuffer2}`, `event: ${senderEvent2}`]
+      }
+      initialReceiverRow={3} receiverCode={receiverCode2}
+      stepReceiver={stepReceiver2} canStepReceiver={canStepReceiver2}
+      receiverLocals={
+        [`r: ${receiverR2}`, `s: ${receiverS2}`, `event: ${receiverEvent2}`]
+      }
+      hideSenderDataLinkToNetwork={true}
+      hideReceiverNetworkInput={true}
+      hideReceiverNetworkToDataLink={true}
+      hideAddEventButton={true}
+    ></Viewer>
+  </Box>;
+}
+
+function Protocol3() {
   const [senderNextFrameToSend3, setSenderNextFrameToSend3] = useState<number>(0);
   const [senderS3, setSenderS3] = useState<Frame>(new Frame());
   const [senderBuffer3, setSenderBuffer3] = useState<Packet>(new Packet());
@@ -1120,6 +1189,39 @@ function App() {
     }
   }, []);
 
+  return <Box>
+    <Grid item xs={12}>
+      <Paper sx={{
+        padding: '30px',
+      }}>
+        <Typography variant="h4">
+          协议三：自动重复请求（ARQ，Automatic Repeat reQuest）或带有重传的肯定确认（PAR，Positive Acknowledgement with Retransmission） Protocol 3 (ARQ, Automatic Repeat reQuest or PAR, Positive Acknowledgement with Retransmission)
+        </Typography>
+        <Typography>
+          协议三实现了不可靠信道上的单向数据传输。Protocol 3 (PAR) allows unidirectional data flow over an unreliable channel.
+        </Typography>
+      </Paper>
+    </Grid>
+    <Viewer
+      initialSenderRow={6} senderCode={senderCode3}
+      stepSender={stepSender3} canStepSender={canStepSender3}
+      senderLocals={
+        [`next_frame_to_send: ${senderNextFrameToSend3}`, `s: ${senderS3}`, `buffer: ${senderBuffer3}`, `event: ${senderEvent3}`]
+      }
+      initialReceiverRow={5} receiverCode={receiverCode3}
+      stepReceiver={stepReceiver3} canStepReceiver={canStepReceiver3}
+      receiverLocals={
+        [`frame_expected: ${receiverFrameExpected3}`, `r: ${receiverR3}`, `s: ${receiverS3}`, `event: ${receiverEvent3}`]
+      }
+      hideSenderDataLinkToNetwork={true}
+      hideReceiverNetworkInput={true}
+      hideReceiverNetworkToDataLink={true}
+    ></Viewer>
+
+  </Box>;
+}
+
+function Protocol4() {
   const [senderNextFrameToSend4, setSenderNextFrameToSend4] = useState<number>(0);
   const [senderFrameExpected4, setSenderFrameExpected4] = useState<number>(0);
   const [senderR4, setSenderR4] = useState<Frame>(new Frame());
@@ -1507,6 +1609,35 @@ function App() {
     }
   }, []);
 
+  return <Box>
+    <Grid item xs={12}>
+      <Paper sx={{
+        padding: '30px',
+      }}>
+        <Typography variant="h4">
+          协议四：滑动窗口（Sliding Window） Protocol 4 (Sliding window)
+        </Typography>
+        <Typography>
+          协议四实现了双向数据传输。Protocol 4 (Sliding window) is bidirectional.
+        </Typography>
+      </Paper>
+    </Grid>
+    <Viewer
+      initialSenderRow={6} senderCode={senderCode4}
+      stepSender={stepSender4} canStepSender={canStepSender4}
+      senderLocals={
+        [`next_frame_to_send: ${senderNextFrameToSend4}`, `frame_expected: ${senderFrameExpected4}`, `r: ${senderR4}`, `s: ${senderS4}`, `buffer: ${senderBuffer4}`, `event: ${senderEvent4}`]
+      }
+      initialReceiverRow={6} receiverCode={receiverCode4}
+      stepReceiver={stepReceiver4} canStepReceiver={canStepReceiver4}
+      receiverLocals={
+        [`next_frame_to_send: ${receiverNextFrameToSend4}`, `frame_expected: ${receiverFrameExpected4}`, `r: ${receiverR4}`, `s: ${receiverS4}`, `buffer: ${receiverBuffer4}`, `event: ${receiverEvent4}`]
+      }
+    ></Viewer>
+  </Box>;
+}
+
+function Protocol5() {
   const [senderNextFrameToSend5, setSenderNextFrameToSend5] = useState<number>(0);
   const [senderAckExpected5, setSenderAckExpected5] = useState<number>(0);
   const [senderFrameExpected5, setSenderFrameExpected5] = useState<number>(0);
@@ -2077,6 +2208,51 @@ function App() {
     }
   }, []);
 
+  return <Box>
+
+    <Grid item xs={12}>
+      <Paper sx={{
+        padding: '30px',
+      }}>
+        <Typography variant="h4">
+          协议五：回退 N 协议（Go-back-n） Protocol 5 (Go-back-n)
+        </Typography>
+        <Typography>
+          协议五允许有多个 frame 同时在传输。发送方可以在没收到 ack 的情况下，发送最多 MAX_SEQ 个 frame。此外，和前面协议不同的是，协议五不再假设网络层一直会有新的 packet。当网络层有新的 packet 要发送的时候，会触发 network_layer_ready 事件。Protocol 5 (Go-back-n) allows multiple outstanding frames. The sender may transmit up to MAX_SEQ frames without waiting for an ack. In addition, unlike in the previous protocols, the network layer is not assumed to have a new packet all the time. Instead, the network layer causes a network layer ready event when there is a packet to send.
+        </Typography>
+      </Paper>
+    </Grid>
+    <Viewer
+      initialSenderRow={28} senderCode={senderCode5}
+      stepSender={stepSender5} canStepSender={canStepSender5}
+      senderLocals={
+        [`next_frame_to_send: ${senderNextFrameToSend5}`,
+        `ack_expected: ${senderAckExpected5}`,
+        `frame_expected: ${senderFrameExpected5}`,
+        `r: ${senderR5}`,
+        `buffer: ${senderBuffer5}`,
+        `nbuffered: ${senderNBuffered5}`,
+        `i: ${senderI5}`,
+        `event: ${senderEvent5}`]
+      }
+      initialReceiverRow={28} receiverCode={receiverCode5}
+      stepReceiver={stepReceiver5} canStepReceiver={canStepReceiver5}
+      receiverLocals={
+        [`next_frame_to_send: ${receiverNextFrameToSend5}`,
+        `ack_expected: ${receiverAckExpected5}`,
+        `frame_expected: ${receiverFrameExpected5}`,
+        `r: ${receiverR5}`,
+        `buffer: ${receiverBuffer5}`,
+        `nbuffered: ${receiverNBuffered5}`,
+        `i: ${receiverI5}`,
+        `event: ${receiverEvent5}`]
+      }
+    ></Viewer>
+  </Box>;
+}
+
+function App() {
+
   return (
     <Container maxWidth={false}>
       <Grid container spacing={2}>
@@ -2092,154 +2268,11 @@ function App() {
             </Typography>
           </Paper>
         </Grid>
-        <Grid item xs={12}>
-          <Paper sx={{
-            padding: '30px',
-          }}>
-            <Typography variant="h4">
-              协议一：乌托邦协议（Utopia） Protocol 1 (Utopia)
-            </Typography>
-            <Typography>
-              协议一提供了从发送方到接收方的单向数据传输。协议一假设了传输通道是无差错的，并且接收方可以任意快地处理输入数据。因此，发送方只需要循环发送数据，多快都可以。Protocol 1 (Utopia) provides for data transmission in one direction only, from sender to receiver. The communication channel is assumed to be error free and the receiver is assumed to be able to process all the input infinitely quickly. Consequently, the sender just sits in a loop pumping data out onto the line as fast as it can.
-            </Typography>
-          </Paper>
-        </Grid>
-        <Viewer
-          initialSenderRow={3} senderCode={senderCode1}
-          stepSender={stepSender1} canStepSender={canStepSender1}
-          senderLocals={
-            [`s: ${senderS1}`, `buffer: ${senderBuffer1}`]
-          }
-          initialReceiverRow={3} receiverCode={receiverCode1}
-          stepReceiver={stepReceiver1} canStepReceiver={canStepReceiver1}
-          receiverLocals={
-            [`r: ${receiverR1}`, `event: ${receiverEvent1}`]
-          }
-          hideSenderDataLinkEvent={true}
-          hideSenderPhysicalToDataLink={true}
-          hideSenderDataLinkToNetwork={true}
-          hideReceiverDataLinkToPhysical={true}
-          hideReceiverNetworkInput={true}
-          hideReceiverNetworkToDataLink={true}
-          hideAddEventButton={true}
-        ></Viewer>
-        <Grid item xs={12}>
-          <Paper sx={{
-            padding: '30px',
-          }}>
-            <Typography variant="h4">
-              协议二：停止-等待协议（Stop-and-Wait） Protocol 2 (Stop-and-wait)
-            </Typography>
-            <Typography>
-              协议二（停止-等待，简称停等协议）也提供了从发送端到接收端的单向数据流。与协议一一样，依然假设通信信道无差错。但是，这次接收端只有有限的缓冲区容量和有限的处理速度，因此协议必须明确防止发送端以快于接收端能处理的速度，向接收端发送数据。Protocol 2 (Stop-and-wait) also provides for a one-directional flow of data from sender to receiver. The communication channel is once again assumed to be error free, as in protocol 1. However, this time the receiver has only a finite buffer capacity and a finite processing speed, so the protocol must explicitly prevent the sender from flooding the receiver with data faster than it can be handled.
-            </Typography>
-          </Paper>
-        </Grid>
-        <Viewer
-          initialSenderRow={4} senderCode={senderCode2}
-          stepSender={stepSender2} canStepSender={canStepSender2}
-          senderLocals={
-            [`s: ${senderS2}`, `buffer: ${senderBuffer2}`, `event: ${senderEvent2}`]
-          }
-          initialReceiverRow={3} receiverCode={receiverCode2}
-          stepReceiver={stepReceiver2} canStepReceiver={canStepReceiver2}
-          receiverLocals={
-            [`r: ${receiverR2}`, `s: ${receiverS2}`, `event: ${receiverEvent2}`]
-          }
-          hideSenderDataLinkToNetwork={true}
-          hideReceiverNetworkInput={true}
-          hideReceiverNetworkToDataLink={true}
-          hideAddEventButton={true}
-        ></Viewer>
-        <Grid item xs={12}>
-          <Paper sx={{
-            padding: '30px',
-          }}>
-            <Typography variant="h4">
-              协议三：自动重复请求（ARQ，Automatic Repeat reQuest）或带有重传的肯定确认（PAR，Positive Acknowledgement with Retransmission） Protocol 3 (ARQ, Automatic Repeat reQuest or PAR, Positive Acknowledgement with Retransmission)
-            </Typography>
-            <Typography>
-              协议三实现了不可靠信道上的单向数据传输。Protocol 3 (PAR) allows unidirectional data flow over an unreliable channel.
-            </Typography>
-          </Paper>
-        </Grid>
-        <Viewer
-          initialSenderRow={6} senderCode={senderCode3}
-          stepSender={stepSender3} canStepSender={canStepSender3}
-          senderLocals={
-            [`next_frame_to_send: ${senderNextFrameToSend3}`, `s: ${senderS3}`, `buffer: ${senderBuffer3}`, `event: ${senderEvent3}`]
-          }
-          initialReceiverRow={5} receiverCode={receiverCode3}
-          stepReceiver={stepReceiver3} canStepReceiver={canStepReceiver3}
-          receiverLocals={
-            [`frame_expected: ${receiverFrameExpected3}`, `r: ${receiverR3}`, `s: ${receiverS3}`, `event: ${receiverEvent3}`]
-          }
-          hideSenderDataLinkToNetwork={true}
-          hideReceiverNetworkInput={true}
-          hideReceiverNetworkToDataLink={true}
-        ></Viewer>
-        <Grid item xs={12}>
-          <Paper sx={{
-            padding: '30px',
-          }}>
-            <Typography variant="h4">
-              协议四：滑动窗口（Sliding Window） Protocol 4 (Sliding window)
-            </Typography>
-            <Typography>
-              协议四实现了双向数据传输。Protocol 4 (Sliding window) is bidirectional.
-            </Typography>
-          </Paper>
-        </Grid>
-        <Viewer
-          initialSenderRow={6} senderCode={senderCode4}
-          stepSender={stepSender4} canStepSender={canStepSender4}
-          senderLocals={
-            [`next_frame_to_send: ${senderNextFrameToSend4}`, `frame_expected: ${senderFrameExpected4}`, `r: ${senderR4}`, `s: ${senderS4}`, `buffer: ${senderBuffer4}`, `event: ${senderEvent4}`]
-          }
-          initialReceiverRow={6} receiverCode={receiverCode4}
-          stepReceiver={stepReceiver4} canStepReceiver={canStepReceiver4}
-          receiverLocals={
-            [`next_frame_to_send: ${receiverNextFrameToSend4}`, `frame_expected: ${receiverFrameExpected4}`, `r: ${receiverR4}`, `s: ${receiverS4}`, `buffer: ${receiverBuffer4}`, `event: ${receiverEvent4}`]
-          }
-        ></Viewer>
-        <Grid item xs={12}>
-          <Paper sx={{
-            padding: '30px',
-          }}>
-            <Typography variant="h4">
-              协议五：回退 N 协议（Go-back-n） Protocol 5 (Go-back-n)
-            </Typography>
-            <Typography>
-              协议五允许有多个 frame 同时在传输。发送方可以在没收到 ack 的情况下，发送最多 MAX_SEQ 个 frame。此外，和前面协议不同的是，协议五不再假设网络层一直会有新的 packet。当网络层有新的 packet 要发送的时候，会触发 network_layer_ready 事件。Protocol 5 (Go-back-n) allows multiple outstanding frames. The sender may transmit up to MAX_SEQ frames without waiting for an ack. In addition, unlike in the previous protocols, the network layer is not assumed to have a new packet all the time. Instead, the network layer causes a network layer ready event when there is a packet to send.
-            </Typography>
-          </Paper>
-        </Grid>
-        <Viewer
-          initialSenderRow={28} senderCode={senderCode5}
-          stepSender={stepSender5} canStepSender={canStepSender5}
-          senderLocals={
-            [`next_frame_to_send: ${senderNextFrameToSend5}`,
-            `ack_expected: ${senderAckExpected5}`,
-            `frame_expected: ${senderFrameExpected5}`,
-            `r: ${senderR5}`,
-            `buffer: ${senderBuffer5}`,
-            `nbuffered: ${senderNBuffered5}`,
-            `i: ${senderI5}`,
-            `event: ${senderEvent5}`]
-          }
-          initialReceiverRow={28} receiverCode={receiverCode5}
-          stepReceiver={stepReceiver5} canStepReceiver={canStepReceiver5}
-          receiverLocals={
-            [`next_frame_to_send: ${receiverNextFrameToSend5}`,
-            `ack_expected: ${receiverAckExpected5}`,
-            `frame_expected: ${receiverFrameExpected5}`,
-            `r: ${receiverR5}`,
-            `buffer: ${receiverBuffer5}`,
-            `nbuffered: ${receiverNBuffered5}`,
-            `i: ${receiverI5}`,
-            `event: ${receiverEvent5}`]
-          }
-        ></Viewer>
+        <Protocol1 />
+        <Protocol2 />
+        <Protocol3 />
+        <Protocol4 />
+        <Protocol5 />
       </Grid>
     </Container>
   );
