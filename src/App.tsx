@@ -435,28 +435,34 @@ function Viewer(props: ViewerProps) {
           <Typography variant="h5">
             数据链路层
           </Typography>
-          <Typography>
-            发送方代码：
-          </Typography>
-          <SyntaxHighlighter language="javascript" style={style}>
-            {senderCode}
-          </SyntaxHighlighter>
-          <Button variant="contained" onClick={() => props.stepSender(state)} disabled={props.canStepSender(state) !== undefined}>下一步</Button>
-          <Button variant="contained" onClick={fastForwardSender} disabled={props.canStepSender(state) !== undefined}>下一步直到无法立即继续</Button>
-          <Typography>
-            {props.canStepSender(state)}
-          </Typography>
-          <MyList description='局部变量：'
-            entries={props.senderLocals}></MyList>
-          <MyList description='以下是数据链路层尚未处理的事件：'
-            hide={props.hideSenderDataLinkEvent}
-            entries={senderDataLinkEvent}></MyList>
-          {
-            props.hideAddEventButton ? null : <Box>
-              <Button variant="contained" onClick={addSenderChecksumErrorEvent}>添加 Checksum Error 事件</Button>
-              <Button variant="contained" onClick={addSenderTimeoutEvent}>添加 Timeout 事件</Button>
-            </Box>
-          }
+          <Grid container spacing={2}>
+            <Grid item xs={8}>
+              <Typography>
+                发送方代码：
+              </Typography>
+              <SyntaxHighlighter language="javascript" style={style}>
+                {senderCode}
+              </SyntaxHighlighter>
+            </Grid>
+            <Grid item xs={4}>
+              <Button variant="contained" onClick={() => props.stepSender(state)} disabled={props.canStepSender(state) !== undefined}>下一步</Button>
+              <Button variant="contained" onClick={fastForwardSender} disabled={props.canStepSender(state) !== undefined}>下一步直到无法立即继续</Button>
+              <Typography>
+                {props.canStepSender(state)}
+              </Typography>
+              <MyList description='局部变量：'
+                entries={props.senderLocals}></MyList>
+              <MyList description='以下是数据链路层尚未处理的事件：'
+                hide={props.hideSenderDataLinkEvent}
+                entries={senderDataLinkEvent}></MyList>
+              {
+                props.hideAddEventButton ? null : <Box>
+                  <Button variant="contained" onClick={addSenderChecksumErrorEvent}>添加 Checksum Error 事件</Button>
+                  <Button variant="contained" onClick={addSenderTimeoutEvent}>添加 Timeout 事件</Button>
+                </Box>
+              }
+            </Grid>
+          </Grid>
         </Paper>
         <Paper sx={style2}>
           <Typography variant="h5">
@@ -501,27 +507,33 @@ function Viewer(props: ViewerProps) {
           <Typography variant="h5">
             数据链路层
           </Typography>
-          <Typography>
-            接收方代码：
-          </Typography>
-          <SyntaxHighlighter language="javascript" style={style}>
-            {receiverCode}
-          </SyntaxHighlighter>
-          <Button variant="contained" onClick={() => props.stepReceiver(state)} disabled={props.canStepReceiver(state) !== undefined}>下一步</Button>
-          <Button variant="contained" onClick={fastForwardReceiver} disabled={props.canStepReceiver(state) !== undefined}>下一步直到无法立即继续</Button>
-          <Typography>
-            {props.canStepReceiver(state)}
-          </Typography>
-          <MyList description='局部变量：'
-            entries={props.receiverLocals}></MyList>
-          <MyList description='以下是数据链路层尚未处理的事件：'
-            entries={receiverDataLinkEvent}></MyList>
-          {
-            props.hideAddEventButton ? null : <Box>
-              <Button variant="contained" onClick={addReceiverChecksumErrorEvent}>添加 Checksum Error 事件</Button>
-              <Button variant="contained" onClick={addReceiverTimeoutEvent}>添加 Timeout 事件</Button>
-            </Box>
-          }
+          <Grid container spacing={2}>
+            <Grid item xs={8}>
+              <Typography>
+                接收方代码：
+              </Typography>
+              <SyntaxHighlighter language="javascript" style={style}>
+                {receiverCode}
+              </SyntaxHighlighter>
+            </Grid>
+            <Grid item xs={4}>
+              <Button variant="contained" onClick={() => props.stepReceiver(state)} disabled={props.canStepReceiver(state) !== undefined}>下一步</Button>
+              <Button variant="contained" onClick={fastForwardReceiver} disabled={props.canStepReceiver(state) !== undefined}>下一步直到无法立即继续</Button>
+              <Typography>
+                {props.canStepReceiver(state)}
+              </Typography>
+              <MyList description='局部变量：'
+                entries={props.receiverLocals}></MyList>
+              <MyList description='以下是数据链路层尚未处理的事件：'
+                entries={receiverDataLinkEvent}></MyList>
+              {
+                props.hideAddEventButton ? null : <Box>
+                  <Button variant="contained" onClick={addReceiverChecksumErrorEvent}>添加 Checksum Error 事件</Button>
+                  <Button variant="contained" onClick={addReceiverTimeoutEvent}>添加 Timeout 事件</Button>
+                </Box>
+              }
+            </Grid>
+          </Grid>
         </Paper>
         <Paper sx={style2}>
           <Typography variant="h5">
@@ -2043,7 +2055,7 @@ function App() {
   }, []);
 
   return (
-    <Container>
+    <Container maxWidth={false}>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Paper sx={{
