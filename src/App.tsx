@@ -1,5 +1,5 @@
 import './App.css';
-import { Box, Container, Grid, Paper, Typography } from '@mui/material';
+import { Container, Grid, Link, Paper, Typography } from '@mui/material';
 import { Protocol1 } from './Protocol1';
 import { Protocol2 } from './Protocol2';
 import { Protocol3 } from './Protocol3';
@@ -25,6 +25,9 @@ function App() {
             </Typography>
             <Typography>
               注：本模拟器没有引入 Timer，需要你来手动触发 Timeout 事件。
+            </Typography>
+            <Typography>
+              源代码：<Link href="https://github.com/thu-cs-lab/data-link-protocols">https://github.com/thu-cs-lab/data-link-protocols</Link>，欢迎提交贡献！
             </Typography>
           </Paper>
         </Grid>
