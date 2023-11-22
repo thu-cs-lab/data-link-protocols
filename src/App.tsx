@@ -5,6 +5,7 @@ import { Protocol2 } from './Protocol2';
 import { Protocol3 } from './Protocol3';
 import { Protocol4 } from './Protocol4';
 import { Protocol5 } from './Protocol5';
+import { Protocol6 } from './Protocol6';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Protocol3 />
         <Protocol4 />
         <Protocol5 />
+        <Protocol6 />
       </Grid>
     </Container>
   );

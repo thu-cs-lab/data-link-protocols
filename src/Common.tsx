@@ -41,11 +41,18 @@ export class Packet {
   }
 }
 
+export enum FrameKind {
+  Data = "Data",
+  Ack = "Ack",
+  Nak = "Nak"
+}
+
 export class Frame {
   constructor(
     public info?: Packet,
     public seq?: number,
-    public ack?: number
+    public ack?: number,
+    public kind?: FrameKind
   ) { }
 
   public withInfo = (info: Packet): Frame => {
@@ -66,6 +73,12 @@ export class Frame {
     return s;
   }
 
+  public withKind = (kind: FrameKind): Frame => {
+    const s = this.clone();
+    s.kind = kind;
+    return s;
+  }
+
   public toString = (): string => {
     let entries = [];
     if (this.info !== undefined) {
@@ -77,12 +90,15 @@ export class Frame {
     if (this.ack !== undefined) {
       entries.push(`ack: ${this.ack}`);
     }
+    if (this.kind !== undefined) {
+      entries.push(`kind: ${this.kind}`);
+    }
 
     return `Frame (${entries.join(", ")})`;
   }
 
   public clone = (): Frame => {
-    return new Frame(this.info?.clone(), this.seq, this.ack);
+    return new Frame(this.info?.clone(), this.seq, this.ack, this.kind);
   }
 }
 
@@ -90,6 +106,7 @@ export enum Event {
   FrameArrival = "Frame Arrival",
   CksumError = "Checksum Error",
   Timeout = "Timeout",
+  AckTimeout = "Ack Timeout",
   NetworkLayerReady = "Network Layer Ready"
 }
 
