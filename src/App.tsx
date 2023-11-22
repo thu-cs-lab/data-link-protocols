@@ -445,7 +445,7 @@ function Viewer(props: ViewerProps) {
                 发送方代码：
               </Typography>
               <SyntaxHighlighter language="javascript" style={style} customStyle={{
-                maxHeight: '600px'
+                maxHeight: '700px'
               }}>
                 {senderCode}
               </SyntaxHighlighter>
@@ -528,7 +528,7 @@ function Viewer(props: ViewerProps) {
                 接收方代码：
               </Typography>
               <SyntaxHighlighter language="javascript" style={style} customStyle={{
-                maxHeight: '600px'
+                maxHeight: '700px'
               }}>
                 {receiverCode}
               </SyntaxHighlighter>
