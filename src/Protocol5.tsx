@@ -5,7 +5,7 @@ import { Frame, Packet, Event, STALL_FROM_NETWORK_LAYER, STALL_FROM_PHYSICAL_LAY
 
 const MAX_SEQ = 7;
 
-export function Protocol() {
+function Protocol() {
   const [nextFrameToSend, setNextFrameToSend] = useState<number>(0);
   const [ackExpected, setAckExpected] = useState<number>(0);
   const [frameExpected, setFrameExpected] = useState<number>(0);
