@@ -29,6 +29,9 @@ function App() {
             <Typography>
               源代码：<Link href="https://github.com/thu-cs-lab/data-link-protocols">https://github.com/thu-cs-lab/data-link-protocols</Link>，欢迎提交贡献！
             </Typography>
+            <Typography>
+              TODO: 模拟物理层的乱序和丢包；重置协议状态；绘制出协议五和协议六的发送和接收窗口；绘制更好看的界面
+            </Typography>
           </Paper>
         </Grid>
         <Protocol1 />
