@@ -110,6 +110,13 @@ export enum Event {
   NetworkLayerReady = "Network Layer Ready"
 }
 
+export type EventType = Event.FrameArrival
+  | Event.CksumError
+  | Event.Timeout
+  | [Event.Timeout, number] // timeout of a sequence number, set oldest_frame in protocol 6
+  | Event.AckTimeout
+  | Event.NetworkLayerReady;
+
 export const STALL_FROM_NETWORK_LAYER = "没有可以从网络层读取的分组";
 export const STALL_FROM_PHYSICAL_LAYER = "没有可以从物理层读取的帧";
 export const STALL_WAIT_FOR_EVENT = "没有新的事件";

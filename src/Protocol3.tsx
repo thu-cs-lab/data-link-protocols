@@ -1,13 +1,13 @@
 import { useCallback, useState } from 'react';
 import { Box, Grid, Paper, Typography } from '@mui/material';
 import { Viewer, ViewerState } from './Viewer';
-import { Frame, Packet, Event, STALL_FROM_NETWORK_LAYER, STALL_FROM_PHYSICAL_LAYER, STALL_WAIT_FOR_EVENT } from './Common';
+import { Frame, Packet, Event, STALL_FROM_NETWORK_LAYER, STALL_FROM_PHYSICAL_LAYER, STALL_WAIT_FOR_EVENT, EventType } from './Common';
 
 export function Protocol3() {
   const [senderNextFrameToSend3, setSenderNextFrameToSend3] = useState<number>(0);
   const [senderS3, setSenderS3] = useState<Frame>(new Frame());
   const [senderBuffer3, setSenderBuffer3] = useState<Packet>(new Packet());
-  const [senderEvent3, setSenderEvent3] = useState<Event | undefined>();
+  const [senderEvent3, setSenderEvent3] = useState<EventType | undefined>();
   const senderCode3 = `
   void sender3(void) {
     seq_nr next_frame_to_send; /* seq number of next outgoing frame */
@@ -155,7 +155,7 @@ export function Protocol3() {
   const [receiverFrameExpected3, setReceiverFrameExpected3] = useState<number>(0);
   const [receiverR3, setReceiverR3] = useState<Frame>(new Frame());
   const [receiverS3, setReceiverS3] = useState<Frame>(new Frame());
-  const [receiverEvent3, setReceiverEvent3] = useState<Event | undefined>();
+  const [receiverEvent3, setReceiverEvent3] = useState<EventType | undefined>();
   const receiverCode3 = `
   void receiver3(void) {
     seq_nr frame_expected;

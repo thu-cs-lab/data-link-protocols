@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Box, Grid, Paper, Typography } from '@mui/material';
 import { Viewer, ViewerState } from './Viewer';
-import { Frame, Packet, Event, STALL_FROM_NETWORK_LAYER, STALL_FROM_PHYSICAL_LAYER, STALL_WAIT_FOR_EVENT } from './Common';
+import { Frame, Packet, Event, STALL_FROM_NETWORK_LAYER, STALL_FROM_PHYSICAL_LAYER, STALL_WAIT_FOR_EVENT, EventType } from './Common';
 
 export function Protocol5() {
   const MAX_SEQ = 7;
@@ -19,7 +19,7 @@ export function Protocol5() {
   });
   const [senderNBuffered5, setSenderNBuffered5] = useState<number>(0);
   const [senderI5, setSenderI5] = useState<number>(0);
-  const [senderEvent5, setSenderEvent5] = useState<Event | undefined>();
+  const [senderEvent5, setSenderEvent5] = useState<EventType | undefined>();
   const senderCode5 = `
   #define MAX_SEQ 7
   static boolean between(seq_nr a, seq_nr b, seq_nr c) {
@@ -343,7 +343,7 @@ export function Protocol5() {
   });
   const [receiverNBuffered5, setReceiverNBuffered5] = useState<number>(0);
   const [receiverI5, setReceiverI5] = useState<number>(0);
-  const [receiverEvent5, setReceiverEvent5] = useState<Event | undefined>();
+  const [receiverEvent5, setReceiverEvent5] = useState<EventType | undefined>();
   const receiverCode5 = senderCode5;
 
   const stepReceiver5 = useCallback((state: ViewerState) => {

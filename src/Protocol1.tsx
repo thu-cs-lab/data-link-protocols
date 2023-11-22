@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Box, Grid, Paper, Typography } from '@mui/material';
 import { Viewer, ViewerState } from './Viewer';
-import { Frame, Packet, Event, STALL_FROM_NETWORK_LAYER, STALL_FROM_PHYSICAL_LAYER, STALL_WAIT_FOR_EVENT } from './Common';
+import { Frame, Packet, STALL_FROM_NETWORK_LAYER, STALL_FROM_PHYSICAL_LAYER, STALL_WAIT_FOR_EVENT, EventType } from './Common';
 
 export function Protocol1() {
   // frame s;
@@ -66,7 +66,7 @@ export function Protocol1() {
   }, []);
 
   const [receiverR1, setReceiverR1] = useState<Frame>(new Frame());
-  const [receiverEvent1, setReceiverEvent1] = useState<Event | undefined>();
+  const [receiverEvent1, setReceiverEvent1] = useState<EventType | undefined>();
   const receiverCode1 = `
   void receiver1(void) {
     frame r;

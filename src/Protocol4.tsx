@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Box, Grid, Paper, Typography } from '@mui/material';
 import { Viewer, ViewerState } from './Viewer';
-import { Frame, Packet, Event, STALL_FROM_NETWORK_LAYER, STALL_FROM_PHYSICAL_LAYER, STALL_WAIT_FOR_EVENT } from './Common';
+import { Frame, Packet, Event, STALL_FROM_NETWORK_LAYER, STALL_FROM_PHYSICAL_LAYER, STALL_WAIT_FOR_EVENT, EventType } from './Common';
 
 export function Protocol4() {
   const [senderNextFrameToSend4, setSenderNextFrameToSend4] = useState<number>(0);
@@ -9,7 +9,7 @@ export function Protocol4() {
   const [senderR4, setSenderR4] = useState<Frame>(new Frame());
   const [senderS4, setSenderS4] = useState<Frame>(new Frame());
   const [senderBuffer4, setSenderBuffer4] = useState<Packet>(new Packet());
-  const [senderEvent4, setSenderEvent4] = useState<Event | undefined>();
+  const [senderEvent4, setSenderEvent4] = useState<EventType | undefined>();
   const senderCode4 = `
   void protocol4(void) {
     seq_nr next_frame_to_send; /* 0 or 1 only */
@@ -220,7 +220,7 @@ export function Protocol4() {
   const [receiverR4, setReceiverR4] = useState<Frame>(new Frame());
   const [receiverS4, setReceiverS4] = useState<Frame>(new Frame());
   const [receiverBuffer4, setReceiverBuffer4] = useState<Packet>(new Packet());
-  const [receiverEvent4, setReceiverEvent4] = useState<Event | undefined>();
+  const [receiverEvent4, setReceiverEvent4] = useState<EventType | undefined>();
   const receiverCode4 = senderCode4;
 
   const stepReceiver4 = useCallback((state: ViewerState) => {

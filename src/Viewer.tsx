@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { Box, Button, Grid, Paper, TextField, Typography } from '@mui/material';
 import { tomorrow as style } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { Event, Packet, Frame, HasToString, AddRowMarker, FastForwarder } from './Common';
+import { Event, Packet, Frame, HasToString, AddRowMarker, FastForwarder, EventType } from './Common';
 import { MyList } from './MyList';
 
 export type ViewerState = {
@@ -17,8 +17,8 @@ export type ViewerState = {
   senderRow: number;
   setSenderRow: (val: number) => void;
 
-  senderDataLinkEvent: Event[];
-  setSenderDataLinkEvent: (val: Event[]) => void;
+  senderDataLinkEvent: EventType[];
+  setSenderDataLinkEvent: (val: EventType[]) => void;
 
   senderDataLinkToNetwork: Packet[];
   setSenderDataLinkToNetwork: (val: Packet[]) => void;
@@ -41,8 +41,8 @@ export type ViewerState = {
   receiverDataLinkToPhysical: Frame[];
   setReceiverDataLinkToPhysical: (val: Frame[]) => void;
 
-  receiverDataLinkEvent: Event[];
-  setReceiverDataLinkEvent: (val: Event[]) => void;
+  receiverDataLinkEvent: EventType[];
+  setReceiverDataLinkEvent: (val: EventType[]) => void;
 
   receiverDataLinkToNetwork: Packet[];
   setReceiverDataLinkToNetwork: (val: Packet[]) => void;
@@ -81,6 +81,7 @@ export type ViewerProps = {
   hideReceiverNetworkInput?: boolean;
   hideAddEventButton?: boolean;
   hideAddAckTimeoutEventButton?: boolean;
+  addOldestFrameToTimeoutEvent?: boolean;
 };
 
 export function Viewer(props: ViewerProps) {
@@ -96,12 +97,14 @@ export function Viewer(props: ViewerProps) {
   // sender data link layer
   const [senderRow, setSenderRow] = useState(props.initialSenderRow);
   const senderCode = AddRowMarker(props.senderCode, senderRow);
-  const [senderDataLinkEvent, setSenderDataLinkEvent] = useState<Event[]>([]);
+  const [senderDataLinkEvent, setSenderDataLinkEvent] = useState<EventType[]>([]);
   // sender data link -> sender physical
   const [senderDataLinkToPhysical, setSenderDataLinkToPhysical] = useState<Frame[]>([]);
   // sender physical -> sender data link
   const [senderPhysicalToDataLink, setSenderPhysicalToDataLink] = useState<Frame[]>([]);
-  const addSenderEvent = useCallback((event: Event) => {
+  // user input for timer index
+  const [senderTimerIndex, setSenderTimerIndex] = useState<string>("");
+  const addSenderEvent = useCallback((event: EventType) => {
     setSenderDataLinkEvent(senderDataLinkEvent.concat([event]));
   }, [senderDataLinkEvent]);
   const senderSendNetwork = useCallback(() => {
@@ -123,7 +126,7 @@ export function Viewer(props: ViewerProps) {
   }, [senderDataLinkEvent, senderNetworkToDataLink, senderNetworkEnabled]);
   const senderDisableNetworkLayer = useCallback(() => {
     if (senderNetworkEnabled) {
-      let events: Event[] = [];
+      let events: EventType[] = [];
       for (let event of senderDataLinkEvent) {
         if (event !== Event.NetworkLayerReady) {
           events.push(event);
@@ -142,12 +145,14 @@ export function Viewer(props: ViewerProps) {
   // receiver data link layer
   const [receiverRow, setReceiverRow] = useState(props.initialReceiverRow);
   const receiverCode = AddRowMarker(props.receiverCode, receiverRow);
-  const [receiverDataLinkEvent, setReceiverDataLinkEvent] = useState<Event[]>([]);
+  const [receiverDataLinkEvent, setReceiverDataLinkEvent] = useState<EventType[]>([]);
   // receiver data link -> receiver physical
   const [receiverDataLinkToPhysical, setReceiverDataLinkToPhysical] = useState<Frame[]>([]);
   // receiver data link -> receiver network
   const [receiverDataLinkToNetwork, setReceiverDataLinkToNetwork] = useState<Packet[]>([]);
-  const addReceiverEvent = useCallback((event: Event) => {
+  // user input for timer index
+  const [receiverTimerIndex, setReceiverTimerIndex] = useState<string>("");
+  const addReceiverEvent = useCallback((event: EventType) => {
     setReceiverDataLinkEvent(receiverDataLinkEvent.concat([event]));
   }, [receiverDataLinkEvent]);
 
@@ -176,7 +181,7 @@ export function Viewer(props: ViewerProps) {
   }, [receiverDataLinkEvent, receiverNetworkToDataLink, receiverNetworkEnabled]);
   const receiverDisableNetworkLayer = useCallback(() => {
     if (receiverNetworkEnabled) {
-      let events: Event[] = [];
+      let events: EventType[] = [];
       for (let event of receiverDataLinkEvent) {
         if (event !== Event.NetworkLayerReady) {
           events.push(event);
@@ -320,7 +325,16 @@ export function Viewer(props: ViewerProps) {
                 props.hideAddEventButton ? null : <Box>
                   <Button variant="contained" onClick={() => addSenderEvent(Event.CksumError)}>添加 Checksum Error 事件</Button>
                   <p></p>
-                  <Button variant="contained" onClick={() => addSenderEvent(Event.Timeout)}>添加 Timeout 事件</Button>
+                  {
+                    props.addOldestFrameToTimeoutEvent ?
+                      <Box>
+                        <TextField label="超时 Timer 编号" variant="outlined" fullWidth onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                          setSenderTimerIndex(event.target.value);
+                        }} error={Number.isNaN(parseInt(senderTimerIndex))} helperText="请输入整数" />
+                        <Button variant="contained" disabled={Number.isNaN(parseInt(senderTimerIndex))} onClick={() => addSenderEvent([Event.Timeout, parseInt(senderTimerIndex)])}>添加 Timeout 事件</Button>
+                      </Box> :
+                      <Button variant="contained" onClick={() => addSenderEvent(Event.Timeout)}>添加 Timeout 事件</Button>
+                  }
                   <p></p>
                   {
                     props.hideAddAckTimeoutEventButton ? null :
@@ -408,6 +422,16 @@ export function Viewer(props: ViewerProps) {
                   <Button variant="contained" onClick={() => addReceiverEvent(Event.CksumError)}>添加 Checksum Error 事件</Button>
                   <p></p>
                   <Button variant="contained" onClick={() => addReceiverEvent(Event.Timeout)}>添加 Timeout 事件</Button>
+                  {
+                    props.addOldestFrameToTimeoutEvent ?
+                      <Box>
+                        <TextField label="超时 Timer 编号" variant="outlined" fullWidth onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                          setReceiverTimerIndex(event.target.value);
+                        }} error={Number.isNaN(parseInt(receiverTimerIndex))} helperText="请输入整数" />
+                        <Button variant="contained" disabled={Number.isNaN(parseInt(receiverTimerIndex))} onClick={() => addReceiverEvent([Event.Timeout, parseInt(receiverTimerIndex)])}>添加 Timeout 事件</Button>
+                      </Box> :
+                      <Button variant="contained" onClick={() => addReceiverEvent(Event.Timeout)}>添加 Timeout 事件</Button>
+                  }
                   <p></p>
                   {
                     props.hideAddAckTimeoutEventButton ? null :

@@ -1,12 +1,12 @@
 import { useCallback, useState } from 'react';
 import { Box, Grid, Paper, Typography } from '@mui/material';
 import { Viewer, ViewerState } from './Viewer';
-import { Frame, Packet, Event, STALL_FROM_NETWORK_LAYER, STALL_FROM_PHYSICAL_LAYER, STALL_WAIT_FOR_EVENT, FrameKind } from './Common';
+import { Frame, Packet, Event, STALL_FROM_NETWORK_LAYER, STALL_FROM_PHYSICAL_LAYER, STALL_WAIT_FOR_EVENT, FrameKind, EventType } from './Common';
+
+const MAX_SEQ = 7;
+const NR_BUFS = (MAX_SEQ + 1) / 2;
 
 export function Protocol6() {
-  const MAX_SEQ = 7;
-  const NR_BUFS = (MAX_SEQ + 1) / 2;
-
   const [senderNoNak6, setSenderNoNak6] = useState<boolean>(false);
   const [senderOldestFrame6, setSenderOldestFrame6] = useState<number>(8);
   const [senderAckExpected6, setSenderAckExpected6] = useState<number>(0);
@@ -37,7 +37,7 @@ export function Protocol6() {
     return result;
   });
   const [senderNBuffered6, setSenderNBuffered6] = useState<number>(0);
-  const [senderEvent6, setSenderEvent6] = useState<Event | undefined>();
+  const [senderEvent6, setSenderEvent6] = useState<EventType | undefined>();
   const senderCode6 = `
   #define MAX_SEQ 7 /* should be 2^n - 1*/
   #define NR_BUFS ((MAX_SEQ + 1) / 2)
@@ -222,7 +222,13 @@ export function Protocol6() {
       setRow(45);
     } else if (row === 45 && dataLinkEvent.length > 0) {
       // wait_for_event(&event);
-      setEvent(dataLinkEvent[0]);
+      if (Array.isArray(dataLinkEvent[0])) {
+        // handle timeout with frame number
+        setOldestFrame6(dataLinkEvent[0][1]);
+        setEvent(dataLinkEvent[0][0]);
+      } else {
+        setEvent(dataLinkEvent[0]);
+      }
       setDataLinkEvent(dataLinkEvent.slice(1));
       setRow(46);
     } else if (row === 46) {
@@ -528,7 +534,7 @@ export function Protocol6() {
     return result;
   });
   const [receiverNBuffered6, setReceiverNBuffered6] = useState<number>(0);
-  const [receiverEvent6, setReceiverEvent6] = useState<Event | undefined>();
+  const [receiverEvent6, setReceiverEvent6] = useState<EventType | undefined>();
   const receiverCode6 = senderCode6;
 
   const stepReceiver6 = useCallback((state: ViewerState) => {
@@ -603,7 +609,13 @@ export function Protocol6() {
       setRow(45);
     } else if (row === 45 && dataLinkEvent.length > 0) {
       // wait_for_event(&event);
-      setEvent(dataLinkEvent[0]);
+      if (Array.isArray(dataLinkEvent[0])) {
+        // handle timeout with frame number
+        setOldestFrame6(dataLinkEvent[0][1]);
+        setEvent(dataLinkEvent[0][0]);
+      } else {
+        setEvent(dataLinkEvent[0]);
+      }
       setDataLinkEvent(dataLinkEvent.slice(1));
       setRow(46);
     } else if (row === 46) {
@@ -888,7 +900,7 @@ export function Protocol6() {
           协议六：选择重传协议（Selective repeat） Protocol 6 (Selective repeat)
         </Typography>
         <Typography>
-          协议六允许 frame 乱序传输，但是在传递给网络层的时候是按顺序的。每个发送出去的 frame 都对应了一个 timer。当 timer 超时的时候，只有对应的 frame 会被重新传输，而不像协议五那样，全部重新传输。Protocol 6 (Selective repeat) accepts frames out of order but passes packets to the network layer in order. Associated with each outstanding frame is a timer. When the timer expires, only that frame is retransmitted, not all the outstanding frames, as in protocol 5. 
+          协议六允许 frame 乱序传输，但是在传递给网络层的时候是按顺序的。每个发送出去的 frame 都对应了一个 timer。当 timer 超时的时候，只有对应的 frame 会被重新传输，而不像协议五那样，全部重新传输。Protocol 6 (Selective repeat) accepts frames out of order but passes packets to the network layer in order. Associated with each outstanding frame is a timer. When the timer expires, only that frame is retransmitted, not all the outstanding frames, as in protocol 5.
         </Typography>
       </Paper>
     </Grid>
@@ -929,6 +941,7 @@ export function Protocol6() {
           `nbuffered: ${receiverNBuffered6}`,
           `event: ${receiverEvent6}`]
       }
+      addOldestFrameToTimeoutEvent={true}
     ></Viewer>
   </Box>;
 }

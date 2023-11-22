@@ -1,12 +1,12 @@
 import { useCallback, useState } from 'react';
 import { Box, Grid, Paper, Typography } from '@mui/material';
 import { Viewer, ViewerState } from './Viewer';
-import { Frame, Packet, Event, STALL_FROM_NETWORK_LAYER, STALL_FROM_PHYSICAL_LAYER, STALL_WAIT_FOR_EVENT } from './Common';
+import { Frame, Packet, STALL_FROM_NETWORK_LAYER, STALL_FROM_PHYSICAL_LAYER, STALL_WAIT_FOR_EVENT, EventType } from './Common';
 
 export function Protocol2() {
   const [senderS2, setSenderS2] = useState<Frame>(new Frame());
   const [senderBuffer2, setSenderBuffer2] = useState<Packet>(new Packet());
-  const [senderEvent2, setSenderEvent2] = useState<Event | undefined>();
+  const [senderEvent2, setSenderEvent2] = useState<EventType | undefined>();
   const senderCode2 = `
   void sender2(void) {
     frame s;          /* buffer for an outbound frame */
@@ -80,7 +80,7 @@ export function Protocol2() {
 
   const [receiverR2, setReceiverR2] = useState<Frame>(new Frame());
   const [receiverS2, setReceiverS2] = useState<Frame>(new Frame());
-  const [receiverEvent2, setReceiverEvent2] = useState<Event | undefined>();
+  const [receiverEvent2, setReceiverEvent2] = useState<EventType | undefined>();
   const receiverCode2 = `
   void receiver2(void) {
     frame r, s;       /* buffers for frames */
