@@ -164,7 +164,7 @@ function Protocol() {
   }, []);
 
   const step = useCallback((state: ViewerState) => {
-    const { row, setRow, dataLinkEvent, setDataLinkEvent, dataLinkToPhysical, setDataLinkToPhysical, physicalToDataLink, setPhysicalToDataLink, dataLinkToNetwork, setDataLinkToNetwork, enableNetworkLayer, disableNetworkLayer, networkToDataLink, setNetworkToDataLink } = state;
+    const { row, setRow, dataLinkEvent, setDataLinkEvent, physicalToDataLink, setPhysicalToDataLink, dataLinkToNetwork, setDataLinkToNetwork, enableNetworkLayer, disableNetworkLayer, networkToDataLink, setNetworkToDataLink } = state;
 
     if (row === 38) {
       // enable_network_layer();
@@ -426,7 +426,7 @@ function Protocol() {
     } else if (row === 108) {
       setRow(44);
     }
-  }, [noNak, oldestFrame, ackExpected, nextFrameToSend, frameExpected, tooFar, r, outBuf, inBuf, arrived, nBuffered, event]);
+  }, [noNak, oldestFrame, ackExpected, nextFrameToSend, frameExpected, tooFar, r, outBuf, inBuf, arrived, nBuffered, event, sendFrame]);
 
   const canStep = useCallback((state: ViewerState) => {
     const { row, dataLinkEvent, physicalToDataLink, networkToDataLink } = state;
