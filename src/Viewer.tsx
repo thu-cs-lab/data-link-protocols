@@ -80,6 +80,7 @@ export type ViewerProps = {
   hideReceiverNetworkToDataLink?: boolean;
   hideReceiverNetworkInput?: boolean;
   hideAddEventButton?: boolean;
+  hideAddAckTimeoutEventButton?: boolean;
 };
 
 export function Viewer(props: ViewerProps) {
@@ -100,11 +101,8 @@ export function Viewer(props: ViewerProps) {
   const [senderDataLinkToPhysical, setSenderDataLinkToPhysical] = useState<Frame[]>([]);
   // sender physical -> sender data link
   const [senderPhysicalToDataLink, setSenderPhysicalToDataLink] = useState<Frame[]>([]);
-  const addSenderChecksumErrorEvent = useCallback(() => {
-    setSenderDataLinkEvent(senderDataLinkEvent.concat([Event.CksumError]));
-  }, [senderDataLinkEvent]);
-  const addSenderTimeoutEvent = useCallback(() => {
-    setSenderDataLinkEvent(senderDataLinkEvent.concat([Event.Timeout]));
+  const addSenderEvent = useCallback((event: Event) => {
+    setSenderDataLinkEvent(senderDataLinkEvent.concat([event]));
   }, [senderDataLinkEvent]);
   const senderSendNetwork = useCallback(() => {
     const packet: Packet = new Packet(senderNetworkInput);
@@ -149,11 +147,8 @@ export function Viewer(props: ViewerProps) {
   const [receiverDataLinkToPhysical, setReceiverDataLinkToPhysical] = useState<Frame[]>([]);
   // receiver data link -> receiver network
   const [receiverDataLinkToNetwork, setReceiverDataLinkToNetwork] = useState<Packet[]>([]);
-  const addReceiverChecksumErrorEvent = useCallback(() => {
-    setReceiverDataLinkEvent(receiverDataLinkEvent.concat([Event.CksumError]));
-  }, [receiverDataLinkEvent]);
-  const addReceiverTimeoutEvent = useCallback(() => {
-    setReceiverDataLinkEvent(receiverDataLinkEvent.concat([Event.Timeout]));
+  const addReceiverEvent = useCallback((event: Event) => {
+    setReceiverDataLinkEvent(receiverDataLinkEvent.concat([event]));
   }, [receiverDataLinkEvent]);
 
   // receiver network layer
@@ -323,9 +318,14 @@ export function Viewer(props: ViewerProps) {
                 entries={senderDataLinkEvent}></MyList>
               {
                 props.hideAddEventButton ? null : <Box>
-                  <Button variant="contained" onClick={addSenderChecksumErrorEvent}>添加 Checksum Error 事件</Button>
+                  <Button variant="contained" onClick={() => addSenderEvent(Event.CksumError)}>添加 Checksum Error 事件</Button>
                   <p></p>
-                  <Button variant="contained" onClick={addSenderTimeoutEvent}>添加 Timeout 事件</Button>
+                  <Button variant="contained" onClick={() => addSenderEvent(Event.Timeout)}>添加 Timeout 事件</Button>
+                  <p></p>
+                  {
+                    props.hideAddAckTimeoutEventButton ? null :
+                      <Button variant="contained" onClick={() => addSenderEvent(Event.AckTimeout)}>添加 Ack Timeout 事件</Button>
+                  }
                 </Box>
               }
             </Grid>
@@ -405,9 +405,14 @@ export function Viewer(props: ViewerProps) {
                 entries={receiverDataLinkEvent}></MyList>
               {
                 props.hideAddEventButton ? null : <Box>
-                  <Button variant="contained" onClick={addReceiverChecksumErrorEvent}>添加 Checksum Error 事件</Button>
+                  <Button variant="contained" onClick={() => addReceiverEvent(Event.CksumError)}>添加 Checksum Error 事件</Button>
                   <p></p>
-                  <Button variant="contained" onClick={addReceiverTimeoutEvent}>添加 Timeout 事件</Button>
+                  <Button variant="contained" onClick={() => addReceiverEvent(Event.Timeout)}>添加 Timeout 事件</Button>
+                  <p></p>
+                  {
+                    props.hideAddAckTimeoutEventButton ? null :
+                      <Button variant="contained" onClick={() => addReceiverEvent(Event.AckTimeout)}>添加 Ack Timeout 事件</Button>
+                  }
                 </Box>
               }
             </Grid>

@@ -613,6 +613,7 @@ export function Protocol5() {
         `i: ${receiverI5}`,
         `event: ${receiverEvent5}`]
       }
+      hideAddAckTimeoutEventButton={true}
     ></Viewer>
   </Box>;
 }

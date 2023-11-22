@@ -415,6 +415,7 @@ export function Protocol4() {
       receiverLocals={
         [`next_frame_to_send: ${receiverNextFrameToSend4}`, `frame_expected: ${receiverFrameExpected4}`, `r: ${receiverR4}`, `s: ${receiverS4}`, `buffer: ${receiverBuffer4}`, `event: ${receiverEvent4}`]
       }
+      hideAddAckTimeoutEventButton={true}
     ></Viewer>
   </Box>;
 }

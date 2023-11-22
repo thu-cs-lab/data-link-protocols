@@ -299,6 +299,7 @@ export function Protocol3() {
       hideSenderDataLinkToNetwork={true}
       hideReceiverNetworkInput={true}
       hideReceiverNetworkToDataLink={true}
+      hideAddAckTimeoutEventButton={true}
     ></Viewer>
 
   </Box>;
