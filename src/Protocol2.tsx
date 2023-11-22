@@ -3,11 +3,11 @@ import { Box, Grid, Paper, Typography } from '@mui/material';
 import { Viewer, ViewerState } from './Viewer';
 import { Frame, Packet, STALL_FROM_NETWORK_LAYER, STALL_FROM_PHYSICAL_LAYER, STALL_WAIT_FOR_EVENT, EventType } from './Common';
 
-export function Protocol2() {
-  const [senderS2, setSenderS2] = useState<Frame>(new Frame());
-  const [senderBuffer2, setSenderBuffer2] = useState<Packet>(new Packet());
-  const [senderEvent2, setSenderEvent2] = useState<EventType | undefined>();
-  const senderCode2 = `
+function Sender() {
+  const [s, setS] = useState<Frame>(new Frame());
+  const [buffer, setBuffer] = useState<Packet>(new Packet());
+  const [event, setEvent] = useState<EventType | undefined>();
+  const code = `
   void sender2(void) {
     frame s;          /* buffer for an outbound frame */
     packet buffer;    /* buffer for an outbound packet */
@@ -20,7 +20,7 @@ export function Protocol2() {
     }
   }`;
 
-  const stepSender2 = useCallback((state: ViewerState) => {
+  const step = useCallback((state: ViewerState) => {
     const row = state.senderRow;
     const setRow = state.setSenderRow;
     const networkToDataLink = state.senderNetworkToDataLink;
@@ -29,11 +29,6 @@ export function Protocol2() {
     const setDataLinkToPhysical = state.setSenderDataLinkToPhysical;
     const dataLinkEvent = state.senderDataLinkEvent;
     const setDataLinkEvent = state.setSenderDataLinkEvent;
-    const buffer = senderBuffer2;
-    const setBuffer = setSenderBuffer2;
-    const s = senderS2;
-    const setS = setSenderS2;
-    const setEvent = setSenderEvent2;
 
     if (row === 4) {
       // while (true) {
@@ -60,9 +55,9 @@ export function Protocol2() {
       // }
       setRow(4);
     }
-  }, [senderS2, senderBuffer2]);
+  }, [s, buffer]);
 
-  const canStepSender2 = useCallback((state: ViewerState) => {
+  const canStep = useCallback((state: ViewerState) => {
     const row = state.senderRow;
     const networkToDataLink = state.senderNetworkToDataLink;
     const dataLinkEvent = state.senderDataLinkEvent;
@@ -78,10 +73,22 @@ export function Protocol2() {
     }
   }, []);
 
-  const [receiverR2, setReceiverR2] = useState<Frame>(new Frame());
-  const [receiverS2, setReceiverS2] = useState<Frame>(new Frame());
-  const [receiverEvent2, setReceiverEvent2] = useState<EventType | undefined>();
-  const receiverCode2 = `
+
+  return {
+    initialRow: 4,
+    code: code,
+    step: step,
+    canStep: canStep,
+    locals:
+      [`s: ${s}`, `buffer: ${buffer}`, `event: ${event}`]
+  }
+}
+
+function Receiver() {
+  const [r, setR] = useState<Frame>(new Frame());
+  const [s] = useState<Frame>(new Frame());
+  const [event, setEvent] = useState<EventType | undefined>();
+  const code = `
   void receiver2(void) {
     frame r, s;       /* buffers for frames */
     event_type event; /* frame_arrival is the only possibility */
@@ -93,7 +100,7 @@ export function Protocol2() {
     }
   }`;
 
-  const stepReceiver2 = useCallback((state: ViewerState) => {
+  const step = useCallback((state: ViewerState) => {
     const row = state.receiverRow;
     const setRow = state.setReceiverRow;
     const dataLinkEvent = state.receiverDataLinkEvent;
@@ -104,10 +111,6 @@ export function Protocol2() {
     const setDataLinkToPhysical = state.setReceiverDataLinkToPhysical;
     const physicalToDataLink = state.receiverPhysicalToDataLink;
     const setPhysicalToDataLink = state.setReceiverPhysicalToDataLink;
-    const setEvent = setReceiverEvent2;
-    const r = receiverR2;
-    const setR = setReceiverR2;
-    const s = receiverS2;
 
     if (row === 3) {
       // while (true) {
@@ -134,9 +137,9 @@ export function Protocol2() {
       // }
       setRow(3);
     }
-  }, [receiverR2, receiverS2]);
+  }, [r, s]);
 
-  const canStepReceiver2 = useCallback((state: ViewerState) => {
+  const canStep = useCallback((state: ViewerState) => {
     const row = state.receiverRow;
     const dataLinkEvent = state.receiverDataLinkEvent;
     const physicalToDataLink = state.receiverPhysicalToDataLink;
@@ -152,6 +155,33 @@ export function Protocol2() {
     }
   }, []);
 
+  return {
+    initialRow: 3,
+    code: code,
+    step: step,
+    canStep: canStep,
+    locals:
+      [`r: ${r}`, `s: ${s}`, `event: ${event}`]
+  }
+}
+
+export function Protocol2() {
+  const {
+    initialRow: initialSenderRow,
+    code: senderCode,
+    step: stepSender,
+    canStep: canStepSender,
+    locals: senderLocals
+  } = Sender();
+
+  const {
+    initialRow: initialReceiverRow,
+    code: receiverCode,
+    step: stepReceiver,
+    canStep: canStepReceiver,
+    locals: receiverLocals
+  } = Receiver();
+
   return <Box>
     <Grid item xs={12}>
       <Paper sx={{
@@ -166,16 +196,12 @@ export function Protocol2() {
       </Paper>
     </Grid>
     <Viewer
-      initialSenderRow={4} senderCode={senderCode2}
-      stepSender={stepSender2} canStepSender={canStepSender2}
-      senderLocals={
-        [`s: ${senderS2}`, `buffer: ${senderBuffer2}`, `event: ${senderEvent2}`]
-      }
-      initialReceiverRow={3} receiverCode={receiverCode2}
-      stepReceiver={stepReceiver2} canStepReceiver={canStepReceiver2}
-      receiverLocals={
-        [`r: ${receiverR2}`, `s: ${receiverS2}`, `event: ${receiverEvent2}`]
-      }
+      initialSenderRow={initialSenderRow} senderCode={senderCode}
+      stepSender={stepSender} canStepSender={canStepSender}
+      senderLocals={senderLocals}
+      initialReceiverRow={initialReceiverRow} receiverCode={receiverCode}
+      stepReceiver={stepReceiver} canStepReceiver={canStepReceiver}
+      receiverLocals={receiverLocals}
       hideSenderDataLinkToNetwork={true}
       hideReceiverNetworkInput={true}
       hideReceiverNetworkToDataLink={true}

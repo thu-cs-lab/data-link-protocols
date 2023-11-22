@@ -73,7 +73,7 @@ function Sender() {
 
 function Receiver() {
   const [r, setR] = useState<Frame>(new Frame());
-  const [event, setReceiverEvent1] = useState<EventType | undefined>();
+  const [event, setEvent] = useState<EventType | undefined>();
   const code = `
   void receiver1(void) {
     frame r;
@@ -94,7 +94,6 @@ function Receiver() {
     const setDataLinkToNetwork = state.setReceiverDataLinkToNetwork;
     const physicalToDataLink = state.receiverPhysicalToDataLink;
     const setPhysicalToDataLink = state.setReceiverPhysicalToDataLink;
-    const setEvent = setReceiverEvent1;
 
     if (row === 3) {
       // while (true) {
