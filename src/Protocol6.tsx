@@ -8,7 +8,7 @@ const NR_BUFS = (MAX_SEQ + 1) / 2;
 
 export function Protocol6() {
   const [senderNoNak6, setSenderNoNak6] = useState<boolean>(false);
-  const [senderOldestFrame6, setSenderOldestFrame6] = useState<number>(8);
+  const [senderOldestFrame6, setSenderOldestFrame6] = useState<number>(MAX_SEQ + 1);
   const [senderAckExpected6, setSenderAckExpected6] = useState<number>(0);
   const [senderNextFrameToSend6, setSenderNextFrameToSend6] = useState<number>(0);
   const [senderFrameExpected6, setSenderFrameExpected6] = useState<number>(0);
@@ -505,7 +505,7 @@ export function Protocol6() {
   }, []);
 
   const [receiverNoNak6, setReceiverNoNak6] = useState<boolean>(false);
-  const [receiverOldestFrame6, setReceiverOldestFrame6] = useState<number>(8);
+  const [receiverOldestFrame6, setReceiverOldestFrame6] = useState<number>(MAX_SEQ + 1);
   const [receiverAckExpected6, setReceiverAckExpected6] = useState<number>(0);
   const [receiverNextFrameToSend6, setReceiverNextFrameToSend6] = useState<number>(0);
   const [receiverFrameExpected6, setReceiverFrameExpected6] = useState<number>(0);
