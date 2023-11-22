@@ -3,12 +3,12 @@ import { Box, Grid, Paper, Typography } from '@mui/material';
 import { Viewer, ViewerState } from './Viewer';
 import { Frame, Packet, Event, STALL_FROM_NETWORK_LAYER, STALL_FROM_PHYSICAL_LAYER, STALL_WAIT_FOR_EVENT, EventType } from './Common';
 
-export function Protocol3() {
-  const [senderNextFrameToSend3, setSenderNextFrameToSend3] = useState<number>(0);
-  const [senderS3, setSenderS3] = useState<Frame>(new Frame());
-  const [senderBuffer3, setSenderBuffer3] = useState<Packet>(new Packet());
-  const [senderEvent3, setSenderEvent3] = useState<EventType | undefined>();
-  const senderCode3 = `
+function Sender() {
+  const [nextFrameToSend, setNextFrameToSend] = useState<number>(0);
+  const [s, setS] = useState<Frame>(new Frame());
+  const [buffer, setBuffer] = useState<Packet>(new Packet());
+  const [event, setEvent] = useState<EventType | undefined>();
+  const code = `
   void sender3(void) {
     seq_nr next_frame_to_send; /* seq number of next outgoing frame */
     frame s;                   /* scratch variable */
@@ -34,16 +34,8 @@ export function Protocol3() {
     }
   }`;
 
-  const stepSender3 = useCallback((state: ViewerState) => {
+  const step = useCallback((state: ViewerState) => {
     const { row, setRow, dataLinkEvent, setDataLinkEvent, dataLinkToPhysical, setDataLinkToPhysical, physicalToDataLink, setPhysicalToDataLink, networkToDataLink, setNetworkToDataLink } = state;
-    const buffer = senderBuffer3;
-    const setBuffer = setSenderBuffer3;
-    const s = senderS3;
-    const setS = setSenderS3;
-    const event = senderEvent3;
-    const setEvent = setSenderEvent3;
-    const nextFrameToSend = senderNextFrameToSend3;
-    const setNextFrameToSend = setSenderNextFrameToSend3;
 
     if (row === 6) {
       // next_frame_to_send = 0;
@@ -118,9 +110,9 @@ export function Protocol3() {
       // }
       setRow(8);
     }
-  }, [senderNextFrameToSend3, senderS3, senderBuffer3, senderEvent3]);
+  }, [nextFrameToSend, s, buffer, event]);
 
-  const canStepSender3 = useCallback((state: ViewerState) => {
+  const canStep = useCallback((state: ViewerState) => {
     const { row, dataLinkEvent, physicalToDataLink, networkToDataLink } = state;
 
     if (row === 7 && networkToDataLink.length === 0) {
@@ -140,11 +132,22 @@ export function Protocol3() {
     }
   }, []);
 
-  const [receiverFrameExpected3, setReceiverFrameExpected3] = useState<number>(0);
-  const [receiverR3, setReceiverR3] = useState<Frame>(new Frame());
-  const [receiverS3, setReceiverS3] = useState<Frame>(new Frame());
-  const [receiverEvent3, setReceiverEvent3] = useState<EventType | undefined>();
-  const receiverCode3 = `
+  return {
+    initialRow: 6,
+    code: code,
+    step: step,
+    canStep: canStep,
+    locals:
+      [`next_frame_to_send: ${nextFrameToSend}`, `s: ${s}`, `buffer: ${buffer}`, `event: ${event}`]
+  }
+}
+
+function Receiver() {
+  const [frameExpected, setFrameExpected] = useState<number>(0);
+  const [r, setR] = useState<Frame>(new Frame());
+  const [s, setS] = useState<Frame>(new Frame());
+  const [event, setEvent] = useState<EventType | undefined>();
+  const code = `
   void receiver3(void) {
     seq_nr frame_expected;
     frame r, s;
@@ -165,16 +168,8 @@ export function Protocol3() {
     }
   }`;
 
-  const stepReceiver3 = useCallback((state: ViewerState) => {
+  const step = useCallback((state: ViewerState) => {
     const { row, setRow, dataLinkEvent, setDataLinkEvent, dataLinkToPhysical, setDataLinkToPhysical, physicalToDataLink, setPhysicalToDataLink, dataLinkToNetwork, setDataLinkToNetwork } = state;
-    const s = receiverS3;
-    const setS = setReceiverS3;
-    const r = receiverR3;
-    const setR = setReceiverR3;
-    const event = receiverEvent3;
-    const setEvent = setReceiverEvent3;
-    const frameExpected = receiverFrameExpected3;
-    const setFrameExpected = setReceiverFrameExpected3;
 
     if (row === 5) {
       // frame_expected = 0;
@@ -233,9 +228,9 @@ export function Protocol3() {
       // }
       setRow(6);
     }
-  }, [receiverFrameExpected3, receiverR3, receiverS3, receiverEvent3]);
+  }, [frameExpected, r, s, event]);
 
-  const canStepReceiver3 = useCallback((state: ViewerState) => {
+  const canStep = useCallback((state: ViewerState) => {
     const { row, dataLinkEvent, physicalToDataLink } = state;
 
     if (row === 7 && dataLinkEvent.length === 0) {
@@ -248,6 +243,34 @@ export function Protocol3() {
       return undefined;
     }
   }, []);
+
+
+  return {
+    initialRow: 5,
+    code: code,
+    step: step,
+    canStep: canStep,
+    locals:
+      [`frame_expected: ${frameExpected}`, `r: ${r}`, `s: ${s}`, `event: ${event}`]
+  }
+}
+
+export function Protocol3() {
+  const {
+    initialRow: initialSenderRow,
+    code: senderCode,
+    step: stepSender,
+    canStep: canStepSender,
+    locals: senderLocals
+  } = Sender();
+
+  const {
+    initialRow: initialReceiverRow,
+    code: receiverCode,
+    step: stepReceiver,
+    canStep: canStepReceiver,
+    locals: receiverLocals
+  } = Receiver();
 
   return <Box>
     <Grid item xs={12}>
@@ -263,16 +286,12 @@ export function Protocol3() {
       </Paper>
     </Grid>
     <Viewer
-      initialSenderRow={6} senderCode={senderCode3}
-      stepSender={stepSender3} canStepSender={canStepSender3}
-      senderLocals={
-        [`next_frame_to_send: ${senderNextFrameToSend3}`, `s: ${senderS3}`, `buffer: ${senderBuffer3}`, `event: ${senderEvent3}`]
-      }
-      initialReceiverRow={5} receiverCode={receiverCode3}
-      stepReceiver={stepReceiver3} canStepReceiver={canStepReceiver3}
-      receiverLocals={
-        [`frame_expected: ${receiverFrameExpected3}`, `r: ${receiverR3}`, `s: ${receiverS3}`, `event: ${receiverEvent3}`]
-      }
+      initialSenderRow={initialSenderRow} senderCode={senderCode}
+      stepSender={stepSender} canStepSender={canStepSender}
+      senderLocals={senderLocals}
+      initialReceiverRow={initialReceiverRow} receiverCode={receiverCode}
+      stepReceiver={stepReceiver} canStepReceiver={canStepReceiver}
+      receiverLocals={receiverLocals}
       hideSenderDataLinkToNetwork={true}
       hideReceiverNetworkInput={true}
       hideReceiverNetworkToDataLink={true}
