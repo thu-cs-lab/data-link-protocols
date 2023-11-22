@@ -442,7 +442,7 @@ function Protocol() {
     } else if (row === 108) {
       setRow(44);
     }
-  }, [noNak, oldestFrame, ackExpected, nextFrameToSend, frameExpected, tooFar, i, r, outBuf, inBuf, arrived, nBuffered, event]);
+  }, [noNak, oldestFrame, ackExpected, nextFrameToSend, frameExpected, tooFar, r, outBuf, inBuf, arrived, nBuffered, event]);
 
   const canStep = useCallback((state: ViewerState) => {
     const { row, dataLinkEvent, physicalToDataLink, networkToDataLink } = state;
