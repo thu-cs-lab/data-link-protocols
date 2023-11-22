@@ -6,53 +6,29 @@ import { Event, Packet, Frame, HasToString, AddRowMarker, FastForwarder, EventTy
 import { MyList } from './MyList';
 
 export type ViewerState = {
-  // sender network layer
-  senderNetworkToDataLink: Packet[];
-  setSenderNetworkToDataLink: (val: Packet[]) => void;
+  // network layer
+  networkToDataLink: Packet[];
+  setNetworkToDataLink: (val: Packet[]) => void;
 
-  senderEnableNetworkLayer: () => void;
-  senderDisableNetworkLayer: () => void;
+  enableNetworkLayer: () => void;
+  disableNetworkLayer: () => void;
 
-  // sender data link layer
-  senderRow: number;
-  setSenderRow: (val: number) => void;
+  // data link layer
+  row: number;
+  setRow: (val: number) => void;
 
-  senderDataLinkEvent: EventType[];
-  setSenderDataLinkEvent: (val: EventType[]) => void;
+  dataLinkEvent: EventType[];
+  setDataLinkEvent: (val: EventType[]) => void;
 
-  senderDataLinkToNetwork: Packet[];
-  setSenderDataLinkToNetwork: (val: Packet[]) => void;
+  dataLinkToNetwork: Packet[];
+  setDataLinkToNetwork: (val: Packet[]) => void;
 
-  senderDataLinkToPhysical: Frame[];
-  setSenderDataLinkToPhysical: (val: Frame[]) => void;
+  dataLinkToPhysical: Frame[];
+  setDataLinkToPhysical: (val: Frame[]) => void;
 
-  // sender physical layer
-  senderPhysicalToDataLink: Frame[];
-  setSenderPhysicalToDataLink: (val: Frame[]) => void;
-
-  // receiver physical layer
-  receiverPhysicalToDataLink: Frame[];
-  setReceiverPhysicalToDataLink: (val: Frame[]) => void;
-
-  // receiver data link layer
-  receiverRow: number;
-  setReceiverRow: (val: number) => void;
-
-  receiverDataLinkToPhysical: Frame[];
-  setReceiverDataLinkToPhysical: (val: Frame[]) => void;
-
-  receiverDataLinkEvent: EventType[];
-  setReceiverDataLinkEvent: (val: EventType[]) => void;
-
-  receiverDataLinkToNetwork: Packet[];
-  setReceiverDataLinkToNetwork: (val: Packet[]) => void;
-
-  // receiver network layer
-  receiverNetworkToDataLink: Packet[];
-  setReceiverNetworkToDataLink: (val: Packet[]) => void;
-
-  receiverEnableNetworkLayer: () => void;
-  receiverDisableNetworkLayer: () => void;
+  // physical layer
+  physicalToDataLink: Frame[];
+  setPhysicalToDataLink: (val: Frame[]) => void;
 };
 
 export type ViewerProps = {
@@ -207,51 +183,53 @@ export function Viewer(props: ViewerProps) {
   }, [senderPhysicalToDataLink, receiverDataLinkToPhysical, senderDataLinkEvent]);
 
   // fast forward
-  const fastForwardSender = FastForwarder(() => props.canStepSender(state) === undefined, () => props.stepSender(state));
-  const fastForwardReceiver = FastForwarder(() => props.canStepReceiver(state) === undefined, () => props.stepReceiver(state));
+  const fastForwardSender = FastForwarder(() => props.canStepSender(senderState) === undefined, () => props.stepSender(senderState));
+  const fastForwardReceiver = FastForwarder(() => props.canStepReceiver(receiverState) === undefined, () => props.stepReceiver(receiverState));
 
-  const state: ViewerState = {
-    senderRow: senderRow,
-    setSenderRow: setSenderRow,
+  const senderState: ViewerState = {
+    networkToDataLink: senderNetworkToDataLink,
+    setNetworkToDataLink: setSenderNetworkToDataLink,
 
-    receiverRow: receiverRow,
-    setReceiverRow: setReceiverRow,
+    enableNetworkLayer: senderEnableNetworkLayer,
+    disableNetworkLayer: senderDisableNetworkLayer,
 
-    senderNetworkToDataLink: senderNetworkToDataLink,
-    setSenderNetworkToDataLink: setSenderNetworkToDataLink,
+    row: senderRow,
+    setRow: setSenderRow,
 
-    senderEnableNetworkLayer: senderEnableNetworkLayer,
-    senderDisableNetworkLayer: senderDisableNetworkLayer,
+    dataLinkToNetwork: senderDataLinkToNetwork,
+    setDataLinkToNetwork: setSenderDataLinkToNetwork,
 
-    senderDataLinkToNetwork: senderDataLinkToNetwork,
-    setSenderDataLinkToNetwork: setSenderDataLinkToNetwork,
+    dataLinkEvent: senderDataLinkEvent,
+    setDataLinkEvent: setSenderDataLinkEvent,
 
-    senderDataLinkEvent: senderDataLinkEvent,
-    setSenderDataLinkEvent: setSenderDataLinkEvent,
+    dataLinkToPhysical: senderDataLinkToPhysical,
+    setDataLinkToPhysical: setSenderDataLinkToPhysical,
 
-    senderDataLinkToPhysical: senderDataLinkToPhysical,
-    setSenderDataLinkToPhysical: setSenderDataLinkToPhysical,
+    physicalToDataLink: senderPhysicalToDataLink,
+    setPhysicalToDataLink: setSenderPhysicalToDataLink,
+  };
 
-    senderPhysicalToDataLink: senderPhysicalToDataLink,
-    setSenderPhysicalToDataLink: setSenderPhysicalToDataLink,
+  const receiverState: ViewerState = {
+    networkToDataLink: receiverNetworkToDataLink,
+    setNetworkToDataLink: setReceiverNetworkToDataLink,
 
-    receiverPhysicalToDataLink: receiverPhysicalToDataLink,
-    setReceiverPhysicalToDataLink: setReceiverPhysicalToDataLink,
+    enableNetworkLayer: receiverEnableNetworkLayer,
+    disableNetworkLayer: receiverDisableNetworkLayer,
 
-    receiverDataLinkToPhysical: receiverDataLinkToPhysical,
-    setReceiverDataLinkToPhysical: setReceiverDataLinkToPhysical,
+    row: receiverRow,
+    setRow: setReceiverRow,
 
-    receiverDataLinkEvent: receiverDataLinkEvent,
-    setReceiverDataLinkEvent: setReceiverDataLinkEvent,
+    dataLinkToNetwork: receiverDataLinkToNetwork,
+    setDataLinkToNetwork: setReceiverDataLinkToNetwork,
 
-    receiverDataLinkToNetwork: receiverDataLinkToNetwork,
-    setReceiverDataLinkToNetwork: setReceiverDataLinkToNetwork,
+    dataLinkEvent: receiverDataLinkEvent,
+    setDataLinkEvent: setReceiverDataLinkEvent,
 
-    receiverNetworkToDataLink: receiverNetworkToDataLink,
-    setReceiverNetworkToDataLink: setReceiverNetworkToDataLink,
+    dataLinkToPhysical: receiverDataLinkToPhysical,
+    setDataLinkToPhysical: setReceiverDataLinkToPhysical,
 
-    receiverEnableNetworkLayer: receiverEnableNetworkLayer,
-    receiverDisableNetworkLayer: receiverDisableNetworkLayer,
+    physicalToDataLink: receiverPhysicalToDataLink,
+    setPhysicalToDataLink: setReceiverPhysicalToDataLink,
   };
 
   const style1 = {
@@ -308,12 +286,12 @@ export function Viewer(props: ViewerProps) {
               </SyntaxHighlighter>
             </Grid>
             <Grid item xs={4}>
-              <Button variant="contained" onClick={() => props.stepSender(state)} disabled={props.canStepSender(state) !== undefined}>下一步</Button>
+              <Button variant="contained" onClick={() => props.stepSender(senderState)} disabled={props.canStepSender(senderState) !== undefined}>下一步</Button>
               <p></p>
-              <Button variant="contained" onClick={fastForwardSender} disabled={props.canStepSender(state) !== undefined}>下一步直到无法立即继续</Button>
+              <Button variant="contained" onClick={fastForwardSender} disabled={props.canStepSender(senderState) !== undefined}>下一步直到无法立即继续</Button>
               <p></p>
               <Typography>
-                {props.canStepSender(state)}
+                {props.canStepSender(senderState)}
               </Typography>
               <p></p>
               <MyList description='局部变量：'
@@ -405,12 +383,12 @@ export function Viewer(props: ViewerProps) {
               </SyntaxHighlighter>
             </Grid>
             <Grid item xs={4}>
-              <Button variant="contained" onClick={() => props.stepReceiver(state)} disabled={props.canStepReceiver(state) !== undefined}>下一步</Button>
+              <Button variant="contained" onClick={() => props.stepReceiver(receiverState)} disabled={props.canStepReceiver(receiverState) !== undefined}>下一步</Button>
               <p></p>
-              <Button variant="contained" onClick={fastForwardReceiver} disabled={props.canStepReceiver(state) !== undefined}>下一步直到无法立即继续</Button>
+              <Button variant="contained" onClick={fastForwardReceiver} disabled={props.canStepReceiver(receiverState) !== undefined}>下一步直到无法立即继续</Button>
               <p></p>
               <Typography>
-                {props.canStepReceiver(state)}
+                {props.canStepReceiver(receiverState)}
               </Typography>
               <p></p>
               <MyList description='局部变量：'

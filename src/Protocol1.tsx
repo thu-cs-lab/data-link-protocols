@@ -20,12 +20,7 @@ function Sender() {
   }`;
 
   const step = useCallback((state: ViewerState) => {
-    const row = state.senderRow;
-    const setRow = state.setSenderRow;
-    const networkToDataLink = state.senderNetworkToDataLink;
-    const setNetworkToDataLink = state.setSenderNetworkToDataLink;
-    const dataLinkToPhysical = state.senderDataLinkToPhysical;
-    const setDataLinkToPhysical = state.setSenderDataLinkToPhysical;
+    const { row, setRow, networkToDataLink, setNetworkToDataLink, dataLinkToPhysical, setDataLinkToPhysical } = state;
 
     if (row === 3) {
       // while (true) {
@@ -50,8 +45,7 @@ function Sender() {
   }, [s, buffer]);
 
   const canStep = useCallback((state: ViewerState) => {
-    const row = state.senderRow;
-    const networkToDataLink = state.senderNetworkToDataLink;
+    const { row, networkToDataLink } = state;
 
     if (row === 4 && networkToDataLink.length === 0) {
       // from_network_layer(&buffer);
@@ -86,14 +80,7 @@ function Receiver() {
   }`;
 
   const step = useCallback((state: ViewerState) => {
-    const row = state.receiverRow;
-    const setRow = state.setReceiverRow;
-    const dataLinkEvent = state.receiverDataLinkEvent;
-    const setDataLinkEvent = state.setReceiverDataLinkEvent;
-    const dataLinkToNetwork = state.receiverDataLinkToNetwork;
-    const setDataLinkToNetwork = state.setReceiverDataLinkToNetwork;
-    const physicalToDataLink = state.receiverPhysicalToDataLink;
-    const setPhysicalToDataLink = state.setReceiverPhysicalToDataLink;
+    const { row, setRow, dataLinkEvent, setDataLinkEvent, dataLinkToNetwork, setDataLinkToNetwork, physicalToDataLink, setPhysicalToDataLink } = state;
 
     if (row === 3) {
       // while (true) {
@@ -119,9 +106,7 @@ function Receiver() {
   }, [r]);
 
   const canStep = useCallback((state: ViewerState) => {
-    const row = state.receiverRow;
-    const dataLinkEvent = state.receiverDataLinkEvent;
-    const physicalToDataLink = state.receiverPhysicalToDataLink;
+    const { row, dataLinkEvent, physicalToDataLink } = state;
 
     if (row === 4 && dataLinkEvent.length === 0) {
       // wait_for_event(&event);

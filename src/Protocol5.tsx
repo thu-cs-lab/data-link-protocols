@@ -101,20 +101,7 @@ export function Protocol5() {
   }`;
 
   const stepSender5 = useCallback((state: ViewerState) => {
-    const row = state.senderRow;
-    const setRow = state.setSenderRow;
-    const networkToDataLink = state.senderNetworkToDataLink;
-    const setNetworkToDataLink = state.setSenderNetworkToDataLink;
-    const dataLinkToPhysical = state.senderDataLinkToPhysical;
-    const setDataLinkToPhysical = state.setSenderDataLinkToPhysical;
-    const dataLinkToNetwork = state.senderDataLinkToNetwork;
-    const setDataLinkToNetwork = state.setSenderDataLinkToNetwork;
-    const physicalToDataLink = state.senderPhysicalToDataLink;
-    const setPhysicalToDataLink = state.setSenderPhysicalToDataLink;
-    const dataLinkEvent = state.senderDataLinkEvent;
-    const setDataLinkEvent = state.setSenderDataLinkEvent;
-    const enableNetworkLayer = state.senderEnableNetworkLayer;
-    const disableNetworkLayer = state.senderDisableNetworkLayer;
+    const { row, setRow, dataLinkEvent, setDataLinkEvent, dataLinkToPhysical, setDataLinkToPhysical, physicalToDataLink, setPhysicalToDataLink, dataLinkToNetwork, setDataLinkToNetwork, enableNetworkLayer, disableNetworkLayer, networkToDataLink, setNetworkToDataLink } = state;
     const buffer = senderBuffer5;
     const setBuffer = setSenderBuffer5;
     const nBuffered = senderNBuffered5;
@@ -311,10 +298,7 @@ export function Protocol5() {
   }, [senderNextFrameToSend5, senderAckExpected5, senderFrameExpected5, senderR5, senderBuffer5, senderNBuffered5, senderI5, senderEvent5]);
 
   const canStepSender5 = useCallback((state: ViewerState) => {
-    const row = state.senderRow;
-    const networkToDataLink = state.senderNetworkToDataLink;
-    const dataLinkEvent = state.senderDataLinkEvent;
-    const physicalToDataLink = state.senderPhysicalToDataLink;
+    const { row, dataLinkEvent, physicalToDataLink, networkToDataLink } = state;
 
     if (row === 34 && dataLinkEvent.length === 0) {
       // wait_for_event(&event);
@@ -347,20 +331,7 @@ export function Protocol5() {
   const receiverCode5 = senderCode5;
 
   const stepReceiver5 = useCallback((state: ViewerState) => {
-    const row = state.receiverRow;
-    const setRow = state.setReceiverRow;
-    const networkToDataLink = state.receiverNetworkToDataLink;
-    const setNetworkToDataLink = state.setReceiverNetworkToDataLink;
-    const dataLinkToPhysical = state.receiverDataLinkToPhysical;
-    const setDataLinkToPhysical = state.setReceiverDataLinkToPhysical;
-    const dataLinkToNetwork = state.receiverDataLinkToNetwork;
-    const setDataLinkToNetwork = state.setReceiverDataLinkToNetwork;
-    const physicalToDataLink = state.receiverPhysicalToDataLink;
-    const setPhysicalToDataLink = state.setReceiverPhysicalToDataLink;
-    const dataLinkEvent = state.receiverDataLinkEvent;
-    const setDataLinkEvent = state.setReceiverDataLinkEvent;
-    const enableNetworkLayer = state.receiverEnableNetworkLayer;
-    const disableNetworkLayer = state.receiverDisableNetworkLayer;
+    const { row, setRow, dataLinkEvent, setDataLinkEvent, dataLinkToPhysical, setDataLinkToPhysical, physicalToDataLink, setPhysicalToDataLink, dataLinkToNetwork, setDataLinkToNetwork, enableNetworkLayer, disableNetworkLayer, networkToDataLink, setNetworkToDataLink } = state;
     const buffer = receiverBuffer5;
     const setBuffer = setReceiverBuffer5;
     const nBuffered = receiverNBuffered5;
@@ -557,10 +528,7 @@ export function Protocol5() {
   }, [receiverNextFrameToSend5, receiverAckExpected5, receiverFrameExpected5, receiverR5, receiverBuffer5, receiverNBuffered5, receiverI5, receiverEvent5]);
 
   const canStepReceiver5 = useCallback((state: ViewerState) => {
-    const row = state.receiverRow;
-    const networkToDataLink = state.receiverNetworkToDataLink;
-    const dataLinkEvent = state.receiverDataLinkEvent;
-    const physicalToDataLink = state.receiverPhysicalToDataLink;
+    const { row, dataLinkEvent, physicalToDataLink, networkToDataLink } = state;
 
     if (row === 34 && dataLinkEvent.length === 0) {
       // wait_for_event(&event);

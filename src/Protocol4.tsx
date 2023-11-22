@@ -48,18 +48,7 @@ export function Protocol4() {
   }`;
 
   const stepSender4 = useCallback((state: ViewerState) => {
-    const row = state.senderRow;
-    const setRow = state.setSenderRow;
-    const networkToDataLink = state.senderNetworkToDataLink;
-    const setNetworkToDataLink = state.setSenderNetworkToDataLink;
-    const dataLinkToPhysical = state.senderDataLinkToPhysical;
-    const setDataLinkToPhysical = state.setSenderDataLinkToPhysical;
-    const dataLinkToNetwork = state.senderDataLinkToNetwork;
-    const setDataLinkToNetwork = state.setSenderDataLinkToNetwork;
-    const physicalToDataLink = state.senderPhysicalToDataLink;
-    const setPhysicalToDataLink = state.setSenderPhysicalToDataLink;
-    const dataLinkEvent = state.senderDataLinkEvent;
-    const setDataLinkEvent = state.setSenderDataLinkEvent;
+    const { row, setRow, dataLinkEvent, setDataLinkEvent, dataLinkToPhysical, setDataLinkToPhysical, physicalToDataLink, setPhysicalToDataLink, dataLinkToNetwork, setDataLinkToNetwork, networkToDataLink, setNetworkToDataLink } = state;
     const buffer = senderBuffer4;
     const setBuffer = setSenderBuffer4;
     const r = senderR4;
@@ -193,10 +182,7 @@ export function Protocol4() {
   }, [senderNextFrameToSend4, senderFrameExpected4, senderR4, senderS4, senderBuffer4, senderEvent4]);
 
   const canStepSender4 = useCallback((state: ViewerState) => {
-    const row = state.senderRow;
-    const networkToDataLink = state.senderNetworkToDataLink;
-    const dataLinkEvent = state.senderDataLinkEvent;
-    const physicalToDataLink = state.senderPhysicalToDataLink;
+    const { row, dataLinkEvent, physicalToDataLink, networkToDataLink } = state;
 
     if (row === 8 && networkToDataLink.length === 0) {
       // from_network_layer(&buffer);
@@ -224,18 +210,7 @@ export function Protocol4() {
   const receiverCode4 = senderCode4;
 
   const stepReceiver4 = useCallback((state: ViewerState) => {
-    const row = state.receiverRow;
-    const setRow = state.setReceiverRow;
-    const networkToDataLink = state.receiverNetworkToDataLink;
-    const setNetworkToDataLink = state.setReceiverNetworkToDataLink;
-    const dataLinkToPhysical = state.receiverDataLinkToPhysical;
-    const setDataLinkToPhysical = state.setReceiverDataLinkToPhysical;
-    const dataLinkToNetwork = state.receiverDataLinkToNetwork;
-    const setDataLinkToNetwork = state.setReceiverDataLinkToNetwork;
-    const physicalToDataLink = state.receiverPhysicalToDataLink;
-    const setPhysicalToDataLink = state.setReceiverPhysicalToDataLink;
-    const dataLinkEvent = state.receiverDataLinkEvent;
-    const setDataLinkEvent = state.setReceiverDataLinkEvent;
+    const { row, setRow, dataLinkEvent, setDataLinkEvent, dataLinkToPhysical, setDataLinkToPhysical, physicalToDataLink, setPhysicalToDataLink, dataLinkToNetwork, setDataLinkToNetwork, networkToDataLink, setNetworkToDataLink } = state;
     const buffer = receiverBuffer4;
     const setBuffer = setReceiverBuffer4;
     const r = receiverR4;
@@ -369,10 +344,7 @@ export function Protocol4() {
   }, [receiverNextFrameToSend4, receiverFrameExpected4, receiverR4, receiverS4, receiverBuffer4, receiverEvent4]);
 
   const canStepReceiver4 = useCallback((state: ViewerState) => {
-    const row = state.receiverRow;
-    const networkToDataLink = state.receiverNetworkToDataLink;
-    const dataLinkEvent = state.receiverDataLinkEvent;
-    const physicalToDataLink = state.receiverPhysicalToDataLink;
+    const { row, dataLinkEvent, physicalToDataLink, networkToDataLink } = state;
 
     if (row === 8 && networkToDataLink.length === 0) {
       // from_network_layer(&buffer);
