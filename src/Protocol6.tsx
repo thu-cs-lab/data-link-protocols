@@ -150,6 +150,19 @@ function Protocol() {
     }
   }`;
 
+  const sendFrame = useCallback((state: ViewerState, fk: FrameKind, frameNr: number, frameExpected: number, buffer: Packet[]) => {
+    const { dataLinkToPhysical, setDataLinkToPhysical } = state;
+    let s = new Frame();
+    s.kind = fk;
+    if (fk === FrameKind.Data)
+      s.info = buffer[frameNr % NR_BUFS];
+    s.seq = frameNr;
+    s.ack = (frameExpected + MAX_SEQ) % (MAX_SEQ + 1);
+    if (fk === FrameKind.Nak)
+      setNoNak(false);
+    setDataLinkToPhysical(dataLinkToPhysical.concat([s]));
+  }, []);
+
   const step = useCallback((state: ViewerState) => {
     const { row, setRow, dataLinkEvent, setDataLinkEvent, dataLinkToPhysical, setDataLinkToPhysical, physicalToDataLink, setPhysicalToDataLink, dataLinkToNetwork, setDataLinkToNetwork, enableNetworkLayer, disableNetworkLayer, networkToDataLink, setNetworkToDataLink } = state;
 
@@ -222,12 +235,7 @@ function Protocol() {
     } else if (row === 51) {
       // send_frame(data, next_frame_to_send, frame_expected,
       //            out_buf); 
-      let s = new Frame();
-      s.kind = FrameKind.Data;
-      s.info = outBuf[nextFrameToSend % NR_BUFS];
-      s.seq = nextFrameToSend;
-      s.ack = (frameExpected + MAX_SEQ) % (MAX_SEQ + 1);
-      setDataLinkToPhysical(dataLinkToPhysical.concat([s]));
+      sendFrame(state, FrameKind.Data, nextFrameToSend, frameExpected, outBuf);
       setRow(53);
     } else if (row === 53) {
       // inc(next_frame_to_send);
@@ -257,12 +265,7 @@ function Protocol() {
       }
     } else if (row === 61) {
       // send_frame(nak, 0, frame_expected, out_buf);
-      let s = new Frame();
-      s.kind = FrameKind.Nak;
-      s.seq = 0;
-      s.ack = (frameExpected + MAX_SEQ) % (MAX_SEQ + 1);
-      setNoNak(false);
-      setDataLinkToPhysical(dataLinkToPhysical.concat([s]));
+      sendFrame(state, FrameKind.Nak, 0, frameExpected, outBuf);
       setRow(64);
     } else if (row === 63) {
       // start_ack_timer();
@@ -346,12 +349,7 @@ function Protocol() {
       }
     } else if (row === 82) {
       // send_frame(data, (r.ack + 1) % (MAX_SEQ + 1), frame_expected, out_buf);
-      let s = new Frame();
-      s.kind = FrameKind.Data;
-      s.info = outBuf[(r.ack! + 1) % (MAX_SEQ + 1) % NR_BUFS];
-      s.seq = (r.ack! + 1) % (MAX_SEQ + 1);
-      s.ack = (frameExpected + MAX_SEQ) % (MAX_SEQ + 1);
-      setDataLinkToPhysical(dataLinkToPhysical.concat([s]));
+      sendFrame(state, FrameKind.Data, (r.ack! + 1) % (MAX_SEQ + 1), frameExpected, outBuf);
       setRow(83);
     } else if (row === 83) {
       // while (between(ack_expected, r.ack, next_frame_to_send)) {
@@ -389,12 +387,7 @@ function Protocol() {
       }
     } else if (row === 92) {
       // send_frame(nak, 0, frame_expected, out_buf);
-      let s = new Frame();
-      s.kind = FrameKind.Nak;
-      s.seq = 0;
-      s.ack = (frameExpected + MAX_SEQ) % (MAX_SEQ + 1);
-      setNoNak(false);
-      setDataLinkToPhysical(dataLinkToPhysical.concat([s]));
+      sendFrame(state, FrameKind.Nak, 0, frameExpected, outBuf);
       setRow(93);
     } else if (row === 93) {
       // break;
@@ -402,12 +395,7 @@ function Protocol() {
     } else if (row === 96) {
       // send_frame(data, oldest_frame, frame_expected,
       // out_buf);
-      let s = new Frame();
-      s.kind = FrameKind.Data;
-      s.info = outBuf[oldestFrame % NR_BUFS];
-      s.seq = oldestFrame % (MAX_SEQ + 1);
-      s.ack = (frameExpected + MAX_SEQ) % (MAX_SEQ + 1);
-      setDataLinkToPhysical(dataLinkToPhysical.concat([s]));
+      sendFrame(state, FrameKind.Data, oldestFrame, frameExpected, outBuf);
       setRow(97);
     } else if (row === 97) {
       // break;
@@ -415,11 +403,7 @@ function Protocol() {
     } else if (row === 101) {
       // send_frame(ack, 0, frame_expected,
       // out_buf);
-      let s = new Frame();
-      s.kind = FrameKind.Ack;
-      s.seq = 0;
-      s.ack = (frameExpected + MAX_SEQ) % (MAX_SEQ + 1);
-      setDataLinkToPhysical(dataLinkToPhysical.concat([s]));
+      sendFrame(state, FrameKind.Ack, 0, frameExpected, outBuf);
       setRow(103);
     } else if (row === 103) {
       // }
