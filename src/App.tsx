@@ -11,7 +11,9 @@ function App() {
   return (
     <Container maxWidth={false}>
       <Grid container spacing={2}>
-        <Grid item xs={12}>
+        <Grid item xs={12} sx={{
+          padding: '10px'
+        }}>
           <Paper sx={{
             padding: '30px',
           }}>
@@ -20,6 +22,9 @@ function App() {
             </Typography>
             <Typography>
               在学习《计算机网络原理》课程时，数据链路层协议是一个重难点。为了理解《计算机网络》教材上讲述的数据链路层协议，你可以在本页面中观察各个数据链路层协议的工作方式。
+            </Typography>
+            <Typography>
+              注：本模拟器没有引入 Timer，需要你来手动触发 Timeout 事件。
             </Typography>
           </Paper>
         </Grid>
