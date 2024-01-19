@@ -12,7 +12,7 @@
 <line x1="170.0" y1="70" x2="190.0" y2="70" stroke="black" />
 <text x="165.0" y="45.0" text-anchor="end" dominant-baseline="middle">1/B</text>
 <text x="0" y="0" transform="translate(178, 45.0),scale(1, 3.3333333333333335)" text-anchor="end" dominant-baseline="middle">{</text>
-<text x="20" y="70" text-anchor="start" dominant-baseline="middle">WND=0</text>
+<text x="20" y="70" text-anchor="start" dominant-baseline="middle">WND=1->0</text>
 <text x="295.0" y="100" text-anchor="start" dominant-baseline="middle">T2</text>
 <line x1="270.0" y1="100" x2="290.0" y2="100" stroke="black" />
 <text x="295.0" y="150" text-anchor="start" dominant-baseline="middle">T3</text>
@@ -39,12 +39,12 @@
 <text x="295.0" y="220.0" text-anchor="start" dominant-baseline="middle">D</text>
 <text x="0" y="0" transform="translate(282, 220.0),scale(1, 5.333333333333333)" text-anchor="start" dominant-baseline="middle">}</text>
 <line x1="180" y1="260" x2="280" y2="180" stroke="black" />
-<text x="20" y="260" text-anchor="start" dominant-baseline="middle">WND=1</text>
+<text x="20" y="260" text-anchor="start" dominant-baseline="middle">WND=0->1</text>
 <text x="165.0" y="310" text-anchor="end" dominant-baseline="middle">T7</text>
 <line x1="170.0" y1="310" x2="190.0" y2="310" stroke="black" />
 <text x="165.0" y="285.0" text-anchor="end" dominant-baseline="middle">1/B</text>
 <text x="0" y="0" transform="translate(178, 285.0),scale(1, 3.3333333333333335)" text-anchor="end" dominant-baseline="middle">{</text>
-<text x="20" y="310" text-anchor="start" dominant-baseline="middle">WND=0</text>
+<text x="20" y="310" text-anchor="start" dominant-baseline="middle">WND=1->0</text>
 <text x="295.0" y="340" text-anchor="start" dominant-baseline="middle">T8</text>
 <line x1="270.0" y1="340" x2="290.0" y2="340" stroke="black" />
 <text x="295.0" y="300.0" text-anchor="start" dominant-baseline="middle">D</text>

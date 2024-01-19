@@ -107,7 +107,7 @@ def gen_svg(out, window):
             t1 = t0 + lat_1_b
             add_annotation(t1, "T1", "A")
             add_range(t0, t1, "1/B", "A")
-            add_window(t1, 0)
+            add_window(t1, "1->0")
 
             lat_d = 80
             t2 = t0 + lat_d
@@ -134,12 +134,12 @@ def gen_svg(out, window):
             add_range(t5, t6, "A/B", "A")
             add_range(t4, t6, "D", "B")
             add_line(t6, t4)
-            add_window(t6, 1)
+            add_window(t6, "0->1")
 
             t7 = t6 + lat_1_b
             add_annotation(t7, "T7", "A")
             add_range(t6, t7, "1/B", "A")
-            add_window(t7, 0)
+            add_window(t7, "1->0")
 
             t8 = t6 + lat_d
             add_annotation(t8, "T8", "B")
@@ -212,6 +212,111 @@ def gen_svg(out, window):
 
     """
             )
+        elif window == 3:
+            t0 = 20
+
+            add_annotation(t0, "T0", "A")
+            add_annotation(t0, "T0", "B")
+            add_window(t0, 3)
+
+            lat_1_b = 50
+            t1 = t0 + lat_1_b
+            add_annotation(t1, "T1", "A")
+            add_range(t0, t1, "1/B", "A")
+            add_window(t1, "3->2")
+
+            add_annotation(t1 + lat_1_b, "", "A")
+            add_range(t1, t1 + lat_1_b, "1/B", "A")
+            add_window(t1 + lat_1_b, "2->1")
+
+            add_annotation(t1 + lat_1_b * 2, "", "A")
+            add_range(t1 + lat_1_b, t1 + lat_1_b * 2, "1/B", "A")
+            add_window(t1 + lat_1_b * 2, "1->0")
+
+            lat_d = 80
+            t2 = t0 + lat_d
+            t3 = t2 + lat_1_b
+            add_annotation(t2, "T2", "B")
+            add_annotation(t3, "T3", "B")
+            add_range(t0, t2, "D", "B")
+            add_range(t2, t3, "1/B", "B")
+            add_line(t0, t2)
+            add_line(t1, t3)
+
+            add_annotation(t3 + lat_1_b, "", "B")
+            add_line(t1 + lat_1_b, t3 + lat_1_b)
+
+            add_annotation(t3 + lat_1_b * 2, "", "B")
+            add_line(t1 + lat_1_b * 2, t3 + lat_1_b * 2)
+
+            lat_a_b = 30
+            t4 = t3 + lat_a_b
+            add_annotation(t4, "T4", "B")
+            add_range(t3, t4, "A/B", "B")
+
+            t5 = t3 + lat_d
+            add_annotation(t5, "T5", "A")
+            add_line(t5, t3)
+
+            t6 = t5 + lat_a_b
+            add_annotation(t6, "T6", "A")
+            add_annotation(t6, "T6", "B")
+            add_range(t5, t6, "A/B", "A")
+            add_range(t4, t6, "D", "B")
+            add_line(t6, t4)
+            add_window(t6, "0->1")
+
+            add_annotation(t3 + lat_1_b + lat_d, "", "A")
+            add_annotation(t3 + lat_1_b + lat_d + lat_a_b, "", "A")
+            add_annotation(t3 + lat_1_b + lat_a_b, "", "B")
+            add_line(t3 + lat_1_b + lat_d, t3 + lat_1_b)
+            add_line(t3 + lat_1_b + lat_d + lat_a_b, t3 + lat_1_b + lat_a_b)
+
+            add_annotation(t3 + lat_1_b * 2 + lat_d, "", "A")
+            add_annotation(t3 + lat_1_b * 2 + lat_d + lat_a_b, "", "A")
+            add_annotation(t3 + lat_1_b * 2 + lat_a_b, "", "B")
+            add_line(t3 + lat_1_b * 2 + lat_d, t3 + lat_1_b * 2)
+            add_line(t3 + lat_1_b * 2 + lat_d + lat_a_b, t3 + lat_1_b * 2 + lat_a_b)
+
+            t7 = t6 + lat_1_b
+            add_annotation(t7, "T7", "A")
+            add_range(t6, t7, "1/B", "A")
+            add_window(t7, "1->0->1")
+
+            add_annotation(t7 + lat_1_b, "", "A")
+            add_annotation(t7 + lat_1_b + lat_d, "", "B")
+            add_window(t7 + lat_1_b, "1->0->1")
+            add_line(t7 + lat_1_b, t7 + lat_1_b + lat_d)
+
+            add_annotation(t7 + lat_1_b * 2, "", "A")
+            add_annotation(t7 + lat_1_b * 2 + lat_d, "", "B")
+            add_window(t7 + lat_1_b * 2, "1->0")
+            add_line(t7 + lat_1_b * 2, t7 + lat_1_b * 2 + lat_d)
+
+            t8 = t6 + lat_d
+            add_annotation(t8, "T8", "B")
+            add_range(t6, t8, "D", "B")
+            add_line(t6, t8)
+
+            t9 = t7 + lat_d
+            add_annotation(t9, "T9", "B")
+            add_range(t8, t9, "1/B", "B")
+            add_line(t7, t9)
+
+            t10 = t9 + lat_a_b
+            add_annotation(t10, "T10", "B")
+            add_range(t9, t10, "A/B", "B")
+
+            t11 = t9 + lat_d
+            add_annotation(t11, "T11", "A")
+            add_line(t11, t9)
+
+            t12 = t10 + lat_d
+            add_annotation(t12, "T12", "A")
+            add_line(t12, t10)
+            add_annotation(t12, "T12", "B")
+            add_range(t10, t12, "D", "B")
+            add_range(t11, t12, "A/B", "A")
 
         print(f"</svg>", file=f)
 
