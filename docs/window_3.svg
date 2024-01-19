@@ -135,4 +135,23 @@
 <polygon points="180,470 180,500 280,420 280,390" fill="gold" fill-opacity="0.0" stroke="transparent" />
 <polygon points="180,280 180,310 280,230 280,200" fill="gold" fill-opacity="0.0" stroke="transparent" />
 <polygon points="180,330 180,360 280,280 280,250" fill="gold" fill-opacity="0.0" stroke="transparent" />
+<text x="0" y="0" text-anchor="start" dominant-baseline="middle">
+<tspan x="380" dy="30">    约定：</tspan>
+<tspan x="380" dy="15">    - D 是传输延迟（单位：s）</tspan>
+<tspan x="380" dy="15">    - B 是带宽（单位：帧/s）</tspan>
+<tspan x="380" dy="15">    - W 是发送窗口大小（单位：帧）</tspan>
+<tspan x="380" dy="15">    - A 是确认帧大小（单位：帧）</tspan>
+<tspan x="380" dy="15">    - WND 表示 A 的发送窗口中还可以发送的帧的个数</tspan>
+<tspan x="380" dy="30">    假设发送窗口大小为三个帧（W=3）</tspan>
+<tspan x="380" dy="15">    从 T0 时刻开始：A 发送三个帧</tspan>
+<tspan x="380" dy="15">    T3 时刻：B 完成接收第一个帧</tspan>
+<tspan x="380" dy="15">    T6 时刻：A 完成接收第一个确认帧，开始发送第四个帧</tspan>
+<tspan x="380" dy="15">    T7 时刻：A 完成发送第四个帧，完成接收第二个确认帧，开始发送第五个帧</tspan>
+<tspan x="380" dy="30">    在 T0 到 T6 时间内，传输了 W 个帧的数据，耗费了 D+1/B+A/B+D 的时间</tspan>
+<tspan x="380" dy="15">    之后都按照这个周期循环</tspan>
+<tspan x="380" dy="30">    链路利用率等于 (W/B)/(2D+1/B+A/B)</tspan>
+<tspan x="380" dy="30">    如果在 T0 到 T6 时间内来不及发送窗口大小的 W 个帧，那么 A 可以一直发送</tspan>
+<tspan x="380" dy="15">    不会因为发送窗口满而停止发送，此时链路利用率等于 100%</tspan>
+<tspan x="380" dy="30">    </tspan>
+</text>
 </svg>
