@@ -1,0 +1,102 @@
+<svg height="700px" xmlns="http://www.w3.org/2000/svg">
+<line x1="180" y1="10" x2="180" y2="600" stroke="black" />
+<line x1="280" y1="10" x2="280" y2="600" stroke="black" />
+<text x="180" y="620" text-anchor="middle" dominant-baseline="middle">A</text>
+<text x="280" y="620" text-anchor="middle" dominant-baseline="middle">B</text>
+<text x="165.0" y="20" text-anchor="end" dominant-baseline="middle">T0</text>
+<line x1="170.0" y1="20" x2="190.0" y2="20" stroke="black" />
+<text x="295.0" y="20" text-anchor="start" dominant-baseline="middle">T0</text>
+<line x1="270.0" y1="20" x2="290.0" y2="20" stroke="black" />
+<text x="20" y="20" text-anchor="start" dominant-baseline="middle">WND=1</text>
+<text x="165.0" y="70" text-anchor="end" dominant-baseline="middle">T1</text>
+<line x1="170.0" y1="70" x2="190.0" y2="70" stroke="black" />
+<text x="165.0" y="45.0" text-anchor="end" dominant-baseline="middle">1/B</text>
+<text x="0" y="0" transform="translate(178, 45.0),scale(1, 3.3333333333333335)" text-anchor="end" dominant-baseline="middle">{</text>
+<text x="20" y="70" text-anchor="start" dominant-baseline="middle">WND=0</text>
+<text x="295.0" y="100" text-anchor="start" dominant-baseline="middle">T2</text>
+<line x1="270.0" y1="100" x2="290.0" y2="100" stroke="black" />
+<text x="295.0" y="150" text-anchor="start" dominant-baseline="middle">T3</text>
+<line x1="270.0" y1="150" x2="290.0" y2="150" stroke="black" />
+<text x="295.0" y="60.0" text-anchor="start" dominant-baseline="middle">D</text>
+<text x="0" y="0" transform="translate(282, 60.0),scale(1, 5.333333333333333)" text-anchor="start" dominant-baseline="middle">}</text>
+<text x="295.0" y="125.0" text-anchor="start" dominant-baseline="middle">1/B</text>
+<text x="0" y="0" transform="translate(282, 125.0),scale(1, 3.3333333333333335)" text-anchor="start" dominant-baseline="middle">}</text>
+<line x1="180" y1="20" x2="280" y2="100" stroke="black" />
+<line x1="180" y1="70" x2="280" y2="150" stroke="black" />
+<text x="295.0" y="180" text-anchor="start" dominant-baseline="middle">T4</text>
+<line x1="270.0" y1="180" x2="290.0" y2="180" stroke="black" />
+<text x="295.0" y="165.0" text-anchor="start" dominant-baseline="middle">A/B</text>
+<text x="0" y="0" transform="translate(282, 165.0),scale(1, 2.0)" text-anchor="start" dominant-baseline="middle">}</text>
+<text x="165.0" y="230" text-anchor="end" dominant-baseline="middle">T5</text>
+<line x1="170.0" y1="230" x2="190.0" y2="230" stroke="black" />
+<line x1="180" y1="230" x2="280" y2="150" stroke="black" />
+<text x="165.0" y="260" text-anchor="end" dominant-baseline="middle">T6</text>
+<line x1="170.0" y1="260" x2="190.0" y2="260" stroke="black" />
+<text x="295.0" y="260" text-anchor="start" dominant-baseline="middle">T6</text>
+<line x1="270.0" y1="260" x2="290.0" y2="260" stroke="black" />
+<text x="165.0" y="245.0" text-anchor="end" dominant-baseline="middle">A/B</text>
+<text x="0" y="0" transform="translate(178, 245.0),scale(1, 2.0)" text-anchor="end" dominant-baseline="middle">{</text>
+<text x="295.0" y="220.0" text-anchor="start" dominant-baseline="middle">D</text>
+<text x="0" y="0" transform="translate(282, 220.0),scale(1, 5.333333333333333)" text-anchor="start" dominant-baseline="middle">}</text>
+<line x1="180" y1="260" x2="280" y2="180" stroke="black" />
+<text x="20" y="260" text-anchor="start" dominant-baseline="middle">WND=1</text>
+<text x="165.0" y="310" text-anchor="end" dominant-baseline="middle">T7</text>
+<line x1="170.0" y1="310" x2="190.0" y2="310" stroke="black" />
+<text x="165.0" y="285.0" text-anchor="end" dominant-baseline="middle">1/B</text>
+<text x="0" y="0" transform="translate(178, 285.0),scale(1, 3.3333333333333335)" text-anchor="end" dominant-baseline="middle">{</text>
+<text x="20" y="310" text-anchor="start" dominant-baseline="middle">WND=0</text>
+<text x="295.0" y="340" text-anchor="start" dominant-baseline="middle">T8</text>
+<line x1="270.0" y1="340" x2="290.0" y2="340" stroke="black" />
+<text x="295.0" y="300.0" text-anchor="start" dominant-baseline="middle">D</text>
+<text x="0" y="0" transform="translate(282, 300.0),scale(1, 5.333333333333333)" text-anchor="start" dominant-baseline="middle">}</text>
+<line x1="180" y1="260" x2="280" y2="340" stroke="black" />
+<text x="295.0" y="390" text-anchor="start" dominant-baseline="middle">T9</text>
+<line x1="270.0" y1="390" x2="290.0" y2="390" stroke="black" />
+<text x="295.0" y="365.0" text-anchor="start" dominant-baseline="middle">1/B</text>
+<text x="0" y="0" transform="translate(282, 365.0),scale(1, 3.3333333333333335)" text-anchor="start" dominant-baseline="middle">}</text>
+<line x1="180" y1="310" x2="280" y2="390" stroke="black" />
+<text x="295.0" y="420" text-anchor="start" dominant-baseline="middle">T10</text>
+<line x1="270.0" y1="420" x2="290.0" y2="420" stroke="black" />
+<text x="295.0" y="405.0" text-anchor="start" dominant-baseline="middle">A/B</text>
+<text x="0" y="0" transform="translate(282, 405.0),scale(1, 2.0)" text-anchor="start" dominant-baseline="middle">}</text>
+<text x="165.0" y="470" text-anchor="end" dominant-baseline="middle">T11</text>
+<line x1="170.0" y1="470" x2="190.0" y2="470" stroke="black" />
+<line x1="180" y1="470" x2="280" y2="390" stroke="black" />
+<text x="165.0" y="500" text-anchor="end" dominant-baseline="middle">T12</text>
+<line x1="170.0" y1="500" x2="190.0" y2="500" stroke="black" />
+<line x1="180" y1="500" x2="280" y2="420" stroke="black" />
+<text x="295.0" y="500" text-anchor="start" dominant-baseline="middle">T12</text>
+<line x1="270.0" y1="500" x2="290.0" y2="500" stroke="black" />
+<text x="295.0" y="460.0" text-anchor="start" dominant-baseline="middle">D</text>
+<text x="0" y="0" transform="translate(282, 460.0),scale(1, 5.333333333333333)" text-anchor="start" dominant-baseline="middle">}</text>
+<text x="165.0" y="485.0" text-anchor="end" dominant-baseline="middle">A/B</text>
+<text x="0" y="0" transform="translate(178, 485.0),scale(1, 2.0)" text-anchor="end" dominant-baseline="middle">{</text>
+<text x="0" y="0" text-anchor="start" dominant-baseline="middle">
+<tspan x="380" dy="36">约定：</tspan>
+<tspan x="380" dy="18">- D 是传输延迟（单位：s）</tspan>
+<tspan x="380" dy="18">- B 是带宽（单位：帧/s）</tspan>
+<tspan x="380" dy="18">- W 是发送窗口大小（单位：帧）</tspan>
+<tspan x="380" dy="18">- A 是确认帧大小（单位：帧）</tspan>
+<tspan x="380" dy="18">- WND 表示 A 的发送窗口中还可以发送的帧的个数</tspan>
+<tspan x="380" dy="36">假设发送窗口大小为一个帧（W=1）</tspan>
+<tspan x="380" dy="18">T0 时刻：A 开始发送一个帧</tspan>
+<tspan x="380" dy="18">T0 ~ T1：发送一个帧，耗时 1/B</tspan>
+<tspan x="380" dy="18">T1 时刻：A 完成发送一个帧</tspan>
+<tspan x="380" dy="36">A 发送的帧经过传播延迟 D 到达 B</tspan>
+<tspan x="380" dy="18">T2 时刻：B 开始接收一个帧</tspan>
+<tspan x="380" dy="18">T0 ~ T2：耗时 D</tspan>
+<tspan x="380" dy="18">T3 时刻：B 完成接收一个帧</tspan>
+<tspan x="380" dy="18">T1 ~ T3：耗时 D</tspan>
+<tspan x="380" dy="36">T3 时刻 B 收到了完整的一个帧，给 A 发送一个确认帧</tspan>
+<tspan x="380" dy="18">假设确认帧的大小是 A（单位：帧）</tspan>
+<tspan x="380" dy="36">T3 时刻：B 开始发送一个确认帧</tspan>
+<tspan x="380" dy="18">T3 ~ T4：发送一个确认帧，耗时 A/B</tspan>
+<tspan x="380" dy="18">T4 时刻：B 完成发送一个确认帧</tspan>
+<tspan x="380" dy="36">B 发送的确认帧经过传播延迟 D 到达 A</tspan>
+<tspan x="380" dy="36">T5 时刻：A 开始收到一个确认帧</tspan>
+<tspan x="380" dy="18">T5 ~ T6：接收一个确认帧，耗时 A/B</tspan>
+<tspan x="380" dy="18">T6 时刻：A 完成接收一个确认帧</tspan>
+<tspan x="380" dy="36">此时 A 接收到确认帧，可以继续发送新的帧。</tspan>
+<tspan x="380" dy="18">之后按照同样的流程进行循环，得到 T7 ~ T12。</tspan>
+</text>
+</svg>
