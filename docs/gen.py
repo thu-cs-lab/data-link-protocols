@@ -78,6 +78,9 @@ def gen_svg(out, window):
                 file=f,
             )
 
+        def add_polygon(ya1, ya2, yb1, yb2):
+            print(f'<polygon points="{a_x},{ya1} {a_x},{ya2} {b_x},{yb2} {b_x},{yb1}" fill="gold" fill-opacity="0.0" stroke="black" />', file=f)
+
         print(f'<svg height="1000px" xmlns="http://www.w3.org/2000/svg">', file=f)
         print(
             f'<line x1="{a_x}" y1="10" x2="{a_x}" y2="{line_height}" stroke="black" />',
@@ -213,6 +216,16 @@ def gen_svg(out, window):
     """
             )
         elif window == 3:
+            print("""
+    <style>
+    polygon:hover {
+      fill: gold;
+      fill-opacity: 1.0;
+      stroke: black;
+      stroke-width: 2px;
+    }
+    </style>
+                  """, file=f)
             t0 = 20
 
             add_annotation(t0, "T0", "A")
@@ -242,12 +255,15 @@ def gen_svg(out, window):
             add_range(t2, t3, "1/B", "B")
             add_line(t0, t2)
             add_line(t1, t3)
+            add_polygon(t0, t1, t2, t3)
 
             add_annotation(t3 + lat_1_b, "", "B")
             add_line(t1 + lat_1_b, t3 + lat_1_b)
+            add_polygon(t0 + lat_1_b, t1 + lat_1_b, t2 + lat_1_b, t3 + lat_1_b)
 
             add_annotation(t3 + lat_1_b * 2, "", "B")
             add_line(t1 + lat_1_b * 2, t3 + lat_1_b * 2)
+            add_polygon(t0 + lat_1_b * 2, t1 + lat_1_b * 2, t2 + lat_1_b * 2, t3 + lat_1_b * 2)
 
             lat_a_b = 30
             t4 = t3 + lat_a_b
@@ -265,18 +281,21 @@ def gen_svg(out, window):
             add_range(t4, t6, "D", "B")
             add_line(t6, t4)
             add_window(t6, "0->1")
+            add_polygon(t5, t6, t3, t4)
 
             add_annotation(t3 + lat_1_b + lat_d, "", "A")
             add_annotation(t3 + lat_1_b + lat_d + lat_a_b, "", "A")
             add_annotation(t3 + lat_1_b + lat_a_b, "", "B")
             add_line(t3 + lat_1_b + lat_d, t3 + lat_1_b)
             add_line(t3 + lat_1_b + lat_d + lat_a_b, t3 + lat_1_b + lat_a_b)
+            add_polygon(t5 + lat_1_b, t6 + lat_1_b, t3 + lat_1_b, t4 + lat_1_b)
 
             add_annotation(t3 + lat_1_b * 2 + lat_d, "", "A")
             add_annotation(t3 + lat_1_b * 2 + lat_d + lat_a_b, "", "A")
             add_annotation(t3 + lat_1_b * 2 + lat_a_b, "", "B")
             add_line(t3 + lat_1_b * 2 + lat_d, t3 + lat_1_b * 2)
             add_line(t3 + lat_1_b * 2 + lat_d + lat_a_b, t3 + lat_1_b * 2 + lat_a_b)
+            add_polygon(t5 + lat_1_b * 2, t6 + lat_1_b * 2, t3 + lat_1_b * 2, t4 + lat_1_b * 2)
 
             t7 = t6 + lat_1_b
             add_annotation(t7, "T7", "A")
@@ -302,6 +321,9 @@ def gen_svg(out, window):
             add_annotation(t9, "T9", "B")
             add_range(t8, t9, "1/B", "B")
             add_line(t7, t9)
+            add_polygon(t6, t7, t8, t9)
+            add_polygon(t6 + lat_1_b, t7 + lat_1_b, t8 + lat_1_b, t9 + lat_1_b)
+            add_polygon(t6 + lat_1_b * 2, t7 + lat_1_b * 2, t8 + lat_1_b * 2, t9 + lat_1_b * 2)
 
             t10 = t9 + lat_a_b
             add_annotation(t10, "T10", "B")
@@ -317,6 +339,7 @@ def gen_svg(out, window):
             add_annotation(t12, "T12", "B")
             add_range(t10, t12, "D", "B")
             add_range(t11, t12, "A/B", "A")
+            add_polygon(t11, t12, t9, t10)
 
         print(f"</svg>", file=f)
 
