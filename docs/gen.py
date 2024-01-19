@@ -69,7 +69,7 @@ def gen_svg(out):
             )
             dy = 0
             for i, line in enumerate(desc.split("\n")):
-                dy += 18
+                dy += 15
                 if line != "":
                     print(f'<tspan x="{b_x + 100}" dy="{dy}">{line}</tspan>', file=f)
                     dy = 0
@@ -78,7 +78,7 @@ def gen_svg(out):
                 file=f,
             )
 
-        print(f'<svg height="700px" xmlns="http://www.w3.org/2000/svg">', file=f)
+        print(f'<svg height="1000px" xmlns="http://www.w3.org/2000/svg">', file=f)
         print(
             f'<line x1="{a_x}" y1="10" x2="{a_x}" y2="{line_height}" stroke="black" />',
             file=f,
@@ -198,8 +198,16 @@ T5 时刻：A 开始收到一个确认帧
 T5 ~ T6：接收一个确认帧，耗时 A/B
 T6 时刻：A 完成接收一个确认帧
 
-此时 A 接收到确认帧，可以继续发送新的帧。
-之后按照同样的流程进行循环，得到 T7 ~ T12。
+此时 A 接收到确认帧，可以继续发送新的帧
+之后按照同样的流程进行循环，得到 T7 ~ T12
+
+在 T0 ~ T6 的一个周期内，传输了 1 个帧的数据，耗费了 D+1/B+A/B+D 的时间
+
+链路利用率等于 (1/B)/(2D+1/B+A/B)
+
+如果确认帧很小可以忽略，那么 A=0，链路利用率等于 1/(2BD+1)
+
+如果确认捎带在数据帧中传输，那么 A=1，链路利用率等于 1/(2BD+2)
 
 """
         )
