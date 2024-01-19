@@ -1,4 +1,4 @@
-def gen_svg(out):
+def gen_svg(out, window):
     a_x = 180
     b_x = 280
     line_height = 600
@@ -74,7 +74,7 @@ def gen_svg(out):
                     print(f'<tspan x="{b_x + 100}" dy="{dy}">{line}</tspan>', file=f)
                     dy = 0
             print(
-                f'</text>',
+                f"</text>",
                 file=f,
             )
 
@@ -96,123 +96,125 @@ def gen_svg(out):
             file=f,
         )
 
-        t0 = 20
+        if window == 1:
+            t0 = 20
 
-        add_annotation(t0, "T0", "A")
-        add_annotation(t0, "T0", "B")
-        add_window(t0, 1)
+            add_annotation(t0, "T0", "A")
+            add_annotation(t0, "T0", "B")
+            add_window(t0, 1)
 
-        lat_1_b = 50
-        t1 = t0 + lat_1_b
-        add_annotation(t1, "T1", "A")
-        add_range(t0, t1, "1/B", "A")
-        add_window(t1, 0)
+            lat_1_b = 50
+            t1 = t0 + lat_1_b
+            add_annotation(t1, "T1", "A")
+            add_range(t0, t1, "1/B", "A")
+            add_window(t1, 0)
 
-        lat_d = 80
-        t2 = t0 + lat_d
-        t3 = t2 + lat_1_b
-        add_annotation(t2, "T2", "B")
-        add_annotation(t3, "T3", "B")
-        add_range(t0, t2, "D", "B")
-        add_range(t2, t3, "1/B", "B")
-        add_line(t0, t2)
-        add_line(t1, t3)
+            lat_d = 80
+            t2 = t0 + lat_d
+            t3 = t2 + lat_1_b
+            add_annotation(t2, "T2", "B")
+            add_annotation(t3, "T3", "B")
+            add_range(t0, t2, "D", "B")
+            add_range(t2, t3, "1/B", "B")
+            add_line(t0, t2)
+            add_line(t1, t3)
 
-        lat_a_b = 30
-        t4 = t3 + lat_a_b
-        add_annotation(t4, "T4", "B")
-        add_range(t3, t4, "A/B", "B")
+            lat_a_b = 30
+            t4 = t3 + lat_a_b
+            add_annotation(t4, "T4", "B")
+            add_range(t3, t4, "A/B", "B")
 
-        t5 = t3 + lat_d
-        add_annotation(t5, "T5", "A")
-        add_line(t5, t3)
+            t5 = t3 + lat_d
+            add_annotation(t5, "T5", "A")
+            add_line(t5, t3)
 
-        t6 = t5 + lat_a_b
-        add_annotation(t6, "T6", "A")
-        add_annotation(t6, "T6", "B")
-        add_range(t5, t6, "A/B", "A")
-        add_range(t4, t6, "D", "B")
-        add_line(t6, t4)
-        add_window(t6, 1)
+            t6 = t5 + lat_a_b
+            add_annotation(t6, "T6", "A")
+            add_annotation(t6, "T6", "B")
+            add_range(t5, t6, "A/B", "A")
+            add_range(t4, t6, "D", "B")
+            add_line(t6, t4)
+            add_window(t6, 1)
 
-        t7 = t6 + lat_1_b
-        add_annotation(t7, "T7", "A")
-        add_range(t6, t7, "1/B", "A")
-        add_window(t7, 0)
+            t7 = t6 + lat_1_b
+            add_annotation(t7, "T7", "A")
+            add_range(t6, t7, "1/B", "A")
+            add_window(t7, 0)
 
-        t8 = t6 + lat_d
-        add_annotation(t8, "T8", "B")
-        add_range(t6, t8, "D", "B")
-        add_line(t6, t8)
+            t8 = t6 + lat_d
+            add_annotation(t8, "T8", "B")
+            add_range(t6, t8, "D", "B")
+            add_line(t6, t8)
 
-        t9 = t7 + lat_d
-        add_annotation(t9, "T9", "B")
-        add_range(t8, t9, "1/B", "B")
-        add_line(t7, t9)
+            t9 = t7 + lat_d
+            add_annotation(t9, "T9", "B")
+            add_range(t8, t9, "1/B", "B")
+            add_line(t7, t9)
 
-        t10 = t9 + lat_a_b
-        add_annotation(t10, "T10", "B")
-        add_range(t9, t10, "A/B", "B")
+            t10 = t9 + lat_a_b
+            add_annotation(t10, "T10", "B")
+            add_range(t9, t10, "A/B", "B")
 
-        t11 = t9 + lat_d
-        add_annotation(t11, "T11", "A")
-        add_line(t11, t9)
+            t11 = t9 + lat_d
+            add_annotation(t11, "T11", "A")
+            add_line(t11, t9)
 
-        t12 = t10 + lat_d
-        add_annotation(t12, "T12", "A")
-        add_line(t12, t10)
-        add_annotation(t12, "T12", "B")
-        add_range(t10, t12, "D", "B")
-        add_range(t11, t12, "A/B", "A")
+            t12 = t10 + lat_d
+            add_annotation(t12, "T12", "A")
+            add_line(t12, t10)
+            add_annotation(t12, "T12", "B")
+            add_range(t10, t12, "D", "B")
+            add_range(t11, t12, "A/B", "A")
 
-        add_desc(
-            """
-约定：
-- D 是传输延迟（单位：s）
-- B 是带宽（单位：帧/s）
-- W 是发送窗口大小（单位：帧）
-- A 是确认帧大小（单位：帧）
-- WND 表示 A 的发送窗口中还可以发送的帧的个数
+            add_desc(
+                """
+    约定：
+    - D 是传输延迟（单位：s）
+    - B 是带宽（单位：帧/s）
+    - W 是发送窗口大小（单位：帧）
+    - A 是确认帧大小（单位：帧）
+    - WND 表示 A 的发送窗口中还可以发送的帧的个数
 
-假设发送窗口大小为一个帧（W=1）
-T0 时刻：A 开始发送一个帧
-T0 ~ T1：发送一个帧，耗时 1/B
-T1 时刻：A 完成发送一个帧
+    假设发送窗口大小为一个帧（W=1）
+    T0 时刻：A 开始发送一个帧
+    T0 ~ T1：发送一个帧，耗时 1/B
+    T1 时刻：A 完成发送一个帧
 
-A 发送的帧经过传播延迟 D 到达 B
-T2 时刻：B 开始接收一个帧
-T0 ~ T2：耗时 D
-T3 时刻：B 完成接收一个帧
-T1 ~ T3：耗时 D
+    A 发送的帧经过传播延迟 D 到达 B
+    T2 时刻：B 开始接收一个帧
+    T0 ~ T2：耗时 D
+    T3 时刻：B 完成接收一个帧
+    T1 ~ T3：耗时 D
 
-T3 时刻 B 收到了完整的一个帧，给 A 发送一个确认帧
-假设确认帧的大小是 A（单位：帧）
+    T3 时刻 B 收到了完整的一个帧，给 A 发送一个确认帧
+    假设确认帧的大小是 A（单位：帧）
 
-T3 时刻：B 开始发送一个确认帧
-T3 ~ T4：发送一个确认帧，耗时 A/B
-T4 时刻：B 完成发送一个确认帧
+    T3 时刻：B 开始发送一个确认帧
+    T3 ~ T4：发送一个确认帧，耗时 A/B
+    T4 时刻：B 完成发送一个确认帧
 
-B 发送的确认帧经过传播延迟 D 到达 A
+    B 发送的确认帧经过传播延迟 D 到达 A
 
-T5 时刻：A 开始收到一个确认帧
-T5 ~ T6：接收一个确认帧，耗时 A/B
-T6 时刻：A 完成接收一个确认帧
+    T5 时刻：A 开始收到一个确认帧
+    T5 ~ T6：接收一个确认帧，耗时 A/B
+    T6 时刻：A 完成接收一个确认帧
 
-此时 A 接收到确认帧，可以继续发送新的帧
-之后按照同样的流程进行循环，得到 T7 ~ T12
+    此时 A 接收到确认帧，可以继续发送新的帧
+    之后按照同样的流程进行循环，得到 T7 ~ T12
 
-在 T0 ~ T6 的一个周期内，传输了 1 个帧的数据，耗费了 D+1/B+A/B+D 的时间
+    在 T0 ~ T6 的一个周期内，传输了 1 个帧的数据，耗费了 D+1/B+A/B+D 的时间
 
-链路利用率等于 (1/B)/(2D+1/B+A/B)
+    链路利用率等于 (1/B)/(2D+1/B+A/B)
 
-如果确认帧很小可以忽略，那么 A=0，链路利用率等于 1/(2BD+1)
+    如果确认帧很小可以忽略，那么 A=0，链路利用率等于 1/(2BD+1)
 
-如果确认捎带在数据帧中传输，那么 A=1，链路利用率等于 1/(2BD+2)
+    如果确认捎带在数据帧中传输，那么 A=1，链路利用率等于 1/(2BD+2)
 
-"""
-        )
+    """
+            )
 
         print(f"</svg>", file=f)
 
 
-gen_svg("window_1.svg")
+gen_svg("window_1.svg", 1)
+gen_svg("window_3.svg", 3)
